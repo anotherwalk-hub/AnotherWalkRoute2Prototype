@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#191919">
+<title>AnotherWalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<!-- Route data — swap this file to load a different route -->
+<script src="route1-stops.js"></script>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --parchment:#f1eade; --carbon:#191919;
+  --bordeaux:#701321; --bordeaux-d:#560f1a;
+  --gold:#b89a5a; --muted:#7a7060; --muted-light:#a09880;
+  --green:#7a9e7e; --panel:#faf6ef; --blue:#3b82f6;
+}
+html, body { height:100%; overflow:hidden; }
+body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(--carbon); display:flex; flex-direction:column; }
+
+/* ── HEADER */
+.app-header { background:var(--carbon); padding:12px 18px 13px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative; z-index:200; border-bottom:1px solid rgba(112,19,33,0.3); }
+.header-center { position:absolute; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; }
+.header-center h1 { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; color:var(--parchment); line-height:1; }
+.header-center .route-sub { font-size:0.56rem; color:var(--gold); letter-spacing:0.14em; text-transform:uppercase; margin-top:3px; font-weight:500; }
+.header-spacer { width:34px; flex-shrink:0; }
+.locate-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
+.locate-btn:hover, .locate-btn.active { color:var(--blue); }
+
+/* ── LAYOUT */
+.app-body { display:flex; flex:1; overflow:hidden; min-height:0; position:relative; }
+
+/* ── SIDEBAR */
+.sidebar { width:280px; flex-shrink:0; background:var(--panel); border-right:1px solid rgba(112,19,33,0.15); display:flex; flex-direction:column; overflow:hidden; z-index:100; }
+.sb-head { padding:14px 17px 11px; border-bottom:1px solid rgba(112,19,33,0.12); flex-shrink:0; }
+.sb-head h2 { font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:0.8rem; color:var(--muted); margin-bottom:9px; }
+.pills { display:flex; gap:5px; }
+.pill { font-size:0.57rem; padding:3px 9px; border-radius:20px; border:1px solid; cursor:pointer; letter-spacing:0.07em; text-transform:uppercase; font-weight:600; background:transparent; font-family:'Montserrat',sans-serif; transition:all .18s; }
+.pill.all { border-color:var(--carbon); color:var(--carbon); }
+.pill.all.on,.pill.all:hover { background:var(--carbon); color:var(--parchment); }
+.pill.stp { border-color:var(--bordeaux); color:var(--bordeaux); }
+.pill.stp.on,.pill.stp:hover { background:var(--bordeaux); color:var(--parchment); }
+.pill.opt { border-color:var(--green); color:var(--green); }
+.pill.opt.on,.pill.opt:hover { background:var(--green); color:#fff; }
+.stop-list { overflow-y:auto; flex:1; padding:5px 0; }
+.stop-list::-webkit-scrollbar { width:3px; }
+.stop-list::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.2); border-radius:2px; }
+.si { display:flex; align-items:flex-start; gap:10px; padding:8px 16px; cursor:pointer; border-left:3px solid transparent; transition:background .14s; }
+.si:hover { background:rgba(112,19,33,0.05); }
+.si.active { background:rgba(112,19,33,0.08); border-left-color:var(--bordeaux); }
+.si.active.opt-item { border-left-color:var(--green); background:rgba(122,158,126,0.07); }
+.dot { width:20px; height:20px; border-radius:50%; color:white; font-size:8.5px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
+.si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
+
+/* ── MAP */
+.map-wrap { flex:1; position:relative; overflow:hidden; }
+#map { width:100%; height:100%; }
+
+/* ── MARKERS */
+.mk-stop { width:22px; height:22px; border-radius:50%; background:var(--bordeaux); border:2px solid white; box-shadow:0 1px 6px rgba(25,25,25,.5); color:white; font-size:7.5px; font-weight:600; font-family:'Montserrat',sans-serif; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .15s; }
+.mk-stop:hover, .mk-stop.active { transform:scale(1.25); }
+.mk-se { width:26px; height:26px; border-radius:50%; background:var(--carbon); border:2px solid white; box-shadow:0 1px 6px rgba(25,25,25,.5); color:var(--parchment); font-size:7px; font-weight:600; font-family:'Montserrat',sans-serif; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.mk-opt { width:24px; height:24px; border-radius:50%; background:var(--green); border:2px solid white; box-shadow:0 1px 6px rgba(25,25,25,.3); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; line-height:1; transition:transform .15s; }
+.mk-opt:hover, .mk-opt.active { transform:scale(1.25); }
+
+/* ── LEGEND */
+.legend { position:absolute; bottom:32px; right:12px; background:rgba(250,246,239,.97); border:1px solid rgba(112,19,33,.18); border-radius:7px; padding:8px 12px; font-size:0.62rem; color:var(--muted); line-height:2.1; box-shadow:0 2px 10px rgba(25,25,25,.1); z-index:100; font-family:'Montserrat',sans-serif; }
+.li { display:flex; align-items:center; gap:7px; }
+.ld { width:11px; height:11px; border-radius:50%; border:2px solid white; box-shadow:0 1px 3px rgba(0,0,0,.2); flex-shrink:0; }
+
+/* ── ROUTE LOADING */
+.route-status { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:150; background:rgba(25,25,25,.85); color:var(--parchment); font-size:0.65rem; padding:5px 14px; border-radius:20px; letter-spacing:0.05em; display:none; align-items:center; gap:7px; white-space:nowrap; font-family:'Montserrat',sans-serif; backdrop-filter:blur(4px); }
+.route-status.show { display:flex; }
+.spinner { width:10px; height:10px; border:2px solid rgba(241,234,222,.3); border-top-color:var(--parchment); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── MAPBOX CONTROL OVERRIDES */
+.mapboxgl-ctrl-group { box-shadow:0 2px 10px rgba(25,25,25,.3)!important; border:none!important; border-radius:6px!important; overflow:hidden; }
+.mapboxgl-ctrl-group button { background:var(--carbon)!important; width:30px!important; height:30px!important; }
+.mapboxgl-ctrl-group button:hover { background:var(--bordeaux)!important; }
+.mapboxgl-ctrl-icon { filter:invert(1) brightness(0.85); }
+.mapboxgl-ctrl-group button + button { border-top:1px solid rgba(112,19,33,.3)!important; }
+.mapboxgl-ctrl-attrib-inner a { color:var(--muted) !important; font-size:0.55rem !important; }
+
+/* ── STOP PANEL */
+.stop-panel { position:absolute; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(100%); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:150; }
+.stop-panel.open { transform:translateY(0); }
+.panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
+.p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; }
+.p-inner::-webkit-scrollbar { width:3px; }
+.p-inner::-webkit-scrollbar-thumb { background:rgba(112,19,33,.2); }
+.p-label { font-size:0.57rem; letter-spacing:0.13em; text-transform:uppercase; font-weight:600; margin-bottom:3px; font-family:'Montserrat',sans-serif; }
+.p-title { font-family:'Playfair Display',serif; font-size:1.22rem; font-weight:600; line-height:1.2; margin-bottom:8px; color:var(--carbon); }
+.p-body { font-size:0.78rem; line-height:1.76; color:#2e2e2e; max-width:660px; font-family:'Montserrat',sans-serif; font-weight:400; }
+.p-body p { margin-bottom:8px; }
+.pro-tip { margin-top:10px; padding:9px 13px; background:rgba(112,19,33,.06); border-left:3px solid var(--bordeaux); border-radius:0 4px 4px 0; font-size:0.74rem; color:var(--bordeaux-d); line-height:1.65; font-family:'Montserrat',sans-serif; }
+.pro-tip strong { display:block; color:var(--bordeaux); font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:2px; font-weight:600; }
+.close-btn { position:absolute; top:12px; right:14px; width:26px; height:26px; border:1px solid rgba(112,19,33,.25); border-radius:50%; background:transparent; cursor:pointer; font-size:0.8rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .18s; }
+.close-btn:hover { background:var(--bordeaux); color:var(--parchment); border-color:var(--bordeaux); }
+
+@media(max-width:640px) { .sidebar { display:none; } }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-spacer"></div>
+  <div class="header-center">
+    <h1 id="headerTitle">—</h1>
+    <div class="route-sub" id="headerSub">—</div>
+  </div>
+  <button class="locate-btn" id="locateBtn" title="My location">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+    </svg>
+  </button>
+</header>
+
+<div class="app-body">
+  <aside class="sidebar">
+    <div class="sb-head">
+      <h2>All stops along the route</h2>
+      <div class="pills">
+        <button class="pill all on" onclick="filterList('all',this)">All</button>
+        <button class="pill stp" onclick="filterList('stop',this)">Stops</button>
+        <button class="pill opt" onclick="filterList('optional',this)">Optional</button>
+      </div>
+    </div>
+    <div class="stop-list" id="stopList"></div>
+  </aside>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+
+    <div class="route-status" id="routeStatus">
+      <div class="spinner"></div>
+      Calculating walking route…
+    </div>
+
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#191919"></div>Start / End</div>
+      <div class="li"><div class="ld" style="background:#701321"></div>Stop</div>
+      <div class="li"><div class="ld" style="background:#7a9e7e"></div>Optional</div>
+    </div>
+
+    <div class="stop-panel" id="stopPanel">
+      <div class="panel-handle" onclick="closePanel()"></div>
+      <button class="close-btn" onclick="closePanel()">&#10005;</button>
+      <div class="p-inner" id="panelContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG
+var MAPBOX_TOKEN = 'pk.eyJ1Ijoibmlja3BvbnRlIiwiYSI6ImNtb25hZGVvbTA3aXMycHM2Yms2ejNxaGcifQ.rTiwFe0d2LfVqGPaUbz8tA';
+var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
+
+// Route data is loaded from route1-stops.js — ROUTE_META and ROUTE_STOPS
+var meta  = ROUTE_META;
+var stops = ROUTE_STOPS;
+
+// Fill header from meta
+document.getElementById('headerTitle').textContent = meta.title;
+document.getElementById('headerSub').textContent   = meta.label + ' · ' + meta.stopCount + ' stops';
+
+// ── MAP
+mapboxgl.accessToken = MAPBOX_TOKEN;
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: MAPBOX_STYLE,
+  center: meta.center,
+  zoom: meta.zoom,
+  attributionControl: true
+});
+map.addControl(new mapboxgl.NavigationControl({showCompass:false}), 'top-right');
+
+map.on('load', function() {
+  addMarkers();
+  fetchWalkingRoute();
+});
+
+// ── MARKERS
+var markerEls = {};
+
+function addMarkers() {
+  stops.forEach(function(stop) {
+    var el = document.createElement('div');
+    if (stop.type === 'start' || stop.type === 'end') {
+      el.className = 'mk-se'; el.textContent = stop.label;
+    } else if (stop.type === 'optional') {
+      el.className = 'mk-opt'; el.textContent = stop.icon || '✦';
+    } else {
+      el.className = 'mk-stop'; el.textContent = stop.label;
+    }
+    el.addEventListener('click', function(e) { e.stopPropagation(); openPanel(stop); });
+    markerEls[stop.id] = el;
+    new mapboxgl.Marker({element:el, anchor:'center'})
+      .setLngLat([stop.lng, stop.lat])
+      .addTo(map);
+  });
+}
+
+// ── WALKING ROUTE — Mapbox Directions API, chunked (max 25 waypoints)
+function fetchWalkingRoute() {
+  var status = document.getElementById('routeStatus');
+  status.classList.add('show');
+
+  var mainStops = stops.filter(function(s) { return s.type !== 'optional'; });
+  var chunkSize = 25;
+  var chunks = [];
+  for (var i = 0; i < mainStops.length; i += chunkSize - 1) {
+    chunks.push(mainStops.slice(i, Math.min(i + chunkSize, mainStops.length)));
+  }
+
+  var results  = new Array(chunks.length);
+  var pending  = chunks.length;
+
+  chunks.forEach(function(chunk, idx) {
+    var coords = chunk.map(function(s) { return s.lng + ',' + s.lat; }).join(';');
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/walking/' + coords
+            + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN;
+
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.routes && data.routes[0]) results[idx] = data.routes[0].geometry.coordinates;
+        onChunkDone();
+      })
+      .catch(function() { onChunkDone(); });
+  });
+
+  function onChunkDone() {
+    pending--;
+    if (pending > 0) return;
+    // Merge chunks, skip first coord of each subsequent chunk to avoid duplicates
+    var merged = [];
+    results.forEach(function(coords, i) {
+      if (!coords) return;
+      merged = merged.concat(i === 0 ? coords : coords.slice(1));
+    });
+    if (merged.length > 1) {
+      drawRoute(merged);
+    } else {
+      // Fallback: straight lines
+      drawRoute(mainStops.map(function(s) { return [s.lng, s.lat]; }));
+    }
+    status.classList.remove('show');
+  }
+}
+
+function drawRoute(coords) {
+  var geojson = {type:'Feature', geometry:{type:'LineString', coordinates:coords}};
+  if (map.getSource('route')) {
+    map.getSource('route').setData(geojson); return;
+  }
+  map.addSource('route', {type:'geojson', data:geojson});
+  // Soft glow underneath
+  map.addLayer({
+    id:'route-glow', type:'line', source:'route',
+    layout:{'line-join':'round','line-cap':'round'},
+    paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6}
+  });
+  // Dashed main line
+  map.addLayer({
+    id:'route-line', type:'line', source:'route',
+    layout:{'line-join':'round','line-cap':'round'},
+    paint:{'line-color':'#701321','line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]}
+  });
+}
+
+// ── LOCATE
+var userMapMarker = null, watchId = null, locateOn = false;
+
+document.getElementById('locateBtn').addEventListener('click', function() {
+  if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+  if (locateOn) {
+    if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    if (userMapMarker) { userMapMarker.remove(); userMapMarker = null; }
+    locateOn = false;
+    document.getElementById('locateBtn').classList.remove('active');
+    return;
+  }
+  locateOn = true;
+  document.getElementById('locateBtn').classList.add('active');
+  navigator.geolocation.getCurrentPosition(
+    function(p) {
+      setUserDot(p.coords.latitude, p.coords.longitude);
+      map.flyTo({center:[p.coords.longitude, p.coords.latitude], zoom:16});
+    },
+    function() {
+      locateOn = false;
+      document.getElementById('locateBtn').classList.remove('active');
+      alert('Location unavailable. Check your browser permissions.');
+    },
+    {enableHighAccuracy:true}
+  );
+  watchId = navigator.geolocation.watchPosition(
+    function(p) { setUserDot(p.coords.latitude, p.coords.longitude); },
+    null,
+    {enableHighAccuracy:true, maximumAge:5000}
+  );
+});
+
+function setUserDot(lat, lng) {
+  var el = document.createElement('div');
+  el.style.cssText = 'width:14px;height:14px;border-radius:50%;background:#3b82f6;border:3px solid white;box-shadow:0 0 0 4px rgba(59,130,246,.25);';
+  if (userMapMarker) userMapMarker.remove();
+  userMapMarker = new mapboxgl.Marker({element:el, anchor:'center'})
+    .setLngLat([lng, lat]).addTo(map);
+}
+
+// ── PANEL
+function openPanel(stop) {
+  document.querySelectorAll('.si').forEach(function(e) { e.classList.remove('active'); });
+  var sEl = document.querySelector('.si[data-id="' + stop.id + '"]');
+  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+
+  Object.values(markerEls).forEach(function(el) { el.classList.remove('active'); });
+  if (markerEls[stop.id]) markerEls[stop.id].classList.add('active');
+
+  var lc = stop.type==='optional' ? 'var(--green)' : stop.type==='start'||stop.type==='end' ? 'var(--gold)' : 'var(--bordeaux)';
+  var lt = stop.type==='optional' ? (stop.icon+' Optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
+  var html = '<div class="p-label" style="color:'+lc+'">'+lt+'</div>'
+           + '<div class="p-title">'+stop.name+'</div>'
+           + '<div class="p-body"><p>'+stop.body+'</p></div>';
+  if (stop.tip) html += '<div class="pro-tip"><strong>Pro Tip</strong>'+stop.tip+'</div>';
+
+  document.getElementById('panelContent').innerHTML = html;
+  document.getElementById('stopPanel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('stopPanel').classList.remove('open');
+  document.querySelectorAll('.si').forEach(function(e) { e.classList.remove('active'); });
+  Object.values(markerEls).forEach(function(el) { el.classList.remove('active'); });
+}
+
+map.on('click', function() { closePanel(); });
+
+// ── SIDEBAR
+function buildList(filter) {
+  filter = filter || 'all';
+  var list = document.getElementById('stopList');
+  list.innerHTML = '';
+  stops.forEach(function(stop) {
+    if (filter==='stop'    && stop.type!=='stop')     return;
+    if (filter==='optional'&& stop.type!=='optional') return;
+    var c    = stop.type==='start'||stop.type==='end' ? '#191919' : stop.type==='optional' ? '#7a9e7e' : '#701321';
+    var isOpt = stop.type==='optional';
+    var tag  = isOpt ? (stop.icon+' optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
+    var el   = document.createElement('div');
+    el.className  = 'si'+(isOpt?' opt-item':'');
+    el.dataset.id = stop.id;
+    el.innerHTML  = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
+                  + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
+    el.addEventListener('click', function() {
+      openPanel(stop);
+      map.flyTo({center:[stop.lng, stop.lat], zoom:17});
+    });
+    list.appendChild(el);
+  });
+}
+
+function filterList(type, btn) {
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('on'); });
+  btn.classList.add('on');
+  buildList(type);
+}
+
+buildList();
+</script>
+</body>
+</html>
