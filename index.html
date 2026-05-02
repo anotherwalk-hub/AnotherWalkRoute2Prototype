@@ -130,16 +130,16 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 
 /* ── LOCATION TOOLTIP */
 .locate-tooltip {
-  position:absolute; top:62px; right:8px;
+  position:absolute; top:58px; right:8px;
   background:var(--carbon); color:var(--parchment);
-  font-family:'Montserrat',sans-serif; font-size:0.72rem;
-  padding:10px 14px; border-radius:10px;
+  font-family:'Montserrat',sans-serif; font-size:0.7rem;
+  padding:8px 12px; border-radius:10px;
   box-shadow:0 4px 16px rgba(25,25,25,0.3);
   border:1px solid rgba(112,19,33,0.3);
-  z-index:300; max-width:200px; line-height:1.5;
-  display:none;
+  z-index:300; max-width:220px; line-height:1.4;
+  display:none; align-items:center; gap:10px;
 }
-.locate-tooltip.show { display:block; }
+.locate-tooltip.show { display:flex; }
 .locate-tooltip::after {
   content:'';
   position:absolute; top:-6px; right:10px;
@@ -150,12 +150,12 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
   transform:rotate(45deg);
 }
 .locate-tooltip-close {
-  display:block; margin-top:8px;
+  flex-shrink:0;
   background:var(--bordeaux); color:var(--parchment);
-  border:none; border-radius:6px; padding:5px 10px;
-  font-family:'Montserrat',sans-serif; font-size:0.65rem;
-  font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
-  cursor:pointer; width:100%;
+  border:none; border-radius:6px; padding:4px 8px;
+  font-family:'Montserrat',sans-serif; font-size:0.62rem;
+  font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
+  cursor:pointer; white-space:nowrap;
 }
 
 /* ── MAPBOX CONTROLS */
@@ -288,7 +288,7 @@ var map = new mapboxgl.Map({
   zoom: meta.zoom,
   attributionControl: true
 });
-map.addControl(new mapboxgl.NavigationControl({showCompass:false}), 'top-right');
+// Zoom controls removed — pinch to zoom on mobile, scroll on desktop
 
 map.on('load', function() {
   addMarkers();
