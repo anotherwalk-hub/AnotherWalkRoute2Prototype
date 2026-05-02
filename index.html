@@ -21,20 +21,59 @@
 html, body { height:100%; overflow:hidden; }
 body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(--carbon); display:flex; flex-direction:column; }
 
-/* HEADER */
-.app-header { background:var(--carbon); padding:12px 18px 13px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative; z-index:200; border-bottom:1px solid rgba(112,19,33,0.3); }
+/* ── HEADER */
+.app-header {
+  background:var(--carbon); padding:12px 18px 13px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; position:relative; z-index:200;
+  border-bottom:1px solid rgba(112,19,33,0.3);
+}
 .header-center { position:absolute; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; }
 .header-center h1 { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; color:var(--parchment); line-height:1; }
 .header-center .route-sub { font-size:0.56rem; color:var(--gold); letter-spacing:0.14em; text-transform:uppercase; margin-top:3px; font-weight:500; }
-.header-spacer { width:34px; flex-shrink:0; }
-.locate-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
+
+/* Hamburger menu button — visible on mobile, hidden on desktop */
+.menu-btn {
+  width:36px; height:36px; flex-shrink:0;
+  display:none; /* shown via media query */
+  flex-direction:column; align-items:flex-start; justify-content:center;
+  gap:5px; cursor:pointer; padding:4px;
+  background:transparent; border:none;
+}
+.menu-btn span {
+  display:block; height:1.5px; background:var(--parchment);
+  border-radius:2px; transition:all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.menu-btn span:nth-child(1){ width:22px; }
+.menu-btn span:nth-child(2){ width:16px; }
+.menu-btn span:nth-child(3){ width:19px; }
+.menu-btn.open span:nth-child(1){ width:20px; transform:translateY(6.5px) rotate(45deg); }
+.menu-btn.open span:nth-child(2){ opacity:0; width:0; }
+.menu-btn.open span:nth-child(3){ width:20px; transform:translateY(-6.5px) rotate(-45deg); }
+
+.locate-btn {
+  width:34px; height:34px; flex-shrink:0;
+  background:transparent; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s;
+  position:relative;
+}
 .locate-btn:hover, .locate-btn.active { color:var(--blue); }
 
-/* LAYOUT */
+/* Spacer to balance header when hamburger is hidden */
+.header-spacer { width:36px; flex-shrink:0; }
+
+/* ── LAYOUT */
 .app-body { display:flex; flex:1; overflow:hidden; min-height:0; position:relative; }
 
-/* SIDEBAR */
-.sidebar { width:280px; flex-shrink:0; background:var(--panel); border-right:1px solid rgba(112,19,33,0.15); display:flex; flex-direction:column; overflow:hidden; z-index:100; }
+/* ── SIDEBAR — desktop always visible, mobile via overlay */
+.sidebar {
+  width:280px; flex-shrink:0;
+  background:var(--panel);
+  border-right:1px solid rgba(112,19,33,0.15);
+  display:flex; flex-direction:column; overflow:hidden; z-index:300;
+  transition:transform 0.32s cubic-bezier(.4,0,.2,1);
+}
 .sb-head { padding:14px 17px 11px; border-bottom:1px solid rgba(112,19,33,0.12); flex-shrink:0; }
 .sb-head h2 { font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:0.8rem; color:var(--muted); margin-bottom:9px; }
 .pills { display:flex; gap:5px; }
@@ -56,45 +95,70 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
 .si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
 
-/* MAP */
+/* Mobile sidebar overlay backdrop */
+.sidebar-backdrop {
+  display:none;
+  position:absolute; inset:0; z-index:250;
+  background:rgba(25,25,25,0.5);
+}
+
+/* ── MAP */
 .map-wrap { flex:1; position:relative; overflow:hidden; }
 #map { width:100%; height:100%; }
 
-/* MARKERS — will-change: transform tells the browser to keep these on the GPU */
+/* ── MARKERS */
 .mk {
-  border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 1px 5px rgba(25,25,25,0.45);
-  color: white;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  /* GPU compositing — eliminates the paint lag on pan/zoom */
-  will-change: transform;
-  transition: box-shadow 0.15s;
+  border-radius:50%; border:2px solid white;
+  box-shadow:0 1px 5px rgba(25,25,25,0.45);
+  color:white; font-family:'Montserrat',sans-serif; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; will-change:transform; transition:box-shadow 0.15s;
 }
 .mk:hover, .mk.sel {
-  box-shadow: 0 0 0 3px rgba(184,154,90,0.7), 0 2px 8px rgba(25,25,25,0.5);
+  box-shadow:0 0 0 3px rgba(184,154,90,0.7), 0 2px 8px rgba(25,25,25,0.5);
 }
-.mk-stop { width:22px; height:22px; background:var(--bordeaux); font-size:7.5px; }
-.mk-se   { width:26px; height:26px; background:var(--carbon); font-size:7px; color:var(--parchment); }
-.mk-opt  { width:24px; height:24px; background:var(--green); font-size:13px; }
+/* 25% larger than before: stop 22→28, se 26→33, opt 24→30 */
+.mk-stop { width:28px; height:28px; background:var(--bordeaux); font-size:9.5px; }
+.mk-se   { width:33px; height:33px; background:var(--carbon); font-size:9px; color:var(--parchment); }
+.mk-opt  { width:30px; height:30px; background:var(--green); font-size:16px; }
 
-/* LEGEND */
-.legend { position:absolute; bottom:32px; right:12px; background:rgba(250,246,239,.97); border:1px solid rgba(112,19,33,.18); border-radius:7px; padding:8px 12px; font-size:0.62rem; color:var(--muted); line-height:2.1; box-shadow:0 2px 10px rgba(25,25,25,.1); z-index:100; font-family:'Montserrat',sans-serif; }
-.li { display:flex; align-items:center; gap:7px; }
-.ld { width:11px; height:11px; border-radius:50%; border:2px solid white; box-shadow:0 1px 3px rgba(0,0,0,.2); flex-shrink:0; }
-
-/* ROUTE LOADING */
+/* ── ROUTE LOADING */
 .route-status { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:150; background:rgba(25,25,25,.85); color:var(--parchment); font-size:0.65rem; padding:5px 14px; border-radius:20px; letter-spacing:0.05em; display:none; align-items:center; gap:7px; white-space:nowrap; font-family:'Montserrat',sans-serif; backdrop-filter:blur(4px); }
 .route-status.show { display:flex; }
 .spinner { width:10px; height:10px; border:2px solid rgba(241,234,222,.3); border-top-color:var(--parchment); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
-/* MAPBOX CONTROLS */
+/* ── LOCATION TOOLTIP */
+.locate-tooltip {
+  position:absolute; bottom:68px; right:8px;
+  background:var(--carbon); color:var(--parchment);
+  font-family:'Montserrat',sans-serif; font-size:0.72rem;
+  padding:10px 14px; border-radius:10px;
+  box-shadow:0 4px 16px rgba(25,25,25,0.3);
+  border:1px solid rgba(112,19,33,0.3);
+  z-index:300; max-width:200px; line-height:1.5;
+  display:none;
+}
+.locate-tooltip.show { display:block; }
+.locate-tooltip::after {
+  content:'';
+  position:absolute; bottom:-6px; right:16px;
+  width:10px; height:10px;
+  background:var(--carbon);
+  border-right:1px solid rgba(112,19,33,0.3);
+  border-bottom:1px solid rgba(112,19,33,0.3);
+  transform:rotate(45deg);
+}
+.locate-tooltip-close {
+  display:block; margin-top:8px;
+  background:var(--bordeaux); color:var(--parchment);
+  border:none; border-radius:6px; padding:5px 10px;
+  font-family:'Montserrat',sans-serif; font-size:0.65rem;
+  font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+  cursor:pointer; width:100%;
+}
+
+/* ── MAPBOX CONTROLS */
 .mapboxgl-ctrl-group { box-shadow:0 2px 10px rgba(25,25,25,.3)!important; border:none!important; border-radius:6px!important; overflow:hidden; }
 .mapboxgl-ctrl-group button { background:var(--carbon)!important; width:30px!important; height:30px!important; }
 .mapboxgl-ctrl-group button:hover { background:var(--bordeaux)!important; }
@@ -102,7 +166,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .mapboxgl-ctrl-group button + button { border-top:1px solid rgba(112,19,33,.3)!important; }
 .mapboxgl-ctrl-attrib-inner a { color:var(--muted)!important; font-size:0.55rem!important; }
 
-/* STOP PANEL */
+/* ── STOP PANEL */
 .stop-panel { position:absolute; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(100%); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:150; }
 .stop-panel.open { transform:translateY(0); }
 .panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
@@ -121,18 +185,45 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 /* USER DOT */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
-@media(max-width:640px) { .sidebar { display:none; } }
+/* ── MOBILE */
+@media(max-width:640px) {
+  /* Show hamburger, hide spacer */
+  .menu-btn { display:flex; }
+  .header-spacer { display:none; }
+
+  /* Sidebar slides in from left as overlay */
+  .sidebar {
+    position:absolute;
+    top:0; left:0; bottom:0;
+    transform:translateX(-100%);
+    box-shadow:4px 0 20px rgba(25,25,25,0.2);
+  }
+  .sidebar.open {
+    transform:translateX(0);
+  }
+  .sidebar-backdrop.show { display:block; }
+
+  /* Locate tooltip anchors better on mobile */
+  .locate-tooltip { right:8px; bottom:64px; max-width:180px; }
+}
 </style>
 </head>
 <body>
 
 <header class="app-header">
+  <!-- Hamburger: mobile only -->
+  <button class="menu-btn" id="menuBtn" aria-label="Open stop list">
+    <span></span><span></span><span></span>
+  </button>
+  <!-- Spacer: desktop only, balances the locate btn -->
   <div class="header-spacer"></div>
+
   <div class="header-center">
     <h1 id="headerTitle">—</h1>
     <div class="route-sub" id="headerSub">—</div>
   </div>
-  <button class="locate-btn" id="locateBtn" title="My location">
+
+  <button class="locate-btn" id="locateBtn" title="Show my location">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
     </svg>
@@ -140,7 +231,11 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 </header>
 
 <div class="app-body">
-  <aside class="sidebar">
+
+  <!-- Backdrop for mobile sidebar -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <aside class="sidebar" id="sidebar">
     <div class="sb-head">
       <h2>All stops along the route</h2>
       <div class="pills">
@@ -154,15 +249,18 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 
   <div class="map-wrap">
     <div id="map"></div>
+
     <div class="route-status" id="routeStatus">
       <div class="spinner"></div>
       Calculating walking route…
     </div>
-    <div class="legend">
-      <div class="li"><div class="ld" style="background:#191919"></div>Start / End</div>
-      <div class="li"><div class="ld" style="background:#701321"></div>Stop</div>
-      <div class="li"><div class="ld" style="background:#7a9e7e"></div>Optional</div>
+
+    <!-- Location tooltip — shown on first visit -->
+    <div class="locate-tooltip" id="locateTooltip">
+      Tap this button to see your live location on the map.
+      <button class="locate-tooltip-close" id="locateTooltipClose">Got it</button>
     </div>
+
     <div class="stop-panel" id="stopPanel">
       <div class="panel-handle" onclick="closePanel()"></div>
       <button class="close-btn" onclick="closePanel()">&#10005;</button>
@@ -192,16 +290,13 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.NavigationControl({showCompass:false}), 'top-right');
 
-// ── MARKERS
-// Using DOM markers with:
-// 1. anchor:'center' — pin point is the exact center of the circle, not the top-left corner
-// 2. will-change:transform in CSS — tells browser to composite on GPU, removes paint lag
-var markerObjects = {}; // store mapboxgl.Marker instances keyed by stop id
-
 map.on('load', function() {
   addMarkers();
   fetchWalkingRoute();
 });
+
+// ── MARKERS
+var markerObjects = {};
 
 function addMarkers() {
   stops.forEach(function(stop) {
@@ -211,38 +306,51 @@ function addMarkers() {
       stop.type === 'optional' ? 'mk-opt' : 'mk-stop'
     );
     el.textContent = stop.type === 'optional' ? (stop.icon || '✦') : stop.label;
-
     el.addEventListener('click', function(e) {
       e.stopPropagation();
       openPanel(stop);
     });
-
-    // anchor:'center' is the critical fix — without it Mapbox anchors to top-left
-    // which causes the apparent "drift" when panning
-    var marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+    var marker = new mapboxgl.Marker({ element:el, anchor:'center' })
       .setLngLat([stop.lng, stop.lat])
       .addTo(map);
-
-    markerObjects[stop.id] = { marker: marker, el: el };
+    markerObjects[stop.id] = { marker:marker, el:el };
   });
 }
 
 // ── WALKING ROUTE
+// The route Start → Stop 1 must pass through Haarlemmerstraat.
+// We insert a via-waypoint on the Haarlemmerstraat to force the correct path.
+// Real coordinates: Haarlemmerstraat midpoint ≈ [4.8906, 52.3816]
+var HAARLEMMERSTRAAT_VIA = { lng: 4.8906, lat: 52.3816 };
+
 function fetchWalkingRoute() {
   document.getElementById('routeStatus').classList.add('show');
 
+  // Build ordered list of waypoints including via point
   var mainStops = stops.filter(function(s){ return s.type !== 'optional'; });
+
+  // Insert via-point between start (index 0) and stop 1 (index 1)
+  var waypoints = [];
+  mainStops.forEach(function(s, i) {
+    waypoints.push({ lng:s.lng, lat:s.lat });
+    if (i === 0) {
+      // inject Haarlemmerstraat waypoint right after start
+      waypoints.push(HAARLEMMERSTRAAT_VIA);
+    }
+  });
+
+  // Chunk into groups of max 25
   var chunkSize = 25;
   var chunks = [];
-  for (var i = 0; i < mainStops.length; i += chunkSize - 1) {
-    chunks.push(mainStops.slice(i, Math.min(i + chunkSize, mainStops.length)));
+  for (var i = 0; i < waypoints.length; i += chunkSize - 1) {
+    chunks.push(waypoints.slice(i, Math.min(i + chunkSize, waypoints.length)));
   }
 
   var results = new Array(chunks.length);
   var pending = chunks.length;
 
   chunks.forEach(function(chunk, idx) {
-    var coords = chunk.map(function(s){ return s.lng + ',' + s.lat; }).join(';');
+    var coords = chunk.map(function(p){ return p.lng + ',' + p.lat; }).join(';');
     fetch('https://api.mapbox.com/directions/v5/mapbox/walking/' + coords
         + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN)
       .then(function(r){ return r.json(); })
@@ -259,7 +367,6 @@ function fetchWalkingRoute() {
     results.forEach(function(c, i){
       if (c) merged = merged.concat(i === 0 ? c : c.slice(1));
     });
-    // Fallback to straight lines if API fails
     if (!merged.length) {
       merged = mainStops.map(function(s){ return [s.lng, s.lat]; });
     }
@@ -270,27 +377,56 @@ function fetchWalkingRoute() {
 
 function drawRoute(coords) {
   var gj = { type:'Feature', geometry:{ type:'LineString', coordinates:coords } };
-  if (map.getSource('route')) {
-    map.getSource('route').setData(gj);
-    return;
-  }
+  if (map.getSource('route')) { map.getSource('route').setData(gj); return; }
   map.addSource('route', { type:'geojson', data:gj });
   map.addLayer({
-    id: 'route-glow', type: 'line', source: 'route',
-    layout: { 'line-join':'round', 'line-cap':'round' },
-    paint: { 'line-color':'#701321', 'line-width':8, 'line-opacity':0.12, 'line-blur':6 }
+    id:'route-glow', type:'line', source:'route',
+    layout:{'line-join':'round','line-cap':'round'},
+    paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6}
   });
   map.addLayer({
-    id: 'route-line', type: 'line', source: 'route',
-    layout: { 'line-join':'round', 'line-cap':'round' },
-    paint: { 'line-color':'#701321', 'line-width':2.5, 'line-opacity':0.78, 'line-dasharray':[2,2] }
+    id:'route-line', type:'line', source:'route',
+    layout:{'line-join':'round','line-cap':'round'},
+    paint:{'line-color':'#701321','line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]}
   });
 }
+
+// ── MOBILE SIDEBAR
+var sidebarOpen = false;
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('menuBtn').classList.toggle('open', sidebarOpen);
+  document.getElementById('sidebar').classList.toggle('open', sidebarOpen);
+  document.getElementById('sidebarBackdrop').classList.toggle('show', sidebarOpen);
+}
+document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
+document.getElementById('sidebarBackdrop').addEventListener('click', function() {
+  if (sidebarOpen) toggleSidebar();
+});
+
+// ── LOCATION TOOLTIP
+// Show on first load; dismissed by "Got it" button or by clicking locate btn
+var tooltipDismissed = false;
+var tooltip = document.getElementById('locateTooltip');
+
+// Show tooltip after a short delay so it doesn't feel abrupt
+setTimeout(function() {
+  if (!tooltipDismissed) tooltip.classList.add('show');
+}, 1200);
+
+document.getElementById('locateTooltipClose').addEventListener('click', function() {
+  tooltip.classList.remove('show');
+  tooltipDismissed = true;
+});
 
 // ── LOCATE
 var userMarker = null, watchId = null, locateOn = false;
 
 document.getElementById('locateBtn').addEventListener('click', function() {
+  // Dismiss tooltip when user taps the button
+  tooltip.classList.remove('show');
+  tooltipDismissed = true;
+
   if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
   if (locateOn) {
     if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
@@ -330,26 +466,25 @@ function setUserDot(lat, lng) {
 
 // ── PANEL
 function openPanel(stop) {
-  // Sidebar highlight
   document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
   var sEl = document.querySelector('.si[data-id="' + stop.id + '"]');
   if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
 
-  // Marker highlight
   Object.values(markerObjects).forEach(function(m){ m.el.classList.remove('sel'); });
   if (markerObjects[stop.id]) markerObjects[stop.id].el.classList.add('sel');
+
+  // Close mobile sidebar when a stop is opened
+  if (sidebarOpen) toggleSidebar();
 
   var lc = stop.type==='optional' ? 'var(--green)' :
            stop.type==='start'||stop.type==='end' ? 'var(--gold)' : 'var(--bordeaux)';
   var lt = stop.type==='optional' ? (stop.icon+' Optional detour') :
            stop.type==='start' ? 'Starting point' :
            stop.type==='end'   ? 'End point' : 'Stop '+stop.label;
-
   var html = '<div class="p-label" style="color:'+lc+'">'+lt+'</div>'
            + '<div class="p-title">'+stop.name+'</div>'
            + '<div class="p-body"><p>'+stop.body+'</p></div>';
   if (stop.tip) html += '<div class="pro-tip"><strong>Pro Tip</strong>'+stop.tip+'</div>';
-
   document.getElementById('panelContent').innerHTML = html;
   document.getElementById('stopPanel').classList.add('open');
 }
@@ -362,7 +497,7 @@ function closePanel() {
 
 map.on('click', function(){ closePanel(); });
 
-// ── SIDEBAR
+// ── SIDEBAR LIST
 function buildList(filter) {
   filter = filter || 'all';
   var list = document.getElementById('stopList');
