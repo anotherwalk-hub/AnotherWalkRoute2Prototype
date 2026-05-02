@@ -60,6 +60,29 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .map-wrap { flex:1; position:relative; overflow:hidden; }
 #map { width:100%; height:100%; }
 
+/* MARKERS — will-change: transform tells the browser to keep these on the GPU */
+.mk {
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 5px rgba(25,25,25,0.45);
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  /* GPU compositing — eliminates the paint lag on pan/zoom */
+  will-change: transform;
+  transition: box-shadow 0.15s;
+}
+.mk:hover, .mk.sel {
+  box-shadow: 0 0 0 3px rgba(184,154,90,0.7), 0 2px 8px rgba(25,25,25,0.5);
+}
+.mk-stop { width:22px; height:22px; background:var(--bordeaux); font-size:7.5px; }
+.mk-se   { width:26px; height:26px; background:var(--carbon); font-size:7px; color:var(--parchment); }
+.mk-opt  { width:24px; height:24px; background:var(--green); font-size:13px; }
+
 /* LEGEND */
 .legend { position:absolute; bottom:32px; right:12px; background:rgba(250,246,239,.97); border:1px solid rgba(112,19,33,.18); border-radius:7px; padding:8px 12px; font-size:0.62rem; color:var(--muted); line-height:2.1; box-shadow:0 2px 10px rgba(25,25,25,.1); z-index:100; font-family:'Montserrat',sans-serif; }
 .li { display:flex; align-items:center; gap:7px; }
@@ -95,7 +118,8 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .close-btn { position:absolute; top:12px; right:14px; width:26px; height:26px; border:1px solid rgba(112,19,33,.25); border-radius:50%; background:transparent; cursor:pointer; font-size:0.8rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .18s; }
 .close-btn:hover { background:var(--bordeaux); color:var(--parchment); border-color:var(--bordeaux); }
 
-.user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); }
+/* USER DOT */
+.user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
 @media(max-width:640px) { .sidebar { display:none; } }
 </style>
@@ -168,268 +192,77 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.NavigationControl({showCompass:false}), 'top-right');
 
-// ── CANVAS IMAGE HELPERS
-// Each marker is drawn on a canvas and registered as a Mapbox sprite image.
-// They live on the GPU — zero DOM lag when panning/zooming.
+// ── MARKERS
+// Using DOM markers with:
+// 1. anchor:'center' — pin point is the exact center of the circle, not the top-left corner
+// 2. will-change:transform in CSS — tells browser to composite on GPU, removes paint lag
+var markerObjects = {}; // store mapboxgl.Marker instances keyed by stop id
 
-function drawCircle(size, bg, textColor, text, fontSize, ringColor) {
-  var dpr = window.devicePixelRatio || 1;
-  var extra = ringColor ? 6 : 0;          // extra canvas space for selection ring
-  var total = (size + extra) * dpr;
-  var c = document.createElement('canvas');
-  c.width = total; c.height = total;
-  var ctx = c.getContext('2d');
-  ctx.scale(dpr, dpr);
-  var half = (size + extra) / 2;
+map.on('load', function() {
+  addMarkers();
+  fetchWalkingRoute();
+});
 
-  // Selection ring
-  if (ringColor) {
-    ctx.beginPath();
-    ctx.arc(half, half, half - 1, 0, Math.PI * 2);
-    ctx.strokeStyle = ringColor;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-  }
-
-  // Shadow
-  ctx.shadowColor = 'rgba(25,25,25,0.4)';
-  ctx.shadowBlur = 4;
-  ctx.shadowOffsetY = 1.5;
-
-  // Circle fill
-  var r = size / 2 - 1.5;
-  ctx.beginPath();
-  ctx.arc(half, half, r, 0, Math.PI * 2);
-  ctx.fillStyle = bg;
-  ctx.fill();
-
-  ctx.shadowColor = 'transparent';
-
-  // White border
-  ctx.beginPath();
-  ctx.arc(half, half, r, 0, Math.PI * 2);
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Label
-  if (text) {
-    ctx.fillStyle = textColor;
-    ctx.font = 'bold ' + fontSize + 'px Montserrat,sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, half, half + 0.5);
-  }
-
-  return { data: ctx.getImageData(0, 0, c.width, c.height), width: c.width, height: c.height };
-}
-
-function drawEmoji(emoji, size, ringColor) {
-  var dpr = window.devicePixelRatio || 1;
-  var extra = ringColor ? 6 : 0;
-  var total = (size + extra) * dpr;
-  var c = document.createElement('canvas');
-  c.width = total; c.height = total;
-  var ctx = c.getContext('2d');
-  ctx.scale(dpr, dpr);
-  var half = (size + extra) / 2;
-
-  if (ringColor) {
-    ctx.beginPath();
-    ctx.arc(half, half, half - 1, 0, Math.PI * 2);
-    ctx.strokeStyle = ringColor;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-  }
-
-  ctx.shadowColor = 'rgba(25,25,25,0.35)';
-  ctx.shadowBlur = 4;
-  ctx.shadowOffsetY = 1.5;
-
-  var r = size / 2 - 1.5;
-  ctx.beginPath();
-  ctx.arc(half, half, r, 0, Math.PI * 2);
-  ctx.fillStyle = '#7a9e7e';
-  ctx.fill();
-
-  ctx.shadowColor = 'transparent';
-
-  ctx.beginPath();
-  ctx.arc(half, half, r, 0, Math.PI * 2);
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.font = Math.round(size * 0.46) + 'px serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(emoji, half, half + 1);
-
-  return { data: ctx.getImageData(0, 0, c.width, c.height), width: c.width, height: c.height };
-}
-
-// ── REGISTER ALL MARKER IMAGES into Mapbox
-function registerImages() {
-  var dpr = window.devicePixelRatio || 1;
-
-  stops.forEach(function(s) {
-    var key = 'mk-' + String(s.id);
-
-    if (s.type === 'stop') {
-      var fs = s.label.length > 2 ? 6.5 : s.label.length === 2 ? 7.5 : 9;
-      map.addImage(key,        drawCircle(22, '#701321', 'white', s.label, fs, null),           {pixelRatio:dpr});
-      map.addImage(key+'-sel', drawCircle(22, '#701321', 'white', s.label, fs, 'rgba(184,154,90,0.85)'), {pixelRatio:dpr});
-
-    } else if (s.type === 'start') {
-      map.addImage('mk-start',       drawCircle(26, '#191919', '#f1eade', 'S', 9, null),           {pixelRatio:dpr});
-      map.addImage('mk-start-sel',   drawCircle(26, '#191919', '#f1eade', 'S', 9, 'rgba(184,154,90,0.85)'), {pixelRatio:dpr});
-
-    } else if (s.type === 'end') {
-      map.addImage('mk-end',         drawCircle(26, '#191919', '#f1eade', 'E', 9, null),           {pixelRatio:dpr});
-      map.addImage('mk-end-sel',     drawCircle(26, '#191919', '#f1eade', 'E', 9, 'rgba(184,154,90,0.85)'), {pixelRatio:dpr});
-
-    } else if (s.type === 'optional') {
-      var emoji = s.icon || '✦';
-      // Avoid registering same emoji twice
-      if (!map.hasImage('mk-opt-' + emoji)) {
-        map.addImage('mk-opt-' + emoji,        drawEmoji(emoji, 24, null),                          {pixelRatio:dpr});
-        map.addImage('mk-opt-' + emoji+'-sel', drawEmoji(emoji, 24, 'rgba(184,154,90,0.85)'),       {pixelRatio:dpr});
-      }
-    }
-  });
-}
-
-// ── GEOJSON SOURCE DATA
-function toGeoJSON(arr) {
-  return {
-    type: 'FeatureCollection',
-    features: arr.map(function(s) {
-      return {
-        type: 'Feature',
-        id: String(s.id),   // numeric string — needed for setFeatureState
-        geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
-        properties: {
-          id:    String(s.id),
-          label: s.label,
-          icon:  s.icon || '',
-          stype: s.type
-        }
-      };
-    })
-  };
-}
-
-// ── ADD SOURCES + LAYERS
-function addMarkersToMap() {
-  var mainStops = stops.filter(function(s){ return s.type === 'stop'; });
-  var seStops   = stops.filter(function(s){ return s.type === 'start' || s.type === 'end'; });
-  var optStops  = stops.filter(function(s){ return s.type === 'optional'; });
-
-  // Sources
-  map.addSource('stops-main', { type:'geojson', data: toGeoJSON(mainStops), promoteId:'id' });
-  map.addSource('stops-se',   { type:'geojson', data: toGeoJSON(seStops),   promoteId:'id' });
-  map.addSource('stops-opt',  { type:'geojson', data: toGeoJSON(optStops),  promoteId:'id' });
-
-  // Layer: regular stops — icon key is 'mk-{id}' e.g. 'mk-1', 'mk-2'
-  map.addLayer({
-    id: 'layer-stops', type: 'symbol', source: 'stops-main',
-    layout: {
-      'icon-image': ['case',
-        ['boolean', ['feature-state','selected'], false],
-        ['concat', 'mk-', ['get','id'], '-sel'],
-        ['concat', 'mk-', ['get','id']]
-      ],
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true
-    }
-  });
-
-  // Layer: start + end — icon key is 'mk-start' / 'mk-end'
-  map.addLayer({
-    id: 'layer-se', type: 'symbol', source: 'stops-se',
-    layout: {
-      'icon-image': ['case',
-        ['boolean', ['feature-state','selected'], false],
-        ['concat', 'mk-', ['get','stype'], '-sel'],
-        ['concat', 'mk-', ['get','stype']]
-      ],
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true
-    }
-  });
-
-  // Layer: optional stops — icon key is 'mk-opt-{emoji}'
-  map.addLayer({
-    id: 'layer-opt', type: 'symbol', source: 'stops-opt',
-    layout: {
-      'icon-image': ['case',
-        ['boolean', ['feature-state','selected'], false],
-        ['concat', 'mk-opt-', ['get','icon'], '-sel'],
-        ['concat', 'mk-opt-', ['get','icon']]
-      ],
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true
-    }
-  });
-
-  // Click handlers
-  ['layer-stops','layer-se','layer-opt'].forEach(function(layer) {
-    map.on('click', layer, function(e) {
-      if (!e.features || !e.features.length) return;
-      var sid  = e.features[0].properties.id;
-      var stop = stops.find(function(s){ return String(s.id) === sid; });
-      if (stop) { e.stopPropagation(); openPanel(stop); }
-    });
-    map.on('mouseenter', layer, function(){ map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', layer, function(){ map.getCanvas().style.cursor = ''; });
-  });
-}
-
-// ── SELECTED STATE
-function sourceForStop(s) {
-  if (s.type === 'start' || s.type === 'end') return 'stops-se';
-  if (s.type === 'optional')                  return 'stops-opt';
-  return 'stops-main';
-}
-
-function updateSelected(stopId) {
-  stops.forEach(function(s) {
-    map.setFeatureState(
-      { source: sourceForStop(s), id: String(s.id) },
-      { selected: stopId !== null && String(s.id) === String(stopId) }
+function addMarkers() {
+  stops.forEach(function(stop) {
+    var el = document.createElement('div');
+    el.className = 'mk ' + (
+      stop.type === 'start' || stop.type === 'end' ? 'mk-se' :
+      stop.type === 'optional' ? 'mk-opt' : 'mk-stop'
     );
+    el.textContent = stop.type === 'optional' ? (stop.icon || '✦') : stop.label;
+
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openPanel(stop);
+    });
+
+    // anchor:'center' is the critical fix — without it Mapbox anchors to top-left
+    // which causes the apparent "drift" when panning
+    var marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([stop.lng, stop.lat])
+      .addTo(map);
+
+    markerObjects[stop.id] = { marker: marker, el: el };
   });
 }
 
 // ── WALKING ROUTE
 function fetchWalkingRoute() {
   document.getElementById('routeStatus').classList.add('show');
+
   var mainStops = stops.filter(function(s){ return s.type !== 'optional'; });
   var chunkSize = 25;
   var chunks = [];
   for (var i = 0; i < mainStops.length; i += chunkSize - 1) {
     chunks.push(mainStops.slice(i, Math.min(i + chunkSize, mainStops.length)));
   }
+
   var results = new Array(chunks.length);
   var pending = chunks.length;
 
   chunks.forEach(function(chunk, idx) {
-    var coords = chunk.map(function(s){ return s.lng+','+s.lat; }).join(';');
-    fetch('https://api.mapbox.com/directions/v5/mapbox/walking/'+coords
-        + '?geometries=geojson&overview=full&access_token='+MAPBOX_TOKEN)
+    var coords = chunk.map(function(s){ return s.lng + ',' + s.lat; }).join(';');
+    fetch('https://api.mapbox.com/directions/v5/mapbox/walking/' + coords
+        + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN)
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.routes && d.routes[0]) results[idx] = d.routes[0].geometry.coordinates;
         onDone();
       })
-      .catch(onDone);
+      .catch(function(){ onDone(); });
   });
 
   function onDone() {
     if (--pending > 0) return;
     var merged = [];
-    results.forEach(function(c,i){ if(c) merged = merged.concat(i===0 ? c : c.slice(1)); });
-    if (!merged.length) merged = stops.filter(function(s){return s.type!=='optional';}).map(function(s){return[s.lng,s.lat];});
+    results.forEach(function(c, i){
+      if (c) merged = merged.concat(i === 0 ? c : c.slice(1));
+    });
+    // Fallback to straight lines if API fails
+    if (!merged.length) {
+      merged = mainStops.map(function(s){ return [s.lng, s.lat]; });
+    }
     drawRoute(merged);
     document.getElementById('routeStatus').classList.remove('show');
   }
@@ -437,30 +270,26 @@ function fetchWalkingRoute() {
 
 function drawRoute(coords) {
   var gj = { type:'Feature', geometry:{ type:'LineString', coordinates:coords } };
-  if (map.getSource('route')) { map.getSource('route').setData(gj); return; }
+  if (map.getSource('route')) {
+    map.getSource('route').setData(gj);
+    return;
+  }
   map.addSource('route', { type:'geojson', data:gj });
-  // Insert route lines BELOW marker layers
   map.addLayer({
-    id:'route-glow', type:'line', source:'route',
-    layout:{'line-join':'round','line-cap':'round'},
-    paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6}
-  }, 'layer-stops');
+    id: 'route-glow', type: 'line', source: 'route',
+    layout: { 'line-join':'round', 'line-cap':'round' },
+    paint: { 'line-color':'#701321', 'line-width':8, 'line-opacity':0.12, 'line-blur':6 }
+  });
   map.addLayer({
-    id:'route-line', type:'line', source:'route',
-    layout:{'line-join':'round','line-cap':'round'},
-    paint:{'line-color':'#701321','line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]}
-  }, 'layer-stops');
+    id: 'route-line', type: 'line', source: 'route',
+    layout: { 'line-join':'round', 'line-cap':'round' },
+    paint: { 'line-color':'#701321', 'line-width':2.5, 'line-opacity':0.78, 'line-dasharray':[2,2] }
+  });
 }
-
-// ── MAP LOAD — everything starts here
-map.on('load', function() {
-  registerImages();
-  addMarkersToMap();
-  fetchWalkingRoute();
-});
 
 // ── LOCATE
 var userMarker = null, watchId = null, locateOn = false;
+
 document.getElementById('locateBtn').addEventListener('click', function() {
   if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
   if (locateOn) {
@@ -475,19 +304,19 @@ document.getElementById('locateBtn').addEventListener('click', function() {
   navigator.geolocation.getCurrentPosition(
     function(p) {
       setUserDot(p.coords.latitude, p.coords.longitude);
-      map.flyTo({center:[p.coords.longitude,p.coords.latitude], zoom:16});
+      map.flyTo({ center:[p.coords.longitude, p.coords.latitude], zoom:16 });
     },
     function() {
       locateOn = false;
       document.getElementById('locateBtn').classList.remove('active');
       alert('Location unavailable. Check your browser permissions.');
     },
-    {enableHighAccuracy:true}
+    { enableHighAccuracy:true }
   );
   watchId = navigator.geolocation.watchPosition(
-    function(p){ setUserDot(p.coords.latitude,p.coords.longitude); },
+    function(p){ setUserDot(p.coords.latitude, p.coords.longitude); },
     null,
-    {enableHighAccuracy:true, maximumAge:5000}
+    { enableHighAccuracy:true, maximumAge:5000 }
   );
 });
 
@@ -495,22 +324,32 @@ function setUserDot(lat, lng) {
   var el = document.createElement('div');
   el.className = 'user-dot';
   if (userMarker) userMarker.remove();
-  userMarker = new mapboxgl.Marker({element:el, anchor:'center'}).setLngLat([lng,lat]).addTo(map);
+  userMarker = new mapboxgl.Marker({ element:el, anchor:'center' })
+    .setLngLat([lng, lat]).addTo(map);
 }
 
 // ── PANEL
 function openPanel(stop) {
+  // Sidebar highlight
   document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
-  var sEl = document.querySelector('.si[data-id="'+stop.id+'"]');
-  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }
-  updateSelected(stop.id);
+  var sEl = document.querySelector('.si[data-id="' + stop.id + '"]');
+  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
 
-  var lc = stop.type==='optional'?'var(--green)':stop.type==='start'||stop.type==='end'?'var(--gold)':'var(--bordeaux)';
-  var lt = stop.type==='optional'?(stop.icon+' Optional detour'):stop.type==='start'?'Starting point':stop.type==='end'?'End point':'Stop '+stop.label;
+  // Marker highlight
+  Object.values(markerObjects).forEach(function(m){ m.el.classList.remove('sel'); });
+  if (markerObjects[stop.id]) markerObjects[stop.id].el.classList.add('sel');
+
+  var lc = stop.type==='optional' ? 'var(--green)' :
+           stop.type==='start'||stop.type==='end' ? 'var(--gold)' : 'var(--bordeaux)';
+  var lt = stop.type==='optional' ? (stop.icon+' Optional detour') :
+           stop.type==='start' ? 'Starting point' :
+           stop.type==='end'   ? 'End point' : 'Stop '+stop.label;
+
   var html = '<div class="p-label" style="color:'+lc+'">'+lt+'</div>'
            + '<div class="p-title">'+stop.name+'</div>'
            + '<div class="p-body"><p>'+stop.body+'</p></div>';
   if (stop.tip) html += '<div class="pro-tip"><strong>Pro Tip</strong>'+stop.tip+'</div>';
+
   document.getElementById('panelContent').innerHTML = html;
   document.getElementById('stopPanel').classList.add('open');
 }
@@ -518,7 +357,7 @@ function openPanel(stop) {
 function closePanel() {
   document.getElementById('stopPanel').classList.remove('open');
   document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
-  updateSelected(null);
+  Object.values(markerObjects).forEach(function(m){ m.el.classList.remove('sel'); });
 }
 
 map.on('click', function(){ closePanel(); });
@@ -531,17 +370,20 @@ function buildList(filter) {
   stops.forEach(function(stop) {
     if (filter==='stop'     && stop.type!=='stop')     return;
     if (filter==='optional' && stop.type!=='optional') return;
-    var c    = stop.type==='start'||stop.type==='end' ? '#191919' : stop.type==='optional' ? '#7a9e7e' : '#701321';
+    var c = stop.type==='start'||stop.type==='end' ? '#191919' :
+            stop.type==='optional' ? '#7a9e7e' : '#701321';
     var isOpt = stop.type==='optional';
-    var tag  = isOpt?(stop.icon+' optional detour'):stop.type==='start'?'Starting point':stop.type==='end'?'End point':'Stop '+stop.label;
+    var tag = isOpt ? (stop.icon+' optional detour') :
+              stop.type==='start' ? 'Starting point' :
+              stop.type==='end'   ? 'End point' : 'Stop '+stop.label;
     var el = document.createElement('div');
-    el.className  = 'si'+(isOpt?' opt-item':'');
+    el.className  = 'si' + (isOpt ? ' opt-item' : '');
     el.dataset.id = stop.id;
     el.innerHTML  = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
                   + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
     el.addEventListener('click', function() {
       openPanel(stop);
-      map.flyTo({center:[stop.lng,stop.lat], zoom:17});
+      map.flyTo({ center:[stop.lng, stop.lat], zoom:17 });
     });
     list.appendChild(el);
   });
