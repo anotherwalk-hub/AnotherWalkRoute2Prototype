@@ -21,7 +21,7 @@
 html, body { height:100%; overflow:hidden; }
 body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(--carbon); display:flex; flex-direction:column; }
 
-/* ── HEADER */
+/* HEADER */
 .app-header { background:var(--carbon); padding:12px 18px 13px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative; z-index:200; border-bottom:1px solid rgba(112,19,33,0.3); }
 .header-center { position:absolute; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; }
 .header-center h1 { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; color:var(--parchment); line-height:1; }
@@ -30,10 +30,10 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .locate-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
 .locate-btn:hover, .locate-btn.active { color:var(--blue); }
 
-/* ── LAYOUT */
+/* LAYOUT */
 .app-body { display:flex; flex:1; overflow:hidden; min-height:0; position:relative; }
 
-/* ── SIDEBAR */
+/* SIDEBAR */
 .sidebar { width:280px; flex-shrink:0; background:var(--panel); border-right:1px solid rgba(112,19,33,0.15); display:flex; flex-direction:column; overflow:hidden; z-index:100; }
 .sb-head { padding:14px 17px 11px; border-bottom:1px solid rgba(112,19,33,0.12); flex-shrink:0; }
 .sb-head h2 { font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:0.8rem; color:var(--muted); margin-bottom:9px; }
@@ -56,22 +56,22 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
 .si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
 
-/* ── MAP */
+/* MAP */
 .map-wrap { flex:1; position:relative; overflow:hidden; }
 #map { width:100%; height:100%; }
 
-/* ── LEGEND */
+/* LEGEND */
 .legend { position:absolute; bottom:32px; right:12px; background:rgba(250,246,239,.97); border:1px solid rgba(112,19,33,.18); border-radius:7px; padding:8px 12px; font-size:0.62rem; color:var(--muted); line-height:2.1; box-shadow:0 2px 10px rgba(25,25,25,.1); z-index:100; font-family:'Montserrat',sans-serif; }
 .li { display:flex; align-items:center; gap:7px; }
 .ld { width:11px; height:11px; border-radius:50%; border:2px solid white; box-shadow:0 1px 3px rgba(0,0,0,.2); flex-shrink:0; }
 
-/* ── ROUTE LOADING */
+/* ROUTE LOADING */
 .route-status { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:150; background:rgba(25,25,25,.85); color:var(--parchment); font-size:0.65rem; padding:5px 14px; border-radius:20px; letter-spacing:0.05em; display:none; align-items:center; gap:7px; white-space:nowrap; font-family:'Montserrat',sans-serif; backdrop-filter:blur(4px); }
 .route-status.show { display:flex; }
 .spinner { width:10px; height:10px; border:2px solid rgba(241,234,222,.3); border-top-color:var(--parchment); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
-/* ── MAPBOX CONTROLS */
+/* MAPBOX CONTROLS */
 .mapboxgl-ctrl-group { box-shadow:0 2px 10px rgba(25,25,25,.3)!important; border:none!important; border-radius:6px!important; overflow:hidden; }
 .mapboxgl-ctrl-group button { background:var(--carbon)!important; width:30px!important; height:30px!important; }
 .mapboxgl-ctrl-group button:hover { background:var(--bordeaux)!important; }
@@ -79,7 +79,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .mapboxgl-ctrl-group button + button { border-top:1px solid rgba(112,19,33,.3)!important; }
 .mapboxgl-ctrl-attrib-inner a { color:var(--muted)!important; font-size:0.55rem!important; }
 
-/* ── STOP PANEL */
+/* STOP PANEL */
 .stop-panel { position:absolute; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(100%); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:150; }
 .stop-panel.open { transform:translateY(0); }
 .panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
@@ -95,7 +95,6 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .close-btn { position:absolute; top:12px; right:14px; width:26px; height:26px; border:1px solid rgba(112,19,33,.25); border-radius:50%; background:transparent; cursor:pointer; font-size:0.8rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .18s; }
 .close-btn:hover { background:var(--bordeaux); color:var(--parchment); border-color:var(--bordeaux); }
 
-/* ── USER LOCATION DOT (still DOM — only 1 element, no lag) */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); }
 
 @media(max-width:640px) { .sidebar { display:none; } }
@@ -131,18 +130,15 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 
   <div class="map-wrap">
     <div id="map"></div>
-
     <div class="route-status" id="routeStatus">
       <div class="spinner"></div>
       Calculating walking route…
     </div>
-
     <div class="legend">
       <div class="li"><div class="ld" style="background:#191919"></div>Start / End</div>
       <div class="li"><div class="ld" style="background:#701321"></div>Stop</div>
       <div class="li"><div class="ld" style="background:#7a9e7e"></div>Optional</div>
     </div>
-
     <div class="stop-panel" id="stopPanel">
       <div class="panel-handle" onclick="closePanel()"></div>
       <button class="close-btn" onclick="closePanel()">&#10005;</button>
@@ -152,9 +148,8 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 </div>
 
 <script>
-// ── CONFIG
 var MAPBOX_TOKEN = 'pk.eyJ1Ijoibmlja3BvbnRlIiwiYSI6ImNtb25hZGVvbTA3aXMycHM2Yms2ejNxaGcifQ.rTiwFe0d2LfVqGPaUbz8tA';
-var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
+var MAPBOX_STYLE = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
 
 var meta  = ROUTE_META;
 var stops = ROUTE_STOPS;
@@ -162,7 +157,7 @@ var stops = ROUTE_STOPS;
 document.getElementById('headerTitle').textContent = meta.title;
 document.getElementById('headerSub').textContent   = meta.label + ' · ' + meta.stopCount + ' stops';
 
-// ── MAP INIT
+// ── MAP
 mapboxgl.accessToken = MAPBOX_TOKEN;
 var map = new mapboxgl.Map({
   container: 'map',
@@ -173,373 +168,283 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.NavigationControl({showCompass:false}), 'top-right');
 
-// ── MARKER IMAGES
-// We draw each marker type onto a canvas and register it as a Mapbox image.
-// This gives us pixel-perfect circles with labels — rendered on the GPU, zero DOM lag.
+// ── CANVAS IMAGE HELPERS
+// Each marker is drawn on a canvas and registered as a Mapbox sprite image.
+// They live on the GPU — zero DOM lag when panning/zooming.
 
-function makeCircleImage(opts) {
-  // opts: { size, bg, border, textColor, text, fontSize }
-  var s    = opts.size;
-  var dpr  = window.devicePixelRatio || 1;
-  var c    = document.createElement('canvas');
-  c.width  = s * dpr;
-  c.height = s * dpr;
-  var ctx  = c.getContext('2d');
+function drawCircle(size, bg, textColor, text, fontSize, ringColor) {
+  var dpr = window.devicePixelRatio || 1;
+  var extra = ringColor ? 6 : 0;          // extra canvas space for selection ring
+  var total = (size + extra) * dpr;
+  var c = document.createElement('canvas');
+  c.width = total; c.height = total;
+  var ctx = c.getContext('2d');
   ctx.scale(dpr, dpr);
+  var half = (size + extra) / 2;
 
-  var cx = s / 2, cy = s / 2, r = s / 2 - 2;
+  // Selection ring
+  if (ringColor) {
+    ctx.beginPath();
+    ctx.arc(half, half, half - 1, 0, Math.PI * 2);
+    ctx.strokeStyle = ringColor;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  }
 
-  // Drop shadow
-  ctx.shadowColor   = 'rgba(25,25,25,0.4)';
-  ctx.shadowBlur    = 4;
+  // Shadow
+  ctx.shadowColor = 'rgba(25,25,25,0.4)';
+  ctx.shadowBlur = 4;
   ctx.shadowOffsetY = 1.5;
 
-  // Fill circle
+  // Circle fill
+  var r = size / 2 - 1.5;
   ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = opts.bg;
+  ctx.arc(half, half, r, 0, Math.PI * 2);
+  ctx.fillStyle = bg;
   ctx.fill();
 
-  // Reset shadow for border
   ctx.shadowColor = 'transparent';
 
   // White border
   ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.strokeStyle = opts.border || 'white';
-  ctx.lineWidth   = 2;
+  ctx.arc(half, half, r, 0, Math.PI * 2);
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Label text
-  if (opts.text) {
-    ctx.fillStyle    = opts.textColor || 'white';
-    ctx.font         = 'bold ' + opts.fontSize + 'px Montserrat, sans-serif';
-    ctx.textAlign    = 'center';
+  // Label
+  if (text) {
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold ' + fontSize + 'px Montserrat,sans-serif';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(opts.text, cx, cy + 0.5);
+    ctx.fillText(text, half, half + 0.5);
   }
 
   return { data: ctx.getImageData(0, 0, c.width, c.height), width: c.width, height: c.height };
 }
 
-function makeOptImage(emoji, size) {
-  var dpr  = window.devicePixelRatio || 1;
-  var c    = document.createElement('canvas');
-  c.width  = size * dpr;
-  c.height = size * dpr;
-  var ctx  = c.getContext('2d');
+function drawEmoji(emoji, size, ringColor) {
+  var dpr = window.devicePixelRatio || 1;
+  var extra = ringColor ? 6 : 0;
+  var total = (size + extra) * dpr;
+  var c = document.createElement('canvas');
+  c.width = total; c.height = total;
+  var ctx = c.getContext('2d');
   ctx.scale(dpr, dpr);
+  var half = (size + extra) / 2;
 
-  var cx = size / 2, cy = size / 2, r = size / 2 - 2;
+  if (ringColor) {
+    ctx.beginPath();
+    ctx.arc(half, half, half - 1, 0, Math.PI * 2);
+    ctx.strokeStyle = ringColor;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  }
 
-  ctx.shadowColor   = 'rgba(25,25,25,0.3)';
-  ctx.shadowBlur    = 4;
+  ctx.shadowColor = 'rgba(25,25,25,0.35)';
+  ctx.shadowBlur = 4;
   ctx.shadowOffsetY = 1.5;
 
+  var r = size / 2 - 1.5;
   ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.arc(half, half, r, 0, Math.PI * 2);
   ctx.fillStyle = '#7a9e7e';
   ctx.fill();
 
   ctx.shadowColor = 'transparent';
 
   ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.arc(half, half, r, 0, Math.PI * 2);
   ctx.strokeStyle = 'white';
-  ctx.lineWidth   = 2;
+  ctx.lineWidth = 2;
   ctx.stroke();
 
-  ctx.font         = Math.round(size * 0.48) + 'px serif';
-  ctx.textAlign    = 'center';
+  ctx.font = Math.round(size * 0.46) + 'px serif';
+  ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(emoji, cx, cy + 1);
+  ctx.fillText(emoji, half, half + 1);
 
   return { data: ctx.getImageData(0, 0, c.width, c.height), width: c.width, height: c.height };
 }
 
-// selected (highlighted) state — slightly larger with gold ring
-function makeSelectedImage(opts) {
-  var s    = opts.size + 6;
-  var dpr  = window.devicePixelRatio || 1;
-  var c    = document.createElement('canvas');
-  c.width  = s * dpr;
-  c.height = s * dpr;
-  var ctx  = c.getContext('2d');
-  ctx.scale(dpr, dpr);
+// ── REGISTER ALL MARKER IMAGES into Mapbox
+function registerImages() {
+  var dpr = window.devicePixelRatio || 1;
 
-  var cx = s / 2, cy = s / 2;
+  stops.forEach(function(s) {
+    var key = 'mk-' + String(s.id);
 
-  // Outer glow ring
-  ctx.beginPath();
-  ctx.arc(cx, cy, s / 2 - 1, 0, Math.PI * 2);
-  ctx.strokeStyle = opts.ring || 'rgba(184,154,90,0.7)';
-  ctx.lineWidth   = 2.5;
-  ctx.stroke();
+    if (s.type === 'stop') {
+      var fs = s.label.length > 2 ? 6.5 : s.label.length === 2 ? 7.5 : 9;
+      map.addImage(key,        drawCircle(22, '#701321', 'white', s.label, fs, null),           {pixelRatio:dpr});
+      map.addImage(key+'-sel', drawCircle(22, '#701321', 'white', s.label, fs, 'rgba(184,154,90,0.85)'), {pixelRatio:dpr});
 
-  var r = opts.size / 2 - 1;
-  ctx.shadowColor   = 'rgba(25,25,25,0.5)';
-  ctx.shadowBlur    = 5;
-  ctx.shadowOffsetY = 2;
+    } else if (s.type === 'start') {
+      map.addImage('mk-start',       drawCircle(26, '#191919', '#f1eade', 'S', 9, null),           {pixelRatio:dpr});
+      map.addImage('mk-start-sel',   drawCircle(26, '#191919', '#f1eade', 'S', 9, 'rgba(184,154,90,0.85)'), {pixelRatio:dpr});
 
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = opts.bg;
-  ctx.fill();
+    } else if (s.type === 'end') {
+      map.addImage('mk-end',         drawCircle(26, '#191919', '#f1eade', 'E', 9, null),           {pixelRatio:dpr});
+      map.addImage('mk-end-sel',     drawCircle(26, '#191919', '#f1eade', 'E', 9, 'rgba(184,154,90,0.85)'), {pixelRatio:dpr});
 
-  ctx.shadowColor = 'transparent';
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth   = 2;
-  ctx.stroke();
-
-  if (opts.text) {
-    ctx.fillStyle    = opts.textColor || 'white';
-    ctx.font         = 'bold ' + opts.fontSize + 'px Montserrat, sans-serif';
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(opts.text, cx, cy + 0.5);
-  }
-
-  return { data: ctx.getImageData(0, 0, c.width, c.height), width: c.width, height: c.height };
+    } else if (s.type === 'optional') {
+      var emoji = s.icon || '✦';
+      // Avoid registering same emoji twice
+      if (!map.hasImage('mk-opt-' + emoji)) {
+        map.addImage('mk-opt-' + emoji,        drawEmoji(emoji, 24, null),                          {pixelRatio:dpr});
+        map.addImage('mk-opt-' + emoji+'-sel', drawEmoji(emoji, 24, 'rgba(184,154,90,0.85)'),       {pixelRatio:dpr});
+      }
+    }
+  });
 }
 
-// ── GEOJSON BUILDERS
-function buildGeoJSON(stopsArr) {
+// ── GEOJSON SOURCE DATA
+function toGeoJSON(arr) {
   return {
     type: 'FeatureCollection',
-    features: stopsArr.map(function(s) {
+    features: arr.map(function(s) {
       return {
         type: 'Feature',
+        id: String(s.id),   // numeric string — needed for setFeatureState
         geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
         properties: {
-          id:      String(s.id),
-          label:   s.label,
-          stype:   s.type,
-          icon:    s.icon || '',
-          name:    s.name,
-          selected: false
+          id:    String(s.id),
+          label: s.label,
+          icon:  s.icon || '',
+          stype: s.type
         }
       };
     })
   };
 }
 
-// ── ACTIVE STOP TRACKING
-var activeStopId = null;
+// ── ADD SOURCES + LAYERS
+function addMarkersToMap() {
+  var mainStops = stops.filter(function(s){ return s.type === 'stop'; });
+  var seStops   = stops.filter(function(s){ return s.type === 'start' || s.type === 'end'; });
+  var optStops  = stops.filter(function(s){ return s.type === 'optional'; });
 
-function updateSelectedFeature(stopId) {
-  activeStopId = stopId ? String(stopId) : null;
+  // Sources
+  map.addSource('stops-main', { type:'geojson', data: toGeoJSON(mainStops), promoteId:'id' });
+  map.addSource('stops-se',   { type:'geojson', data: toGeoJSON(seStops),   promoteId:'id' });
+  map.addSource('stops-opt',  { type:'geojson', data: toGeoJSON(optStops),  promoteId:'id' });
 
-  // Refresh all three sources so selected state re-evaluates
-  ['stops-main', 'stops-se', 'stops-opt'].forEach(function(src) {
-    var s = map.getSource(src);
-    if (s) s.setData(s._data); // re-push same data, filter expression handles selection
+  // Layer: regular stops — icon key is 'mk-{id}' e.g. 'mk-1', 'mk-2'
+  map.addLayer({
+    id: 'layer-stops', type: 'symbol', source: 'stops-main',
+    layout: {
+      'icon-image': ['case',
+        ['boolean', ['feature-state','selected'], false],
+        ['concat', 'mk-', ['get','id'], '-sel'],
+        ['concat', 'mk-', ['get','id']]
+      ],
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true
+    }
   });
 
-  // Easier: just update a feature-state
-  stops.forEach(function(s) {
-    map.setFeatureState(
-      {source: sourceForStop(s), id: String(s.id)},
-      {selected: activeStopId === String(s.id)}
-    );
+  // Layer: start + end — icon key is 'mk-start' / 'mk-end'
+  map.addLayer({
+    id: 'layer-se', type: 'symbol', source: 'stops-se',
+    layout: {
+      'icon-image': ['case',
+        ['boolean', ['feature-state','selected'], false],
+        ['concat', 'mk-', ['get','stype'], '-sel'],
+        ['concat', 'mk-', ['get','stype']]
+      ],
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true
+    }
+  });
+
+  // Layer: optional stops — icon key is 'mk-opt-{emoji}'
+  map.addLayer({
+    id: 'layer-opt', type: 'symbol', source: 'stops-opt',
+    layout: {
+      'icon-image': ['case',
+        ['boolean', ['feature-state','selected'], false],
+        ['concat', 'mk-opt-', ['get','icon'], '-sel'],
+        ['concat', 'mk-opt-', ['get','icon']]
+      ],
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true
+    }
+  });
+
+  // Click handlers
+  ['layer-stops','layer-se','layer-opt'].forEach(function(layer) {
+    map.on('click', layer, function(e) {
+      if (!e.features || !e.features.length) return;
+      var sid  = e.features[0].properties.id;
+      var stop = stops.find(function(s){ return String(s.id) === sid; });
+      if (stop) { e.stopPropagation(); openPanel(stop); }
+    });
+    map.on('mouseenter', layer, function(){ map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', layer, function(){ map.getCanvas().style.cursor = ''; });
   });
 }
 
+// ── SELECTED STATE
 function sourceForStop(s) {
   if (s.type === 'start' || s.type === 'end') return 'stops-se';
   if (s.type === 'optional')                  return 'stops-opt';
   return 'stops-main';
 }
 
-// ── MAP LOAD
-map.on('load', function() {
-  registerImages();
-  addSources();
-  addLayers();
-  bindClicks();
-  fetchWalkingRoute();
-});
-
-function registerImages() {
-  // Regular stops 1–33
-  stops.filter(function(s){ return s.type==='stop'; }).forEach(function(s) {
-    var id     = 'mk-' + s.id;
-    var idSel  = 'mk-' + s.id + '-sel';
-    var fs     = s.label.length > 2 ? 6.5 : s.label.length === 2 ? 7.5 : 9;
-    var img    = makeCircleImage({size:22, bg:'#701321', textColor:'white', text:s.label, fontSize:fs});
-    var imgSel = makeSelectedImage({size:22, bg:'#701321', textColor:'white', text:s.label, fontSize:fs, ring:'rgba(184,154,90,0.8)'});
-    map.addImage(id,    img,    {pixelRatio: window.devicePixelRatio||1});
-    map.addImage(idSel, imgSel, {pixelRatio: window.devicePixelRatio||1});
+function updateSelected(stopId) {
+  stops.forEach(function(s) {
+    map.setFeatureState(
+      { source: sourceForStop(s), id: String(s.id) },
+      { selected: stopId !== null && String(s.id) === String(stopId) }
+    );
   });
-
-  // Start / End
-  ['S','E'].forEach(function(lbl, i) {
-    var sid    = i === 0 ? 'start' : 'end';
-    var img    = makeCircleImage({size:26, bg:'#191919', textColor:'#f1eade', text:lbl, fontSize:9});
-    var imgSel = makeSelectedImage({size:26, bg:'#191919', textColor:'#f1eade', text:lbl, fontSize:9, ring:'rgba(184,154,90,0.8)'});
-    map.addImage('mk-'+sid,       img,    {pixelRatio: window.devicePixelRatio||1});
-    map.addImage('mk-'+sid+'-sel',imgSel, {pixelRatio: window.devicePixelRatio||1});
-  });
-
-  // Optional stops — per unique emoji
-  var seen = {};
-  stops.filter(function(s){ return s.type==='optional'; }).forEach(function(s) {
-    var emoji = s.icon || '✦';
-    if (seen[emoji]) return;
-    seen[emoji] = true;
-    var img    = makeOptImage(emoji, 24);
-    var imgSel = makeOptImage(emoji, 28); // slightly bigger when selected
-    map.addImage('mk-opt-' + emoji,       img,    {pixelRatio: window.devicePixelRatio||1});
-    map.addImage('mk-opt-' + emoji+'-sel',imgSel, {pixelRatio: window.devicePixelRatio||1});
-  });
-}
-
-function addSources() {
-  var mainStops = stops.filter(function(s){ return s.type==='stop'; });
-  var seStops   = stops.filter(function(s){ return s.type==='start'||s.type==='end'; });
-  var optStops  = stops.filter(function(s){ return s.type==='optional'; });
-
-  function toGJ(arr) {
-    return {
-      type:'FeatureCollection',
-      features: arr.map(function(s){
-        return {
-          type:'Feature',
-          id: String(s.id),
-          geometry:{type:'Point', coordinates:[s.lng,s.lat]},
-          properties:{id:String(s.id), label:s.label, icon:s.icon||'', stype:s.type}
-        };
-      })
-    };
-  }
-
-  map.addSource('stops-main', {type:'geojson', data: toGJ(mainStops), promoteId:'id'});
-  map.addSource('stops-se',   {type:'geojson', data: toGJ(seStops),   promoteId:'id'});
-  map.addSource('stops-opt',  {type:'geojson', data: toGJ(optStops),  promoteId:'id'});
-  map.addSource('stops-opt',  {type:'geojson', data: toGJ(optStops),  promoteId:'id'});
-}
-
-function addLayers() {
-  // ── Regular stops
-  map.addLayer({
-    id: 'layer-stops',
-    type: 'symbol',
-    source: 'stops-main',
-    layout: {
-      'icon-image': [
-        'case',
-        ['boolean', ['feature-state','selected'], false],
-        ['concat', 'mk-', ['get','label'], '-sel'],
-        ['concat', 'mk-', ['get','label']]
-      ],
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true,
-      'icon-size': 1
-    }
-  });
-
-  // ── Start / End
-  map.addLayer({
-    id: 'layer-se',
-    type: 'symbol',
-    source: 'stops-se',
-    layout: {
-      'icon-image': [
-        'case',
-        ['boolean', ['feature-state','selected'], false],
-        ['concat', 'mk-', ['get','id'], '-sel'],
-        ['concat', 'mk-', ['get','id']]
-      ],
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true,
-      'icon-size': 1
-    }
-  });
-
-  // ── Optional stops
-  map.addLayer({
-    id: 'layer-opt',
-    type: 'symbol',
-    source: 'stops-opt',
-    layout: {
-      'icon-image': [
-        'case',
-        ['boolean', ['feature-state','selected'], false],
-        ['concat', 'mk-opt-', ['get','icon'], '-sel'],
-        ['concat', 'mk-opt-', ['get','icon']]
-      ],
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true,
-      'icon-size': 1
-    }
-  });
-}
-
-function bindClicks() {
-  ['layer-stops','layer-se','layer-opt'].forEach(function(layer) {
-    map.on('click', layer, function(e) {
-      if (!e.features || !e.features.length) return;
-      var fid  = e.features[0].properties.id;
-      var stop = stops.find(function(s){ return String(s.id) === fid; });
-      if (stop) { e.stopPropagation(); openPanel(stop); }
-    });
-    // pointer cursor on hover
-    map.on('mouseenter', layer, function(){ map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', layer, function(){ map.getCanvas().style.cursor = ''; });
-  });
-
-  map.on('click', function() { closePanel(); });
 }
 
 // ── WALKING ROUTE
 function fetchWalkingRoute() {
-  var status = document.getElementById('routeStatus');
-  status.classList.add('show');
-
+  document.getElementById('routeStatus').classList.add('show');
   var mainStops = stops.filter(function(s){ return s.type !== 'optional'; });
   var chunkSize = 25;
-  var chunks    = [];
+  var chunks = [];
   for (var i = 0; i < mainStops.length; i += chunkSize - 1) {
     chunks.push(mainStops.slice(i, Math.min(i + chunkSize, mainStops.length)));
   }
-
   var results = new Array(chunks.length);
   var pending = chunks.length;
 
   chunks.forEach(function(chunk, idx) {
     var coords = chunk.map(function(s){ return s.lng+','+s.lat; }).join(';');
-    var url = 'https://api.mapbox.com/directions/v5/mapbox/walking/'+coords
-            + '?geometries=geojson&overview=full&access_token='+MAPBOX_TOKEN;
-    fetch(url)
+    fetch('https://api.mapbox.com/directions/v5/mapbox/walking/'+coords
+        + '?geometries=geojson&overview=full&access_token='+MAPBOX_TOKEN)
       .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (data.routes && data.routes[0]) results[idx] = data.routes[0].geometry.coordinates;
-        done();
+      .then(function(d){
+        if (d.routes && d.routes[0]) results[idx] = d.routes[0].geometry.coordinates;
+        onDone();
       })
-      .catch(function(){ done(); });
+      .catch(onDone);
   });
 
-  function done() {
+  function onDone() {
     if (--pending > 0) return;
     var merged = [];
-    results.forEach(function(c, i){ if(c) merged = merged.concat(i===0 ? c : c.slice(1)); });
-    if (!merged.length) merged = mainStops.map(function(s){ return [s.lng,s.lat]; });
+    results.forEach(function(c,i){ if(c) merged = merged.concat(i===0 ? c : c.slice(1)); });
+    if (!merged.length) merged = stops.filter(function(s){return s.type!=='optional';}).map(function(s){return[s.lng,s.lat];});
     drawRoute(merged);
-    status.classList.remove('show');
+    document.getElementById('routeStatus').classList.remove('show');
   }
 }
 
 function drawRoute(coords) {
-  var gj = {type:'Feature', geometry:{type:'LineString', coordinates:coords}};
+  var gj = { type:'Feature', geometry:{ type:'LineString', coordinates:coords } };
   if (map.getSource('route')) { map.getSource('route').setData(gj); return; }
-  map.addSource('route', {type:'geojson', data:gj});
+  map.addSource('route', { type:'geojson', data:gj });
+  // Insert route lines BELOW marker layers
   map.addLayer({
     id:'route-glow', type:'line', source:'route',
     layout:{'line-join':'round','line-cap':'round'},
     paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6}
-  }, 'layer-stops'); // insert below markers
+  }, 'layer-stops');
   map.addLayer({
     id:'route-line', type:'line', source:'route',
     layout:{'line-join':'round','line-cap':'round'},
@@ -547,9 +452,15 @@ function drawRoute(coords) {
   }, 'layer-stops');
 }
 
+// ── MAP LOAD — everything starts here
+map.on('load', function() {
+  registerImages();
+  addMarkersToMap();
+  fetchWalkingRoute();
+});
+
 // ── LOCATE
 var userMarker = null, watchId = null, locateOn = false;
-
 document.getElementById('locateBtn').addEventListener('click', function() {
   if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
   if (locateOn) {
@@ -564,7 +475,7 @@ document.getElementById('locateBtn').addEventListener('click', function() {
   navigator.geolocation.getCurrentPosition(
     function(p) {
       setUserDot(p.coords.latitude, p.coords.longitude);
-      map.flyTo({center:[p.coords.longitude, p.coords.latitude], zoom:16});
+      map.flyTo({center:[p.coords.longitude,p.coords.latitude], zoom:16});
     },
     function() {
       locateOn = false;
@@ -574,38 +485,32 @@ document.getElementById('locateBtn').addEventListener('click', function() {
     {enableHighAccuracy:true}
   );
   watchId = navigator.geolocation.watchPosition(
-    function(p){ setUserDot(p.coords.latitude, p.coords.longitude); },
+    function(p){ setUserDot(p.coords.latitude,p.coords.longitude); },
     null,
     {enableHighAccuracy:true, maximumAge:5000}
   );
 });
 
 function setUserDot(lat, lng) {
-  // User dot stays as a single DOM marker — no performance concern
   var el = document.createElement('div');
   el.className = 'user-dot';
   if (userMarker) userMarker.remove();
-  userMarker = new mapboxgl.Marker({element:el, anchor:'center'})
-    .setLngLat([lng, lat]).addTo(map);
+  userMarker = new mapboxgl.Marker({element:el, anchor:'center'}).setLngLat([lng,lat]).addTo(map);
 }
 
 // ── PANEL
 function openPanel(stop) {
-  // Sidebar highlight
   document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
   var sEl = document.querySelector('.si[data-id="'+stop.id+'"]');
   if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  updateSelected(stop.id);
 
-  // Native feature state highlight
-  updateSelectedFeature(stop.id);
-
-  var lc = stop.type==='optional' ? 'var(--green)' : stop.type==='start'||stop.type==='end' ? 'var(--gold)' : 'var(--bordeaux)';
-  var lt = stop.type==='optional' ? (stop.icon+' Optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
+  var lc = stop.type==='optional'?'var(--green)':stop.type==='start'||stop.type==='end'?'var(--gold)':'var(--bordeaux)';
+  var lt = stop.type==='optional'?(stop.icon+' Optional detour'):stop.type==='start'?'Starting point':stop.type==='end'?'End point':'Stop '+stop.label;
   var html = '<div class="p-label" style="color:'+lc+'">'+lt+'</div>'
            + '<div class="p-title">'+stop.name+'</div>'
            + '<div class="p-body"><p>'+stop.body+'</p></div>';
   if (stop.tip) html += '<div class="pro-tip"><strong>Pro Tip</strong>'+stop.tip+'</div>';
-
   document.getElementById('panelContent').innerHTML = html;
   document.getElementById('stopPanel').classList.add('open');
 }
@@ -613,8 +518,10 @@ function openPanel(stop) {
 function closePanel() {
   document.getElementById('stopPanel').classList.remove('open');
   document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
-  updateSelectedFeature(null);
+  updateSelected(null);
 }
+
+map.on('click', function(){ closePanel(); });
 
 // ── SIDEBAR
 function buildList(filter) {
@@ -626,15 +533,15 @@ function buildList(filter) {
     if (filter==='optional' && stop.type!=='optional') return;
     var c    = stop.type==='start'||stop.type==='end' ? '#191919' : stop.type==='optional' ? '#7a9e7e' : '#701321';
     var isOpt = stop.type==='optional';
-    var tag  = isOpt ? (stop.icon+' optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
-    var el   = document.createElement('div');
+    var tag  = isOpt?(stop.icon+' optional detour'):stop.type==='start'?'Starting point':stop.type==='end'?'End point':'Stop '+stop.label;
+    var el = document.createElement('div');
     el.className  = 'si'+(isOpt?' opt-item':'');
     el.dataset.id = stop.id;
     el.innerHTML  = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
                   + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
     el.addEventListener('click', function() {
       openPanel(stop);
-      map.flyTo({center:[stop.lng, stop.lat], zoom:17});
+      map.flyTo({center:[stop.lng,stop.lat], zoom:17});
     });
     list.appendChild(el);
   });
