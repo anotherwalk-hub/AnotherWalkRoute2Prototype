@@ -130,13 +130,14 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 
 /* ── LOCATION TOOLTIP */
 .locate-tooltip {
-  position:fixed; top:58px; right:10px;
+  position:fixed; top:70px; right:10px;
   background:var(--carbon); color:var(--parchment);
   font-family:'Montserrat',sans-serif; font-size:0.7rem;
   padding:8px 12px; border-radius:10px;
   box-shadow:0 4px 16px rgba(25,25,25,0.3);
   border:1px solid rgba(112,19,33,0.3);
-  z-index:1000; max-width:210px; line-height:1.4;
+  z-index:1000;
+  white-space:nowrap;
   display:none; align-items:center; gap:10px;
 }
 .locate-tooltip.show { display:flex; }
@@ -202,9 +203,6 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
     transform:translateX(0);
   }
   .sidebar-backdrop.show { display:block; }
-
-  /* Locate tooltip anchors better on mobile */
-  .locate-tooltip { right:8px; bottom:64px; max-width:180px; }
 }
 </style>
 </head>
