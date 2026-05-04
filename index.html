@@ -115,7 +115,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .mapboxgl-ctrl-attrib-inner a { color:var(--muted)!important; font-size:0.55rem!important; }
 
 /* ── STOP PANEL */
-.stop-panel { position:absolute; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(100%); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:150; }
+.stop-panel { position:absolute; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(calc(100% + 40px)); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:150; }
 .stop-panel.open { transform:translateY(0); }
 .panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
 .p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; }
@@ -224,8 +224,7 @@ var ROUTES = [
     meta: R1_META,
     stops: R1_STOPS,
     unlocked: true,
-    // Via-waypoints to steer the walking route through specific streets
-    // Format: { after: stopId, lat, lng }
+    color: '#4a2060',   // deep purple — route 1 accent color
     viaPoints: []
   },
   {
@@ -233,6 +232,7 @@ var ROUTES = [
     meta: R2_META,
     stops: R2_STOPS,
     unlocked: true,
+    color: '#701321',   // bordeaux — route 2 accent color
     viaPoints: [
       // Steer start→stop1 through Haarlemmerstraat
       { after: 'start', lat: 52.37957057693914, lng: 4.893586518460003 }
@@ -307,11 +307,10 @@ function loadRoute(key) {
   resetPills();
 
   // Place markers
-  addMarkers(route.stops);
+  addMarkers(route.stops, route.color);
 
   // Fetch walking route
-  fetchWalkingRoute(route);
-}
+  fetchWalkingRoute(route);}
 
 function getRoute(key) {
   return ROUTES.find(function(r) { return r.key === key; });
@@ -328,13 +327,17 @@ function clearMarkers() {
   markerObjects = {};
 }
 
-function addMarkers(stops) {
+function addMarkers(stops, routeColor) {
   stops.forEach(function(stop) {
     var el = document.createElement('div');
     el.className = 'mk ' + (
       stop.type === 'start' || stop.type === 'end' ? 'mk-se' :
       stop.type === 'optional' ? 'mk-opt' : 'mk-stop'
     );
+    // Apply route-specific color to regular stops
+    if (stop.type === 'stop' && routeColor) {
+      el.style.background = routeColor;
+    }
     el.textContent = stop.type === 'optional' ? (stop.icon || '✦') : stop.label;
     el.addEventListener('click', function(e) { e.stopPropagation(); openPanel(stop); });
     var marker = new mapboxgl.Marker({ element:el, anchor:'center' })
@@ -369,19 +372,14 @@ function fetchWalkingRoute(route) {
     });
   });
 
-  // Chunk into max 25
+  // Chunk into groups of max 25, overlapping by 1 for continuity
   var chunks = [];
-  for (var i = 0; i < waypoints.length; i += 24) {
-    chunks.push(waypoints.slice(i, Math.min(i + 25, waypoints.length)));
-    if (i + 25 < waypoints.length) i--; // overlap by 1
-  }
-  // Simpler chunking — avoid overlap bug:
-  chunks = [];
-  for (var j = 0; j < waypoints.length; j += 24) {
-    var end = Math.min(j + 25, waypoints.length);
-    chunks.push(waypoints.slice(j, end));
-    if (end === waypoints.length) break;
-    j = end - 2; // back up 1 for continuity
+  var i = 0;
+  while (i < waypoints.length) {
+    var end = Math.min(i + 25, waypoints.length);
+    chunks.push(waypoints.slice(i, end));
+    if (end >= waypoints.length) break;
+    i = end - 1; // overlap last point so chunks connect
   }
 
   var results = new Array(chunks.length);
@@ -402,23 +400,24 @@ function fetchWalkingRoute(route) {
   function onDone() {
     if (--pending > 0) return;
     var merged = [];
-    results.forEach(function(c, i) {
-      if (c) merged = merged.concat(i === 0 ? c : c.slice(1));
+    results.forEach(function(c, idx) {
+      if (c) merged = merged.concat(idx === 0 ? c : c.slice(1));
     });
     if (!merged.length) {
       merged = mainStops.map(function(s) { return [s.lng, s.lat]; });
     }
-    drawRoute(merged);
+    drawRoute(merged, route.color);
     document.getElementById('routeStatus').classList.remove('show');
   }
 }
 
-function drawRoute(coords) {
+function drawRoute(coords, color) {
+  color = color || '#701321';
   var gj = { type:'Feature', geometry:{ type:'LineString', coordinates:coords } };
   clearRouteLayer();
   map.addSource('route', { type:'geojson', data:gj });
-  map.addLayer({ id:'route-glow', type:'line', source:'route', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6} });
-  map.addLayer({ id:'route-line', type:'line', source:'route', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':'#701321','line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]} });
+  map.addLayer({ id:'route-glow', type:'line', source:'route', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':color,'line-width':8,'line-opacity':0.12,'line-blur':6} });
+  map.addLayer({ id:'route-line', type:'line', source:'route', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':color,'line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]} });
 }
 
 // ── MOBILE SIDEBAR
