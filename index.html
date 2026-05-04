@@ -9,7 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+<!-- ── ROUTE DATA FILES
+     Each route is a separate JS file that defines ROUTE_META and ROUTE_STOPS.
+     To add a new route: add a new script tag + entry in ROUTES config below.
+     To lock/unlock a route for the paywall: set unlocked: true/false in ROUTES.
+-->
+<script src="route1-stops.js"></script>
+<script>var R1_META = ROUTE_META; var R1_STOPS = ROUTE_STOPS;</script>
 <script src="route2-stops.js"></script>
+<script>var R2_META = ROUTE_META; var R2_STOPS = ROUTE_STOPS;</script>
+
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root {
@@ -22,59 +32,37 @@ html, body { height:100%; overflow:hidden; }
 body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(--carbon); display:flex; flex-direction:column; }
 
 /* ── HEADER */
-.app-header {
-  background:var(--carbon); padding:12px 18px 13px;
-  display:flex; align-items:center; justify-content:space-between;
-  flex-shrink:0; position:relative; z-index:200;
-  border-bottom:1px solid rgba(112,19,33,0.3);
-}
+.app-header { background:var(--carbon); padding:12px 18px 13px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative; z-index:200; border-bottom:1px solid rgba(112,19,33,0.3); }
 .header-center { position:absolute; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; }
 .header-center h1 { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; color:var(--parchment); line-height:1; }
 .header-center .route-sub { font-size:0.56rem; color:var(--gold); letter-spacing:0.14em; text-transform:uppercase; margin-top:3px; font-weight:500; }
-
-/* Hamburger menu button — visible on mobile, hidden on desktop */
-.menu-btn {
-  width:36px; height:36px; flex-shrink:0;
-  display:none; /* shown via media query */
-  flex-direction:column; align-items:flex-start; justify-content:center;
-  gap:5px; cursor:pointer; padding:4px;
-  background:transparent; border:none;
-}
-.menu-btn span {
-  display:block; height:1.5px; background:var(--parchment);
-  border-radius:2px; transition:all 0.3s cubic-bezier(.4,0,.2,1);
-}
+.menu-btn { width:36px; height:36px; flex-shrink:0; display:none; flex-direction:column; align-items:flex-start; justify-content:center; gap:5px; cursor:pointer; padding:4px; background:transparent; border:none; }
+.menu-btn span { display:block; height:1.5px; background:var(--parchment); border-radius:2px; transition:all 0.3s cubic-bezier(.4,0,.2,1); }
 .menu-btn span:nth-child(1){ width:22px; }
 .menu-btn span:nth-child(2){ width:16px; }
 .menu-btn span:nth-child(3){ width:19px; }
 .menu-btn.open span:nth-child(1){ width:20px; transform:translateY(6.5px) rotate(45deg); }
 .menu-btn.open span:nth-child(2){ opacity:0; width:0; }
 .menu-btn.open span:nth-child(3){ width:20px; transform:translateY(-6.5px) rotate(-45deg); }
-
-.locate-btn {
-  width:34px; height:34px; flex-shrink:0;
-  background:transparent; border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s;
-  position:relative;
-}
+.locate-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
 .locate-btn:hover, .locate-btn.active { color:var(--blue); }
-
-/* Spacer to balance header when hamburger is hidden */
 .header-spacer { width:36px; flex-shrink:0; }
 
 /* ── LAYOUT */
 .app-body { display:flex; flex:1; overflow:hidden; min-height:0; position:relative; }
 
-/* ── SIDEBAR — desktop always visible, mobile via overlay */
-.sidebar {
-  width:280px; flex-shrink:0;
-  background:var(--panel);
-  border-right:1px solid rgba(112,19,33,0.15);
-  display:flex; flex-direction:column; overflow:hidden; z-index:300;
-  transition:transform 0.32s cubic-bezier(.4,0,.2,1);
-}
-.sb-head { padding:14px 17px 11px; border-bottom:1px solid rgba(112,19,33,0.12); flex-shrink:0; }
+/* ── SIDEBAR */
+.sidebar { width:280px; flex-shrink:0; background:var(--panel); border-right:1px solid rgba(112,19,33,0.15); display:flex; flex-direction:column; overflow:hidden; z-index:300; transition:transform 0.32s cubic-bezier(.4,0,.2,1); }
+
+/* Route switcher tabs at top of sidebar */
+.route-tabs { display:flex; flex-shrink:0; border-bottom:1px solid rgba(112,19,33,0.12); }
+.route-tab { flex:1; padding:10px 8px; font-family:'Montserrat',sans-serif; font-size:0.6rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; text-align:center; cursor:pointer; color:var(--muted); border:none; background:transparent; transition:all .18s; border-bottom:2px solid transparent; line-height:1.3; }
+.route-tab:hover { color:var(--carbon); background:rgba(112,19,33,0.04); }
+.route-tab.active { color:var(--bordeaux); border-bottom-color:var(--bordeaux); }
+.route-tab.locked { color:var(--muted-light); cursor:default; }
+.route-tab .lock { font-size:0.65rem; display:block; margin-top:1px; opacity:0.6; }
+
+.sb-head { padding:12px 17px 10px; border-bottom:1px solid rgba(112,19,33,0.12); flex-shrink:0; }
 .sb-head h2 { font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:0.8rem; color:var(--muted); margin-bottom:9px; }
 .pills { display:flex; gap:5px; }
 .pill { font-size:0.57rem; padding:3px 9px; border-radius:20px; border:1px solid; cursor:pointer; letter-spacing:0.07em; text-transform:uppercase; font-weight:600; background:transparent; font-family:'Montserrat',sans-serif; transition:all .18s; }
@@ -95,69 +83,28 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
 .si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
 
-/* Mobile sidebar overlay backdrop */
-.sidebar-backdrop {
-  display:none;
-  position:absolute; inset:0; z-index:250;
-  background:rgba(25,25,25,0.5);
-}
-
 /* ── MAP */
 .map-wrap { flex:1; position:relative; overflow:hidden; }
 #map { width:100%; height:100%; }
 
 /* ── MARKERS */
-.mk {
-  border-radius:50%; border:2px solid white;
-  box-shadow:0 1px 5px rgba(25,25,25,0.45);
-  color:white; font-family:'Montserrat',sans-serif; font-weight:600;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; will-change:transform; transition:box-shadow 0.15s;
-}
-.mk:hover, .mk.sel {
-  box-shadow:0 0 0 3px rgba(184,154,90,0.7), 0 2px 8px rgba(25,25,25,0.5);
-}
-/* 25% larger than before: stop 22→28, se 26→33, opt 24→30 */
+.mk { border-radius:50%; border:2px solid white; box-shadow:0 1px 5px rgba(25,25,25,0.45); color:white; font-family:'Montserrat',sans-serif; font-weight:600; display:flex; align-items:center; justify-content:center; cursor:pointer; will-change:transform; transition:box-shadow 0.15s; }
+.mk:hover, .mk.sel { box-shadow:0 0 0 3px rgba(184,154,90,0.7), 0 2px 8px rgba(25,25,25,0.5); }
 .mk-stop { width:28px; height:28px; background:var(--bordeaux); font-size:9.5px; }
 .mk-se   { width:33px; height:33px; background:var(--carbon); font-size:9px; color:var(--parchment); }
 .mk-opt  { width:30px; height:30px; background:var(--green); font-size:16px; }
 
-/* ── ROUTE LOADING */
+/* ── ROUTE STATUS */
 .route-status { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:150; background:rgba(25,25,25,.85); color:var(--parchment); font-size:0.65rem; padding:5px 14px; border-radius:20px; letter-spacing:0.05em; display:none; align-items:center; gap:7px; white-space:nowrap; font-family:'Montserrat',sans-serif; backdrop-filter:blur(4px); }
 .route-status.show { display:flex; }
 .spinner { width:10px; height:10px; border:2px solid rgba(241,234,222,.3); border-top-color:var(--parchment); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
 /* ── LOCATION TOOLTIP */
-.locate-tooltip {
-  position:fixed; top:70px; right:10px;
-  background:var(--carbon); color:var(--parchment);
-  font-family:'Montserrat',sans-serif; font-size:0.7rem;
-  padding:8px 12px; border-radius:10px;
-  box-shadow:0 4px 16px rgba(25,25,25,0.3);
-  border:1px solid rgba(112,19,33,0.3);
-  z-index:1000;
-  white-space:nowrap;
-  display:none; align-items:center; gap:10px;
-}
+.locate-tooltip { position:fixed; top:70px; right:10px; background:var(--carbon); color:var(--parchment); font-family:'Montserrat',sans-serif; font-size:0.7rem; padding:8px 12px; border-radius:10px; box-shadow:0 4px 16px rgba(25,25,25,0.3); border:1px solid rgba(112,19,33,0.3); z-index:1000; white-space:nowrap; display:none; align-items:center; gap:10px; }
 .locate-tooltip.show { display:flex; }
-.locate-tooltip::after {
-  content:'';
-  position:absolute; top:-6px; right:10px;
-  width:10px; height:10px;
-  background:var(--carbon);
-  border-left:1px solid rgba(112,19,33,0.3);
-  border-top:1px solid rgba(112,19,33,0.3);
-  transform:rotate(45deg);
-}
-.locate-tooltip-close {
-  flex-shrink:0;
-  background:var(--bordeaux); color:var(--parchment);
-  border:none; border-radius:6px; padding:4px 8px;
-  font-family:'Montserrat',sans-serif; font-size:0.62rem;
-  font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
-  cursor:pointer; white-space:nowrap;
-}
+.locate-tooltip::after { content:''; position:absolute; top:-6px; right:10px; width:10px; height:10px; background:var(--carbon); border-left:1px solid rgba(112,19,33,0.3); border-top:1px solid rgba(112,19,33,0.3); transform:rotate(45deg); }
+.locate-tooltip-close { flex-shrink:0; background:var(--bordeaux); color:var(--parchment); border:none; border-radius:6px; padding:4px 8px; font-family:'Montserrat',sans-serif; font-size:0.62rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; cursor:pointer; white-space:nowrap; }
 
 /* ── MAPBOX CONTROLS */
 .mapboxgl-ctrl-group { box-shadow:0 2px 10px rgba(25,25,25,.3)!important; border:none!important; border-radius:6px!important; overflow:hidden; }
@@ -183,25 +130,18 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .close-btn { position:absolute; top:12px; right:14px; width:26px; height:26px; border:1px solid rgba(112,19,33,.25); border-radius:50%; background:transparent; cursor:pointer; font-size:0.8rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .18s; }
 .close-btn:hover { background:var(--bordeaux); color:var(--parchment); border-color:var(--bordeaux); }
 
-/* USER DOT */
+/* ── MOBILE SIDEBAR BACKDROP */
+.sidebar-backdrop { display:none; position:absolute; inset:0; z-index:250; background:rgba(25,25,25,0.5); }
+
+/* ── USER DOT */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
 /* ── MOBILE */
 @media(max-width:640px) {
-  /* Show hamburger, hide spacer */
   .menu-btn { display:flex; }
   .header-spacer { display:none; }
-
-  /* Sidebar slides in from left as overlay */
-  .sidebar {
-    position:absolute;
-    top:0; left:0; bottom:0;
-    transform:translateX(-100%);
-    box-shadow:4px 0 20px rgba(25,25,25,0.2);
-  }
-  .sidebar.open {
-    transform:translateX(0);
-  }
+  .sidebar { position:absolute; top:0; left:0; bottom:0; transform:translateX(-100%); box-shadow:4px 0 20px rgba(25,25,25,0.2); }
+  .sidebar.open { transform:translateX(0); }
   .sidebar-backdrop.show { display:block; }
 }
 </style>
@@ -209,18 +149,14 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 <body>
 
 <header class="app-header">
-  <!-- Hamburger: mobile only -->
   <button class="menu-btn" id="menuBtn" aria-label="Open stop list">
     <span></span><span></span><span></span>
   </button>
-  <!-- Spacer: desktop only, balances the locate btn -->
   <div class="header-spacer"></div>
-
   <div class="header-center">
     <h1 id="headerTitle">—</h1>
     <div class="route-sub" id="headerSub">—</div>
   </div>
-
   <button class="locate-btn" id="locateBtn" title="Show my location">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
@@ -229,11 +165,12 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 </header>
 
 <div class="app-body">
-
-  <!-- Backdrop for mobile sidebar -->
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <aside class="sidebar" id="sidebar">
+    <!-- Route switcher tabs -->
+    <div class="route-tabs" id="routeTabs"></div>
+
     <div class="sb-head">
       <h2>All stops along the route</h2>
       <div class="pills">
@@ -251,51 +188,147 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
       <div class="spinner"></div>
       Calculating walking route…
     </div>
-
-    <div class="stop-panel" id="stopPanel">
-      <div class="panel-handle" onclick="closePanel()"></div>
-      <button class="close-btn" onclick="closePanel()">&#10005;</button>
-      <div class="p-inner" id="panelContent"></div>
-    </div>
   </div>
 </div>
 
-<!-- Tooltip fixed to viewport — always near the locate button in the header -->
+<!-- Tooltip fixed to viewport -->
 <div class="locate-tooltip" id="locateTooltip">
   Tap to see your location
   <button class="locate-tooltip-close" id="locateTooltipClose">Got it</button>
 </div>
 
+<div class="stop-panel" id="stopPanel">
+  <div class="panel-handle" onclick="closePanel()"></div>
+  <button class="close-btn" onclick="closePanel()">&#10005;</button>
+  <div class="p-inner" id="panelContent"></div>
+</div>
+
 <script>
+// ── MAPBOX CONFIG
 var MAPBOX_TOKEN = 'pk.eyJ1Ijoibmlja3BvbnRlIiwiYSI6ImNtb25hZGVvbTA3aXMycHM2Yms2ejNxaGcifQ.rTiwFe0d2LfVqGPaUbz8tA';
-var MAPBOX_STYLE = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
+var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
 
-var meta  = ROUTE_META;
-var stops = ROUTE_STOPS;
+// ── ROUTE REGISTRY
+// ─────────────────────────────────────────────────────────────
+// To add a new route:
+//   1. Add a <script src="routeN-stops.js"> tag in the <head>
+//   2. Add a var RN_META / RN_STOPS line after it (like routes 1 & 2 above)
+//   3. Add an entry here with the correct meta + stops references
+//
+// To lock/unlock a route (future paywall):
+//   Set unlocked: false to hide stops and show a locked state
+// ─────────────────────────────────────────────────────────────
+var ROUTES = [
+  {
+    key: 'route1',
+    meta: R1_META,
+    stops: R1_STOPS,
+    unlocked: true,
+    // Via-waypoints to steer the walking route through specific streets
+    // Format: { after: stopId, lat, lng }
+    viaPoints: []
+  },
+  {
+    key: 'route2',
+    meta: R2_META,
+    stops: R2_STOPS,
+    unlocked: true,
+    viaPoints: [
+      // Steer start→stop1 through Haarlemmerstraat
+      { after: 'start', lat: 52.37957057693914, lng: 4.893586518460003 }
+    ]
+  }
+];
 
-document.getElementById('headerTitle').textContent = meta.title;
-document.getElementById('headerSub').textContent   = meta.label + ' · ' + meta.stopCount + ' stops';
+// ── STATE
+var activeRouteKey = ROUTES[0].key;
+var activeFilter   = 'all';
+var markerObjects  = {};
+var userMarker     = null;
+var watchId        = null;
+var locateOn       = false;
 
-// ── MAP
+// ── MAP INIT
 mapboxgl.accessToken = MAPBOX_TOKEN;
 var map = new mapboxgl.Map({
   container: 'map',
   style: MAPBOX_STYLE,
-  center: meta.center,
-  zoom: meta.zoom,
+  center: ROUTES[0].meta.center,
+  zoom: ROUTES[0].meta.zoom,
   attributionControl: true
 });
-// Zoom controls removed — pinch to zoom on mobile, scroll on desktop
 
 map.on('load', function() {
-  addMarkers();
-  fetchWalkingRoute();
+  buildRouteTabs();
+  loadRoute(activeRouteKey);
 });
 
-// ── MARKERS
-var markerObjects = {};
+// ── ROUTE TABS
+function buildRouteTabs() {
+  var container = document.getElementById('routeTabs');
+  container.innerHTML = '';
+  ROUTES.forEach(function(route) {
+    var btn = document.createElement('button');
+    btn.className = 'route-tab' + (route.key === activeRouteKey ? ' active' : '') + (!route.unlocked ? ' locked' : '');
+    btn.dataset.key = route.key;
+    btn.innerHTML = route.meta.title + (route.unlocked ? '' : '<span class="lock">🔒</span>');
+    btn.addEventListener('click', function() {
+      if (!route.unlocked) return; // locked — do nothing (future: show paywall)
+      switchRoute(route.key);
+    });
+    container.appendChild(btn);
+  });
+}
 
-function addMarkers() {
+// ── SWITCH ROUTE
+function switchRoute(key) {
+  if (key === activeRouteKey) return;
+  activeRouteKey = key;
+  closePanel();
+  clearMarkers();
+  clearRouteLayer();
+  buildRouteTabs();
+  loadRoute(key);
+  if (sidebarOpen) toggleSidebar();
+}
+
+function loadRoute(key) {
+  var route = getRoute(key);
+  if (!route) return;
+
+  document.getElementById('headerTitle').textContent = route.meta.title;
+  document.getElementById('headerSub').textContent   = route.meta.label + ' · ' + route.meta.stopCount + ' stops';
+
+  // Fly map to route center
+  map.flyTo({ center: route.meta.center, zoom: route.meta.zoom, speed: 1.4 });
+
+  // Build sidebar list
+  buildList('all');
+  resetPills();
+
+  // Place markers
+  addMarkers(route.stops);
+
+  // Fetch walking route
+  fetchWalkingRoute(route);
+}
+
+function getRoute(key) {
+  return ROUTES.find(function(r) { return r.key === key; });
+}
+
+function getCurrentStops() {
+  var route = getRoute(activeRouteKey);
+  return route ? route.stops : [];
+}
+
+// ── MARKERS
+function clearMarkers() {
+  Object.values(markerObjects).forEach(function(m) { m.marker.remove(); });
+  markerObjects = {};
+}
+
+function addMarkers(stops) {
   stops.forEach(function(stop) {
     var el = document.createElement('div');
     el.className = 'mk ' + (
@@ -303,10 +336,7 @@ function addMarkers() {
       stop.type === 'optional' ? 'mk-opt' : 'mk-stop'
     );
     el.textContent = stop.type === 'optional' ? (stop.icon || '✦') : stop.label;
-    el.addEventListener('click', function(e) {
-      e.stopPropagation();
-      openPanel(stop);
-    });
+    el.addEventListener('click', function(e) { e.stopPropagation(); openPanel(stop); });
     var marker = new mapboxgl.Marker({ element:el, anchor:'center' })
       .setLngLat([stop.lng, stop.lat])
       .addTo(map);
@@ -315,57 +345,68 @@ function addMarkers() {
 }
 
 // ── WALKING ROUTE
-// The route Start → Stop 1 must pass through Haarlemmerstraat.
-// We insert a via-waypoint on the Haarlemmerstraat to force the correct path.
-// Real coordinates: Haarlemmerstraat midpoint ≈ [4.8906, 52.3816]
-var HAARLEMMERSTRAAT_VIA = { lng: 4.893586518460003, lat: 52.37957057693914 };
+function clearRouteLayer() {
+  ['route-line', 'route-glow'].forEach(function(id) {
+    if (map.getLayer(id)) map.removeLayer(id);
+  });
+  if (map.getSource('route')) map.removeSource('route');
+}
 
-function fetchWalkingRoute() {
+function fetchWalkingRoute(route) {
   document.getElementById('routeStatus').classList.add('show');
 
-  // Build ordered list of waypoints including via point
-  var mainStops = stops.filter(function(s){ return s.type !== 'optional'; });
+  var mainStops = route.stops.filter(function(s) { return s.type !== 'optional'; });
 
-  // Insert via-point between start (index 0) and stop 1 (index 1)
+  // Build waypoint list, inserting viaPoints at specified positions
   var waypoints = [];
-  mainStops.forEach(function(s, i) {
+  mainStops.forEach(function(s) {
     waypoints.push({ lng:s.lng, lat:s.lat });
-    if (i === 0) {
-      // inject Haarlemmerstraat waypoint right after start
-      waypoints.push(HAARLEMMERSTRAAT_VIA);
-    }
+    // Check if any viaPoint should be inserted after this stop
+    route.viaPoints.forEach(function(vp) {
+      if (String(vp.after) === String(s.id)) {
+        waypoints.push({ lng:vp.lng, lat:vp.lat });
+      }
+    });
   });
 
-  // Chunk into groups of max 25
-  var chunkSize = 25;
+  // Chunk into max 25
   var chunks = [];
-  for (var i = 0; i < waypoints.length; i += chunkSize - 1) {
-    chunks.push(waypoints.slice(i, Math.min(i + chunkSize, waypoints.length)));
+  for (var i = 0; i < waypoints.length; i += 24) {
+    chunks.push(waypoints.slice(i, Math.min(i + 25, waypoints.length)));
+    if (i + 25 < waypoints.length) i--; // overlap by 1
+  }
+  // Simpler chunking — avoid overlap bug:
+  chunks = [];
+  for (var j = 0; j < waypoints.length; j += 24) {
+    var end = Math.min(j + 25, waypoints.length);
+    chunks.push(waypoints.slice(j, end));
+    if (end === waypoints.length) break;
+    j = end - 2; // back up 1 for continuity
   }
 
   var results = new Array(chunks.length);
   var pending = chunks.length;
 
   chunks.forEach(function(chunk, idx) {
-    var coords = chunk.map(function(p){ return p.lng + ',' + p.lat; }).join(';');
+    var coords = chunk.map(function(p) { return p.lng + ',' + p.lat; }).join(';');
     fetch('https://api.mapbox.com/directions/v5/mapbox/walking/' + coords
         + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN)
-      .then(function(r){ return r.json(); })
-      .then(function(d){
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
         if (d.routes && d.routes[0]) results[idx] = d.routes[0].geometry.coordinates;
         onDone();
       })
-      .catch(function(){ onDone(); });
+      .catch(function() { onDone(); });
   });
 
   function onDone() {
     if (--pending > 0) return;
     var merged = [];
-    results.forEach(function(c, i){
+    results.forEach(function(c, i) {
       if (c) merged = merged.concat(i === 0 ? c : c.slice(1));
     });
     if (!merged.length) {
-      merged = mainStops.map(function(s){ return [s.lng, s.lat]; });
+      merged = mainStops.map(function(s) { return [s.lng, s.lat]; });
     }
     drawRoute(merged);
     document.getElementById('routeStatus').classList.remove('show');
@@ -374,18 +415,10 @@ function fetchWalkingRoute() {
 
 function drawRoute(coords) {
   var gj = { type:'Feature', geometry:{ type:'LineString', coordinates:coords } };
-  if (map.getSource('route')) { map.getSource('route').setData(gj); return; }
+  clearRouteLayer();
   map.addSource('route', { type:'geojson', data:gj });
-  map.addLayer({
-    id:'route-glow', type:'line', source:'route',
-    layout:{'line-join':'round','line-cap':'round'},
-    paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6}
-  });
-  map.addLayer({
-    id:'route-line', type:'line', source:'route',
-    layout:{'line-join':'round','line-cap':'round'},
-    paint:{'line-color':'#701321','line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]}
-  });
+  map.addLayer({ id:'route-glow', type:'line', source:'route', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':'#701321','line-width':8,'line-opacity':0.12,'line-blur':6} });
+  map.addLayer({ id:'route-line', type:'line', source:'route', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':'#701321','line-width':2.5,'line-opacity':0.78,'line-dasharray':[2,2]} });
 }
 
 // ── MOBILE SIDEBAR
@@ -397,87 +430,53 @@ function toggleSidebar() {
   document.getElementById('sidebarBackdrop').classList.toggle('show', sidebarOpen);
 }
 document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
-document.getElementById('sidebarBackdrop').addEventListener('click', function() {
-  if (sidebarOpen) toggleSidebar();
-});
+document.getElementById('sidebarBackdrop').addEventListener('click', function() { if (sidebarOpen) toggleSidebar(); });
 
 // ── LOCATION TOOLTIP
-// Show on first load; dismissed by "Got it" button or by clicking locate btn
 var tooltipDismissed = false;
 var tooltip = document.getElementById('locateTooltip');
-
-// Show tooltip after a short delay so it doesn't feel abrupt
-setTimeout(function() {
-  if (!tooltipDismissed) tooltip.classList.add('show');
-}, 1200);
-
+setTimeout(function() { if (!tooltipDismissed) tooltip.classList.add('show'); }, 1200);
 document.getElementById('locateTooltipClose').addEventListener('click', function() {
-  tooltip.classList.remove('show');
-  tooltipDismissed = true;
+  tooltip.classList.remove('show'); tooltipDismissed = true;
 });
 
 // ── LOCATE
-var userMarker = null, watchId = null, locateOn = false;
-
 document.getElementById('locateBtn').addEventListener('click', function() {
-  // Dismiss tooltip when user taps the button
-  tooltip.classList.remove('show');
-  tooltipDismissed = true;
-
+  tooltip.classList.remove('show'); tooltipDismissed = true;
   if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
   if (locateOn) {
     if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
     if (userMarker) { userMarker.remove(); userMarker = null; }
-    locateOn = false;
-    document.getElementById('locateBtn').classList.remove('active');
-    return;
+    locateOn = false; document.getElementById('locateBtn').classList.remove('active'); return;
   }
-  locateOn = true;
-  document.getElementById('locateBtn').classList.add('active');
+  locateOn = true; document.getElementById('locateBtn').classList.add('active');
   navigator.geolocation.getCurrentPosition(
-    function(p) {
-      setUserDot(p.coords.latitude, p.coords.longitude);
-      map.flyTo({ center:[p.coords.longitude, p.coords.latitude], zoom:16 });
-    },
-    function() {
-      locateOn = false;
-      document.getElementById('locateBtn').classList.remove('active');
-      alert('Location unavailable. Check your browser permissions.');
-    },
+    function(p) { setUserDot(p.coords.latitude, p.coords.longitude); map.flyTo({center:[p.coords.longitude, p.coords.latitude], zoom:16}); },
+    function() { locateOn = false; document.getElementById('locateBtn').classList.remove('active'); alert('Location unavailable. Check your browser permissions.'); },
     { enableHighAccuracy:true }
   );
   watchId = navigator.geolocation.watchPosition(
-    function(p){ setUserDot(p.coords.latitude, p.coords.longitude); },
-    null,
-    { enableHighAccuracy:true, maximumAge:5000 }
+    function(p) { setUserDot(p.coords.latitude, p.coords.longitude); }, null, { enableHighAccuracy:true, maximumAge:5000 }
   );
 });
 
 function setUserDot(lat, lng) {
-  var el = document.createElement('div');
-  el.className = 'user-dot';
+  var el = document.createElement('div'); el.className = 'user-dot';
   if (userMarker) userMarker.remove();
-  userMarker = new mapboxgl.Marker({ element:el, anchor:'center' })
-    .setLngLat([lng, lat]).addTo(map);
+  userMarker = new mapboxgl.Marker({element:el, anchor:'center'}).setLngLat([lng, lat]).addTo(map);
 }
 
 // ── PANEL
 function openPanel(stop) {
-  document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
+  document.querySelectorAll('.si').forEach(function(e) { e.classList.remove('active'); });
   var sEl = document.querySelector('.si[data-id="' + stop.id + '"]');
-  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
-
-  Object.values(markerObjects).forEach(function(m){ m.el.classList.remove('sel'); });
+  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  Object.values(markerObjects).forEach(function(m) { m.el.classList.remove('sel'); });
   if (markerObjects[stop.id]) markerObjects[stop.id].el.classList.add('sel');
-
-  // Close mobile sidebar when a stop is opened
   if (sidebarOpen) toggleSidebar();
 
-  var lc = stop.type==='optional' ? 'var(--green)' :
-           stop.type==='start'||stop.type==='end' ? 'var(--gold)' : 'var(--bordeaux)';
-  var lt = stop.type==='optional' ? (stop.icon+' Optional detour') :
-           stop.type==='start' ? 'Starting point' :
-           stop.type==='end'   ? 'End point' : 'Stop '+stop.label;
+  var lc = stop.type==='optional' ? 'var(--green)' : stop.type==='start'||stop.type==='end' ? 'var(--gold)' : 'var(--bordeaux)';
+  var lt = stop.type==='optional' ? (stop.icon+' Optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
   var html = '<div class="p-label" style="color:'+lc+'">'+lt+'</div>'
            + '<div class="p-title">'+stop.name+'</div>'
            + '<div class="p-body"><p>'+stop.body+'</p></div>';
@@ -488,46 +487,47 @@ function openPanel(stop) {
 
 function closePanel() {
   document.getElementById('stopPanel').classList.remove('open');
-  document.querySelectorAll('.si').forEach(function(e){ e.classList.remove('active'); });
-  Object.values(markerObjects).forEach(function(m){ m.el.classList.remove('sel'); });
+  document.querySelectorAll('.si').forEach(function(e) { e.classList.remove('active'); });
+  Object.values(markerObjects).forEach(function(m) { m.el.classList.remove('sel'); });
 }
 
-map.on('click', function(){ closePanel(); });
+map.on('click', function() { closePanel(); });
 
 // ── SIDEBAR LIST
 function buildList(filter) {
   filter = filter || 'all';
+  activeFilter = filter;
+  var stops = getCurrentStops();
   var list = document.getElementById('stopList');
   list.innerHTML = '';
   stops.forEach(function(stop) {
     if (filter==='stop'     && stop.type!=='stop')     return;
     if (filter==='optional' && stop.type!=='optional') return;
-    var c = stop.type==='start'||stop.type==='end' ? '#191919' :
-            stop.type==='optional' ? '#7a9e7e' : '#701321';
+    var c = stop.type==='start'||stop.type==='end' ? '#191919' : stop.type==='optional' ? '#7a9e7e' : '#701321';
     var isOpt = stop.type==='optional';
-    var tag = isOpt ? (stop.icon+' optional detour') :
-              stop.type==='start' ? 'Starting point' :
-              stop.type==='end'   ? 'End point' : 'Stop '+stop.label;
+    var tag = isOpt ? (stop.icon+' optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
     var el = document.createElement('div');
     el.className  = 'si' + (isOpt ? ' opt-item' : '');
     el.dataset.id = stop.id;
     el.innerHTML  = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
                   + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
     el.addEventListener('click', function() {
-      openPanel(stop);
-      map.flyTo({ center:[stop.lng, stop.lat], zoom:17 });
+      openPanel(stop); map.flyTo({center:[stop.lng, stop.lat], zoom:17});
     });
     list.appendChild(el);
   });
 }
 
 function filterList(type, btn) {
-  document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('on'); });
   btn.classList.add('on');
   buildList(type);
 }
 
-buildList();
+function resetPills() {
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('on'); });
+  document.querySelector('.pill.all').classList.add('on');
+}
 </script>
 </body>
 </html>
