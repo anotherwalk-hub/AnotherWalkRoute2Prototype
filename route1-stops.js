@@ -14,7 +14,7 @@
 
 var ROUTE_META = {
   id: 'amsterdam-ij',
-  title: 'Amsterdam from the IJ',
+  title: 'The Center, Reconsidered',
   city: 'Amsterdam',
   label: 'Amsterdam · Route 1',
   stopCount: 30,
