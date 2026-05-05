@@ -29,7 +29,7 @@
   --green:#7a9e7e; --panel:#faf6ef; --blue:#3b82f6;
 }
 html, body { height:100%; overflow:hidden; }
-body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(--carbon); display:flex; flex-direction:column; }
+body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(--carbon); display:flex; flex-direction:column; }
 
 /* ── HEADER */
 .app-header { background:var(--carbon); padding:12px 18px 13px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative; z-index:200; border-bottom:1px solid rgba(112,19,33,0.3); }
@@ -77,15 +77,15 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .stop-list::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.2); border-radius:2px; }
 .si { display:flex; align-items:flex-start; gap:10px; padding:8px 16px; cursor:pointer; border-left:3px solid transparent; transition:background .14s; }
 .si:hover { background:rgba(112,19,33,0.05); }
-.si.active { background:rgba(112,19,33,0.08); border-left-color:var(--bordeaux); }
+.si.active { background:rgba(112,19,33,0.08); border-left-color:var(--route-color, #701321); }
 .si.active.opt-item { border-left-color:var(--green); background:rgba(122,158,126,0.07); }
 .dot { width:20px; height:20px; border-radius:50%; color:white; font-size:8.5px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
 .si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
 .si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
 
 /* ── MAP */
-.map-wrap { flex:1; position:relative; overflow:hidden; }
-#map { width:100%; height:100%; }
+.map-wrap { flex:1; position:relative; overflow:hidden; min-height:0; }
+#map { position:absolute; inset:0; }
 
 /* ── MARKERS */
 .mk { border-radius:50%; border:2px solid white; box-shadow:0 1px 5px rgba(25,25,25,0.45); color:white; font-family:'Montserrat',sans-serif; font-weight:600; display:flex; align-items:center; justify-content:center; cursor:pointer; will-change:transform; transition:box-shadow 0.15s; }
@@ -115,7 +115,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--carbon); color:var(
 .mapboxgl-ctrl-attrib-inner a { color:var(--muted)!important; font-size:0.55rem!important; }
 
 /* ── STOP PANEL */
-.stop-panel { position:absolute; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(calc(100% + 40px)); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:150; }
+.stop-panel { position:fixed; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(calc(100% + 40px)); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:500; }
 .stop-panel.open { transform:translateY(0); }
 .panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
 .p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; }
@@ -225,7 +225,12 @@ var ROUTES = [
     stops: R1_STOPS,
     unlocked: true,
     color: '#4a2060',   // deep purple — route 1 accent color
-    viaPoints: []
+    viaPoints: [
+      { after: 9,   lat: 52.37887, lng: 4.88495 },        // stop 9→10: steer south along Westerstraat
+      { after: 11,  lat: 52.37369656654916, lng: 4.897871984270471 }, // stop 11→12
+      { after: 14,  lat: 52.37325937592941, lng: 4.900235612333194 }, // stop 14→15
+      { after: 30,  lat: 52.37382330239057, lng: 4.889992860439131 }  // stop 30→end
+    ]
   },
   {
     key: 'route2',
@@ -269,11 +274,16 @@ function buildRouteTabs() {
   container.innerHTML = '';
   ROUTES.forEach(function(route) {
     var btn = document.createElement('button');
-    btn.className = 'route-tab' + (route.key === activeRouteKey ? ' active' : '') + (!route.unlocked ? ' locked' : '');
+    var isActive = route.key === activeRouteKey;
+    btn.className = 'route-tab' + (isActive ? ' active' : '') + (!route.unlocked ? ' locked' : '');
     btn.dataset.key = route.key;
     btn.innerHTML = route.meta.title + (route.unlocked ? '' : '<span class="lock">🔒</span>');
+    if (isActive) {
+      btn.style.color = route.color;
+      btn.style.borderBottomColor = route.color;
+    }
     btn.addEventListener('click', function() {
-      if (!route.unlocked) return; // locked — do nothing (future: show paywall)
+      if (!route.unlocked) return;
       switchRoute(route.key);
     });
     container.appendChild(btn);
@@ -299,6 +309,11 @@ function loadRoute(key) {
   document.getElementById('headerTitle').textContent = route.meta.title;
   document.getElementById('headerSub').textContent   = route.meta.label + ' · ' + route.meta.stopCount + ' stops';
 
+  // Update CSS accent color so sidebar dots, borders and pills reflect the route
+  document.documentElement.style.setProperty('--current-route-color', route.color);
+  var pillStp = document.querySelector('.pill.stp');
+  if (pillStp) { pillStp.style.borderColor = route.color; pillStp.style.color = route.color; }
+
   // Fly map to route center
   map.flyTo({ center: route.meta.center, zoom: route.meta.zoom, speed: 1.4 });
 
@@ -310,7 +325,8 @@ function loadRoute(key) {
   addMarkers(route.stops, route.color);
 
   // Fetch walking route
-  fetchWalkingRoute(route);}
+  fetchWalkingRoute(route);
+}
 
 function getRoute(key) {
   return ROUTES.find(function(r) { return r.key === key; });
@@ -499,15 +515,17 @@ function buildList(filter) {
   var stops = getCurrentStops();
   var list = document.getElementById('stopList');
   list.innerHTML = '';
+  var routeColor = getRoute(activeRouteKey).color || '#701321';
   stops.forEach(function(stop) {
     if (filter==='stop'     && stop.type!=='stop')     return;
     if (filter==='optional' && stop.type!=='optional') return;
-    var c = stop.type==='start'||stop.type==='end' ? '#191919' : stop.type==='optional' ? '#7a9e7e' : '#701321';
+    var c = stop.type==='start'||stop.type==='end' ? '#191919' : stop.type==='optional' ? '#7a9e7e' : routeColor;
     var isOpt = stop.type==='optional';
     var tag = isOpt ? (stop.icon+' optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
     var el = document.createElement('div');
     el.className  = 'si' + (isOpt ? ' opt-item' : '');
     el.dataset.id = stop.id;
+    el.style.setProperty('--route-color', routeColor);
     el.innerHTML  = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
                   + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
     el.addEventListener('click', function() {
