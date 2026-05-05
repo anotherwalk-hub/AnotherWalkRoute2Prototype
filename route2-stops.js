@@ -13,7 +13,12 @@ var ROUTE_META = {
   stopCount: 33,
   duration: '±3 hr',
   center: [4.885, 52.374],
-  zoom: 14
+  zoom: 14,
+  // Via-waypoints: steer the walking route through specific streets.
+  // Format: { after: stopId, lat, lng }
+  viaPoints: [
+    { after: 'start', lat: 52.37957057693914, lng: 4.893586518460003 } // start→stop1 via Haarlemmerstraat
+  ]
 };
 
 var ROUTE_STOPS = [

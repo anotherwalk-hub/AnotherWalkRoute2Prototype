@@ -20,7 +20,15 @@ var ROUTE_META = {
   stopCount: 30,
   duration: '±3.5 hr',
   center: [4.897, 52.373],
-  zoom: 14
+  zoom: 14,
+  // Via-waypoints: steer the walking route through specific streets.
+  // Format: { after: stopId, lat, lng }
+  // To add more: copy a line and set 'after' to the stop id after which the point should appear.
+  viaPoints: [
+    { after: 11, lat: 52.37369656654916, lng: 4.897871984270471 }, // stop 11→12
+    { after: 14, lat: 52.37325937592941, lng: 4.900235612333194 }, // stop 14→15
+    { after: 30, lat: 52.37382330239057, lng: 4.889992860439131 }  // stop 30→end
+  ]
 };
 
 var ROUTE_STOPS = [

@@ -225,11 +225,7 @@ var ROUTES = [
     stops: R1_STOPS,
     unlocked: true,
     color: '#4a2060',   // deep purple — route 1 accent color
-    viaPoints: [
-      { after: 11,  lat: 52.37369656654916, lng: 4.897871984270471 }, // stop 11→12
-      { after: 14,  lat: 52.37325937592941, lng: 4.900235612333194 }, // stop 14→15
-      { after: 30,  lat: 52.37382330239057, lng: 4.889992860439131 }  // stop 30→end
-    ]
+    viaPoints: R1_META.viaPoints || []
   },
   {
     key: 'route2',
@@ -237,10 +233,7 @@ var ROUTES = [
     stops: R2_STOPS,
     unlocked: true,
     color: '#701321',   // bordeaux — route 2 accent color
-    viaPoints: [
-      // Steer start→stop1 through Haarlemmerstraat
-      { after: 'start', lat: 52.37957057693914, lng: 4.893586518460003 }
-    ]
+    viaPoints: R2_META.viaPoints || []
   }
 ];
 
