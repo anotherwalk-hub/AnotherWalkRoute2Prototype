@@ -112,8 +112,8 @@ var ROUTE_STOPS = [
     type: 'stop',
     label: '8',
     name: 'The Old Church & Koffieschenkerij',
-    lat: 52.3744177,
-    lng: 4.898176299999999,
+    lat: 52.374643016496506,
+    lng: 4.898420612017469,
     body: 'The Old Church is the oldest building in Amsterdam, standing right in the heart of the Red Light District. Take a moment to look closely at the building and notice how its different parts come together, each reflecting a different moment in time.<br><br>That contrast can feel strange at first: centuries-old history surrounded by neon lights and nightlife. Over time, the church has taken on a new role as a cultural space, hosting contemporary art and events. It reflects how Amsterdam constantly reuses its past instead of freezing it.<br><br>Right next to the church, almost hidden within its garden, De Koffie Schenkerij offers a calmer moment. Step into the courtyard, lower your voice, and feel how the city suddenly exhales here.'
   },
   {
@@ -178,8 +178,8 @@ var ROUTE_STOPS = [
     label: '🍔',
     icon: '🍔',
     name: 'Le Smash (Zeedijk)',
-    lat: 52.3737826,
-    lng: 4.9000422,
+    lat: 52.37430253216961,
+    lng: 4.900567384499221,
     body: 'If you feel like stepping slightly away from tradition, Le Smash offers a completely different, contemporary food experience. It shows how new ideas keep entering old streets. Just notice how naturally the old and new exist side by side here.',
     tip: 'The smash burgers come highly recommended.'
   },
@@ -384,8 +384,8 @@ var ROUTE_STOPS = [
     type: 'end',
     label: 'E',
     name: 'W Hotel Amsterdam',
-    lat: 52.3727871,
-    lng: 4.890005899999999,
+    lat: 52.3728321761365,
+    lng: 4.889637487198247,
     body: 'The W Hotel marks the end of this walk. Modern, stylish, and alive with city energy. You can take the elevator to the top floor and have a coffee, a drink, or a bite, and give your feet a well-earned rest.<br><br>It\'s a place to relax and look back on your walk through Amsterdam. You can reflect on the layers you\'ve passed: canals, narrow streets, hidden churches, cultural landmarks, and everyday life blending together.<br><br>This walk wasn\'t about ticking off highlights, but about seeing the city differently. In depth, in context, and at your own pace. Let it settle, and when you\'re ready…<br><br><em>There\'s always AnotherWalk.</em>'
   }
 ];
