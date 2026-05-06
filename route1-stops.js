@@ -26,7 +26,7 @@ var ROUTE_META = {
   // To add more: copy a line and set 'after' to the stop id after which the point should appear.
   viaPoints: [
     { after: 11, lat: 52.37369656654916, lng: 4.897871984270471 }, // stop 11→12
-    { after: 14, lat: 52.37325937592941, lng: 4.900235612333194 }, // stop 14→15
+    { after: 25, lat: 52.37257747748585, lng: 4.894000499788872 }, // stop 25→26
     { after: 30, lat: 52.37382330239057, lng: 4.889992860439131 }  // stop 30→end
   ]
 };
@@ -96,6 +96,17 @@ var ROUTE_STOPS = [
     lat: 52.374683,
     lng: 4.900496,
     body: 'Patta (slang for shoe) is more than a shop; it\'s a reflection of modern Amsterdam culture. What started as a local sneaker store grew into an international brand with deep roots in the city. The founders drew inspiration from music, street culture, and their own backgrounds, all of which are part of Amsterdam\'s diverse identity.<br><br>Having a place like Patta in the historic center says something important: culture here is not frozen in time. New voices and styles are given space alongside old streets and buildings. Walking past or stepping inside, you can feel how the city continues to redefine itself.'
+  },
+  {
+    id: 'opt3',
+    type: 'optional',
+    label: '🍔',
+    icon: '🍔',
+    name: 'Le Smash (Zeedijk)',
+    lat: 52.37430253216961,
+    lng: 4.900567384499221,
+    body: 'If you feel like stepping slightly away from tradition, Le Smash offers a completely different, contemporary food experience. It shows how new ideas keep entering old streets. Just notice how naturally the old and new exist side by side here.',
+    tip: 'The smash burgers come highly recommended.'
   },
   {
     id: 6,
@@ -179,17 +190,6 @@ var ROUTE_STOPS = [
     lat: 52.37372512048745,
     lng: 4.900371520293544,
     body: 'As you step back onto the Zeedijk, you\'ll notice the atmosphere shifting almost immediately. This is where you naturally enter Amsterdam\'s Chinatown — something you can already sense from the signage, smells, and architecture around you.<br><br>Nam Kee is one of the most well-known Chinese restaurants in Amsterdam. It became part of modern Dutch culture not just because of its food, but also through literature and film — playing a central role in <em>The Oysters of Nam Kee</em>, a novel and later a film that captured a raw, intimate portrait of growing up in Amsterdam.<br><br>You don\'t have to eat here to feel that atmosphere. Just standing outside already tells part of the story.'
-  },
-  {
-    id: 'opt3',
-    type: 'optional',
-    label: '🍔',
-    icon: '🍔',
-    name: 'Le Smash (Zeedijk)',
-    lat: 52.37430253216961,
-    lng: 4.900567384499221,
-    body: 'If you feel like stepping slightly away from tradition, Le Smash offers a completely different, contemporary food experience. It shows how new ideas keep entering old streets. Just notice how naturally the old and new exist side by side here.',
-    tip: 'The smash burgers come highly recommended.'
   },
   {
     id: 14,
