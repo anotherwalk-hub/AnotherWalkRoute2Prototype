@@ -26,7 +26,6 @@ var ROUTE_META = {
   // To add more: copy a line and set 'after' to the stop id after which the point should appear.
   viaPoints: [
     { after: 11, lat: 52.37369656654916, lng: 4.897871984270471 }, // stop 11→12
-    { after: 14, lat: 52.37318987884661, lng: 4.90024267675529  }, // stop 14→15 via Zeedijk
     { after: 25, lat: 52.37257747748585, lng: 4.894000499788872 }, // stop 25→26
     { after: 30, lat: 52.37382330239057, lng: 4.889992860439131 }  // stop 30→end
   ]
