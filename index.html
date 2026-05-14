@@ -19,6 +19,8 @@
 <script>var R1_META = ROUTE_META; var R1_STOPS = ROUTE_STOPS;</script>
 <script src="route2-stops.js"></script>
 <script>var R2_META = ROUTE_META; var R2_STOPS = ROUTE_STOPS;</script>
+<script src="route3-stops.js"></script>
+<script>var R3_META = ROUTE_META; var R3_STOPS = ROUTE_STOPS;</script>
 
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -234,6 +236,14 @@ var ROUTES = [
     unlocked: true,
     color: '#701321',   // bordeaux — route 2 accent color
     viaPoints: R2_META.viaPoints || []
+  },
+  {
+    key: 'route3',
+    meta: R3_META,
+    stops: R3_STOPS,
+    unlocked: true,
+    color: '#2d5a3d',   // dark teal — route 3 accent color
+    viaPoints: R3_META.viaPoints || []
   }
 ];
 
