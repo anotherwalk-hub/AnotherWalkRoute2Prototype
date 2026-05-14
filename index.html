@@ -138,7 +138,105 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 /* ── USER DOT */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
-/* ── MOBILE */
+/* ── INTRO OVERLAY */
+.intro-overlay {
+  position:fixed; inset:0; z-index:1000;
+  display:flex; align-items:flex-end;
+  pointer-events:none; opacity:0;
+  transition:opacity .4s ease;
+}
+.intro-overlay.show { pointer-events:all; opacity:1; }
+
+.intro-bg {
+  position:absolute; inset:0;
+  background:rgba(25,25,25,0.72);
+  backdrop-filter:blur(3px);
+}
+
+.intro-sheet {
+  position:relative; width:100%;
+  background:var(--parchment);
+  border-radius:24px 24px 0 0;
+  max-height:88vh;
+  display:flex; flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .45s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.intro-overlay.show .intro-sheet { transform:translateY(0); }
+
+/* Coloured accent bar at top, using route colour */
+.intro-accent {
+  height:4px; flex-shrink:0;
+  background:var(--bordeaux);
+  transition:background .3s;
+}
+
+.intro-scroll {
+  overflow-y:auto; flex:1;
+  padding:28px 28px 0;
+}
+.intro-scroll::-webkit-scrollbar { width:3px; }
+.intro-scroll::-webkit-scrollbar-thumb { background:rgba(112,19,33,.2); border-radius:2px; }
+
+.intro-eyebrow {
+  font-size:0.6rem; font-weight:600;
+  letter-spacing:0.16em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:10px;
+  font-family:'Montserrat',sans-serif;
+}
+.intro-title {
+  font-family:'Playfair Display',serif;
+  font-size:1.7rem; font-weight:600; line-height:1.15;
+  color:var(--carbon); margin-bottom:6px;
+}
+.intro-meta {
+  display:flex; gap:16px; margin-bottom:20px;
+  font-size:0.65rem; color:var(--muted);
+  font-family:'Montserrat',sans-serif; font-weight:500;
+  letter-spacing:0.04em;
+}
+.intro-meta span {
+  display:flex; align-items:center; gap:5px;
+}
+.intro-divider {
+  height:1px; background:rgba(112,19,33,.15);
+  margin-bottom:20px;
+}
+.intro-body {
+  font-family:'Montserrat',sans-serif;
+  font-size:0.82rem; line-height:1.78;
+  color:#2e2e2e; font-weight:400;
+}
+.intro-body p { margin-bottom:10px; }
+
+.intro-footer {
+  padding:20px 28px 36px;
+  flex-shrink:0;
+  background:var(--parchment);
+}
+.intro-cta {
+  display:block; width:100%;
+  border:none; border-radius:12px;
+  padding:16px 24px;
+  font-family:'Playfair Display',serif;
+  font-size:1rem; font-weight:600;
+  color:var(--parchment);
+  cursor:pointer;
+  letter-spacing:0.01em;
+  background:var(--bordeaux);
+  transition:all .2s;
+  position:relative; overflow:hidden;
+}
+.intro-cta::after {
+  content:'→';
+  position:absolute; right:20px; top:50%;
+  transform:translateY(-50%);
+  font-size:1.1rem; opacity:0.7;
+}
+.intro-cta:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 6px 20px rgba(112,19,33,.3); }
+.intro-cta:active { transform:translateY(0); }
+
 @media(max-width:640px) {
   .menu-btn { display:flex; }
   .header-spacer { display:none; }
@@ -203,6 +301,24 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
   <div class="panel-handle" onclick="closePanel()"></div>
   <button class="close-btn" onclick="closePanel()">&#10005;</button>
   <div class="p-inner" id="panelContent"></div>
+</div>
+
+<!-- ── INTRO OVERLAY -->
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-bg" id="introBg"></div>
+  <div class="intro-sheet">
+    <div class="intro-accent" id="introAccent"></div>
+    <div class="intro-scroll">
+      <div class="intro-eyebrow" id="introEyebrow">Amsterdam</div>
+      <div class="intro-title" id="introTitle">—</div>
+      <div class="intro-meta" id="introMeta"></div>
+      <div class="intro-divider"></div>
+      <div class="intro-body" id="introBody"></div>
+    </div>
+    <div class="intro-footer">
+      <button class="intro-cta" id="introCta">I am ready for this AnotherWalk!</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -326,8 +442,12 @@ function loadRoute(key) {
   // Place markers
   addMarkers(route.stops, route.color);
 
-  // Fetch walking route
-  fetchWalkingRoute(route);
+  // Show intro if route has one
+  if (route.meta.intro) {
+    openIntro(route);
+  } else {
+    fetchWalkingRoute(route);
+  }
 }
 
 function getRoute(key) {
@@ -509,6 +629,39 @@ function closePanel() {
 }
 
 map.on('click', function() { closePanel(); });
+
+// ── INTRO PANEL
+function openIntro(route) {
+  var overlay = document.getElementById('introOverlay');
+  document.getElementById('introAccent').style.background = route.color;
+  document.getElementById('introEyebrow').textContent = route.meta.city + ' · ' + route.meta.label;
+  document.getElementById('introTitle').textContent = route.meta.title;
+  document.getElementById('introMeta').innerHTML =
+    '<span>🕐 ' + route.meta.duration + '</span>' +
+    '<span>📍 ' + route.meta.stopCount + ' stops</span>';
+  // Convert <br> to paragraphs for body text
+  var paragraphs = route.meta.intro.split('<br><br>');
+  document.getElementById('introBody').innerHTML = paragraphs.map(function(p) {
+    return '<p>' + p.replace(/<br>/g, ' ') + '</p>';
+  }).join('');
+  // Style CTA button with route color
+  document.getElementById('introCta').style.background = route.color;
+
+  // Show with slight delay so animation is visible
+  overlay.classList.add('show');
+
+  // Wire close button
+  document.getElementById('introCta').onclick = function() {
+    closeIntro(route);
+  };
+}
+
+function closeIntro(route) {
+  var overlay = document.getElementById('introOverlay');
+  overlay.classList.remove('show');
+  // Start loading the walking route after closing intro
+  fetchWalkingRoute(route);
+}
 
 // ── SIDEBAR LIST
 function buildList(filter) {

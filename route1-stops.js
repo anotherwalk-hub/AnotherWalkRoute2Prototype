@@ -24,6 +24,7 @@ var ROUTE_META = {
   // Via-waypoints: steer the walking route through specific streets.
   // Format: { after: stopId, lat, lng }
   // To add more: copy a line and set 'after' to the stop id after which the point should appear.
+  intro: 'This walk takes you through the historic heart of Amsterdam: an area that is lively, layered, sometimes chaotic, and deeply old. You\'ll walk through the Red Light District and other busy parts of the city center. It can feel touristy at times, but beneath that surface lies a place full of character, contradictions, and everyday life.<br><br>This route is not meant to be rushed or "ticked off." Walk it at your own pace. Pause when something catches your eye. Take detours, skip stops, sit down for a coffee or a drink. The walk starts at Amsterdam Central Station and gradually brings you deeper into the city, ending behind Dam Square, right in the center.<br><br>Along the way you\'ll find plenty of places to eat, drink, and rest. Some are mentioned, many are not — keep your eyes open and follow your curiosity.<br><br>A few practical notes: be mindful of cyclists — they appear suddenly and move fast. Watch your belongings, especially in busy areas. You will pass the Red Light District; be respectful of the people who live and work here. This route is about observing, not judging.<br><br>Most of all: don\'t just look — experience.',
   viaPoints: [
     { after: 11, lat: 52.37369656654916, lng: 4.897871984270471 }, // stop 11→12
     { after: 25, lat: 52.37257747748585, lng: 4.894000499788872 }, // stop 25→26

@@ -16,6 +16,7 @@ var ROUTE_META = {
   zoom: 14,
   // Via-waypoints: steer the walking route through specific streets.
   // Format: { after: stopId, lat, lng }
+  intro: 'This walk begins at the Nieuwe Haarlemmersluis and leads you through the heart of the Jordaan, ending at the Spui. Along the way, you\'ll move from the edge of the historic city into one of Amsterdam\'s most characterful neighbourhoods: a place shaped by work, resilience, and reinvention.<br><br>The Jordaan was built in the 17th century as a pragmatic expansion area for labourers and craftsmen. Unlike the grand canal belt, this district developed quickly and irregularly. Look closely and you\'ll notice that many streets run at slight angles, creating unusually shaped corner buildings — subtle reminders of its modest beginnings.<br><br>For centuries, the Jordaan was associated with overcrowding and poverty, but also with strong community life. Hidden courtyards, workshops, and brown cafés defined the neighbourhood. Over time, decline gave way to renewal. From the 1970s onward, artists and students moved in; by the 1990s, the Jordaan had become one of Amsterdam\'s most desirable areas.<br><br>Today, tradition and transformation exist side by side. As you walk, notice the human scale: narrow streets, small façades, quiet inner courtyards — but also boutique shops and carefully restored interiors.',
   viaPoints: [
     { after: 'start', lat: 52.37957057693914, lng: 4.893586518460003 } // start→stop1 via Haarlemmerstraat
   ]
