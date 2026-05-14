@@ -20,7 +20,12 @@ var ROUTE_META = {
   duration: '±2.5 hr',
   center: [4.895, 52.360],
   zoom: 14,
-  viaPoints: []
+  viaPoints: [
+    { after: 2,      lat: 52.3663500, lng: 4.8924000 }, // stop 2→3: via Reguliersdwarsstraat/Vijzelstraat naar Tuschinski
+    { after: 3,      lat: 52.3664500, lng: 4.8953000 }, // stop 3→4: kortste route over Rembrandtplein, geen lus
+    { after: 4,      lat: 52.3655000, lng: 4.8961000 }, // stop 4→5: via Thorbeckeplein
+    { after: 'opt2', lat: 52.3650000, lng: 4.8975000 }  // Pitaqueen→stop 6: via Utrechtsestraat
+  ]
 };
 
 var ROUTE_STOPS = [
