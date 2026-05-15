@@ -9,11 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- ── ROUTE DATA FILES -->
 <script src="route1-stops.js"></script>
 <script>var R1_META = ROUTE_META; var R1_STOPS = ROUTE_STOPS;</script>
 <script src="route2-stops.js"></script>
@@ -45,14 +42,12 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .menu-btn.open span:nth-child(1){ width:20px; transform:translateY(6.5px) rotate(45deg); }
 .menu-btn.open span:nth-child(2){ opacity:0; width:0; }
 .menu-btn.open span:nth-child(3){ width:20px; transform:translateY(-6.5px) rotate(-45deg); }
-.locate-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
-.locate-btn:hover, .locate-btn.active { color:var(--blue); }
+.header-right { display:flex; align-items:center; gap:4px; }
+.icon-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
+.icon-btn:hover { color:rgba(241,234,222,0.85); }
+.icon-btn.active { color:var(--blue); }
+.icon-btn.signed-in { color:var(--gold); }
 .header-spacer { width:36px; flex-shrink:0; }
-
-/* ── AUTH BUTTON in header */
-.auth-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
-.auth-btn:hover { color:var(--parchment); }
-.auth-btn.signed-in { color:var(--gold); }
 
 /* ── LAYOUT */
 .app-body { display:flex; flex:1; overflow:hidden; min-height:0; position:relative; }
@@ -63,7 +58,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .route-tab { flex:1; padding:10px 8px; font-family:'Montserrat',sans-serif; font-size:0.6rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; text-align:center; cursor:pointer; color:var(--muted); border:none; background:transparent; transition:all .18s; border-bottom:2px solid transparent; line-height:1.3; }
 .route-tab:hover { color:var(--carbon); background:rgba(112,19,33,0.04); }
 .route-tab.active { color:var(--bordeaux); border-bottom-color:var(--bordeaux); }
-.route-tab.locked { color:var(--muted-light); cursor:default; }
+.route-tab.locked { color:var(--muted-light); }
 .route-tab .lock { font-size:0.65rem; display:block; margin-top:1px; opacity:0.6; }
 .sb-head { padding:12px 17px 10px; border-bottom:1px solid rgba(112,19,33,0.12); flex-shrink:0; }
 .sb-head h2 { font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:0.8rem; color:var(--muted); margin-bottom:9px; }
@@ -139,65 +134,59 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 /* ── USER DOT */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
-/* ── INTRO OVERLAY */
-.intro-overlay { position:fixed; inset:0; z-index:1000; display:flex; align-items:flex-end; pointer-events:none; opacity:0; transition:opacity .4s ease; }
-.intro-overlay.show { pointer-events:all; opacity:1; }
-.intro-bg { position:absolute; inset:0; background:rgba(25,25,25,0.72); backdrop-filter:blur(3px); }
-.intro-sheet { position:relative; width:100%; background:var(--parchment); border-radius:24px 24px 0 0; max-height:88vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .45s cubic-bezier(.4,0,.2,1); overflow:hidden; }
-.intro-overlay.show .intro-sheet { transform:translateY(0); }
-.intro-accent { height:4px; flex-shrink:0; background:var(--bordeaux); transition:background .3s; }
-.intro-scroll { overflow-y:auto; flex:1; padding:28px 28px 0; }
-.intro-scroll::-webkit-scrollbar { width:4px; }
-.intro-scroll::-webkit-scrollbar-track { background: rgba(112,19,33,0.05); border-radius:2px; }
-.intro-scroll::-webkit-scrollbar-thumb { background:rgba(112,19,33,.35); border-radius:2px; }
-.intro-eyebrow { font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; font-family:'Montserrat',sans-serif; }
-.intro-title { font-family:'Playfair Display',serif; font-size:1.7rem; font-weight:600; line-height:1.15; color:var(--carbon); margin-bottom:6px; }
-.intro-meta { display:flex; gap:16px; margin-bottom:20px; font-size:0.65rem; color:var(--muted); font-family:'Montserrat',sans-serif; font-weight:500; letter-spacing:0.04em; }
-.intro-meta span { display:flex; align-items:center; gap:5px; }
-.intro-divider { height:1px; background:rgba(112,19,33,.15); margin-bottom:20px; }
-.intro-body { font-family:'Montserrat',sans-serif; font-size:0.82rem; line-height:1.78; color:#2e2e2e; font-weight:400; }
-.intro-body p { margin-bottom:10px; }
-.intro-footer { padding:20px 28px 36px; flex-shrink:0; background:var(--parchment); }
-.intro-cta { display:block; width:100%; border:none; border-radius:12px; padding:16px 24px; font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--parchment); cursor:pointer; letter-spacing:0.01em; background:var(--bordeaux); transition:all .2s; position:relative; overflow:hidden; }
-.intro-cta::after { content:'→'; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:1.1rem; opacity:0.7; }
-.intro-cta:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 6px 20px rgba(112,19,33,.3); }
-.intro-cta:active { transform:translateY(0); }
+/* ── SHARED OVERLAY BASE */
+.aw-overlay { position:fixed; inset:0; z-index:1000; display:flex; align-items:flex-end; pointer-events:none; opacity:0; transition:opacity .4s ease; }
+.aw-overlay.show { pointer-events:all; opacity:1; }
+.aw-overlay-bg { position:absolute; inset:0; background:rgba(25,25,25,0.75); backdrop-filter:blur(3px); }
+.aw-sheet { position:relative; width:100%; background:var(--parchment); border-radius:24px 24px 0 0; max-height:88vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .45s cubic-bezier(.4,0,.2,1); overflow:hidden; }
+.aw-overlay.show .aw-sheet { transform:translateY(0); }
+.aw-accent { height:4px; flex-shrink:0; background:var(--bordeaux); }
+.aw-scroll { overflow-y:auto; flex:1; padding:28px 28px 0; }
+.aw-scroll::-webkit-scrollbar { width:4px; }
+.aw-scroll::-webkit-scrollbar-track { background:rgba(112,19,33,0.05); }
+.aw-scroll::-webkit-scrollbar-thumb { background:rgba(112,19,33,.3); border-radius:2px; }
+.aw-footer { padding:20px 28px 36px; flex-shrink:0; background:var(--parchment); }
+.aw-cta { display:block; width:100%; border:none; border-radius:12px; padding:16px 24px; font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--parchment); cursor:pointer; background:var(--bordeaux); transition:all .2s; position:relative; overflow:hidden; margin-bottom:0; }
+.aw-cta::after { content:'→'; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:1.1rem; opacity:0.7; }
+.aw-cta:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 6px 20px rgba(112,19,33,.3); }
+.aw-cta:active { transform:translateY(0); }
+.aw-cta:disabled { opacity:0.6; cursor:default; transform:none; box-shadow:none; filter:none; }
+.aw-cta-secondary { display:block; width:100%; border:1.5px solid rgba(112,19,33,0.25); border-radius:12px; padding:13px 24px; font-family:'Montserrat',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--bordeaux); cursor:pointer; background:transparent; transition:all .2s; margin-top:10px; text-align:center; }
+.aw-cta-secondary:hover { background:rgba(112,19,33,0.05); }
+.aw-eyebrow { font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; font-family:'Montserrat',sans-serif; }
+.aw-title { font-family:'Playfair Display',serif; font-size:1.7rem; font-weight:600; line-height:1.15; color:var(--carbon); margin-bottom:6px; }
+.aw-meta { display:flex; gap:16px; margin-bottom:20px; font-size:0.65rem; color:var(--muted); font-family:'Montserrat',sans-serif; font-weight:500; letter-spacing:0.04em; }
+.aw-meta span { display:flex; align-items:center; gap:5px; }
+.aw-divider { height:1px; background:rgba(112,19,33,.15); margin-bottom:20px; }
+.aw-body { font-family:'Montserrat',sans-serif; font-size:0.82rem; line-height:1.78; color:#2e2e2e; font-weight:400; }
+.aw-body p { margin-bottom:10px; }
+.aw-close { position:absolute; top:14px; right:14px; width:28px; height:28px; border:1px solid rgba(112,19,33,.2); border-radius:50%; background:transparent; cursor:pointer; font-size:0.8rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .18s; z-index:10; }
+.aw-close:hover { background:var(--bordeaux); color:var(--parchment); border-color:var(--bordeaux); }
 
-/* ── LOGIN OVERLAY */
-.login-overlay { position:fixed; inset:0; z-index:2000; display:flex; align-items:flex-end; pointer-events:none; opacity:0; transition:opacity .4s ease; }
-.login-overlay.show { pointer-events:all; opacity:1; }
-.login-bg { position:absolute; inset:0; background:rgba(25,25,25,0.85); backdrop-filter:blur(4px); }
-.login-sheet { position:relative; width:100%; background:var(--parchment); border-radius:24px 24px 0 0; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .45s cubic-bezier(.4,0,.2,1); overflow:hidden; }
-.login-overlay.show .login-sheet { transform:translateY(0); }
-.login-accent { height:4px; flex-shrink:0; background:var(--bordeaux); }
-.login-body { padding:32px 28px 40px; }
-.login-logo { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600; color:var(--bordeaux); letter-spacing:0.02em; margin-bottom:6px; }
-.login-tagline { font-size:0.7rem; color:var(--muted); font-family:'Montserrat',sans-serif; font-weight:400; margin-bottom:28px; line-height:1.5; }
+/* ── PREVIEW OVERLAY extras */
+#previewOverlay { z-index:1100; }
+.preview-locked-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(112,19,33,0.07); border:1px solid rgba(112,19,33,0.18); border-radius:20px; padding:4px 12px; font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--bordeaux); font-family:'Montserrat',sans-serif; margin-bottom:16px; }
+.preview-stop-hint { margin-top:18px; padding-top:16px; border-top:1px solid rgba(112,19,33,.1); font-size:0.72rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.65; }
+.preview-stop-hint strong { color:var(--carbon); }
+
+/* ── LOGIN OVERLAY extras */
+#loginOverlay { z-index:2000; }
+.login-logo { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600; color:var(--bordeaux); margin-bottom:6px; }
+.login-tagline { font-size:0.72rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.65; margin-bottom:28px; }
 .login-label { font-size:0.6rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); font-family:'Montserrat',sans-serif; margin-bottom:8px; display:block; }
-.login-input { width:100%; padding:14px 16px; border:1.5px solid rgba(112,19,33,0.25); border-radius:10px; background:white; font-family:'Montserrat',sans-serif; font-size:0.9rem; color:var(--carbon); outline:none; transition:border-color .2s; margin-bottom:14px; }
+.login-input { width:100%; padding:14px 16px; border:1.5px solid rgba(112,19,33,0.25); border-radius:10px; background:white; font-family:'Montserrat',sans-serif; font-size:0.9rem; color:var(--carbon); outline:none; transition:border-color .2s; }
 .login-input:focus { border-color:var(--bordeaux); }
-.login-submit { display:block; width:100%; border:none; border-radius:12px; padding:16px 24px; font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--parchment); cursor:pointer; background:var(--bordeaux); transition:all .2s; position:relative; overflow:hidden; margin-bottom:16px; }
-.login-submit:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 6px 20px rgba(112,19,33,.3); }
-.login-submit:active { transform:translateY(0); }
-.login-submit:disabled { opacity:0.6; cursor:default; transform:none; }
-.login-note { font-size:0.65rem; color:var(--muted-light); font-family:'Montserrat',sans-serif; text-align:center; line-height:1.6; }
-.login-note a { color:var(--bordeaux); text-decoration:none; }
-
-/* ── LOGIN SUCCESS STATE */
-.login-sent { display:none; padding:32px 28px 40px; text-align:center; }
+.login-note { font-size:0.62rem; color:var(--muted-light); font-family:'Montserrat',sans-serif; text-align:center; line-height:1.6; margin-top:12px; }
+/* Sent state */
+.login-form-inner.hidden { display:none; }
+.login-sent { display:none; }
 .login-sent.show { display:block; }
-.login-sent-icon { font-size:2.5rem; margin-bottom:16px; }
+.login-sent-icon { font-size:2.2rem; margin-bottom:14px; }
 .login-sent-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:600; color:var(--carbon); margin-bottom:10px; }
-.login-sent-body { font-size:0.78rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.7; }
+.login-sent-body { font-size:0.76rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.75; }
 .login-sent-email { color:var(--bordeaux); font-weight:600; }
-
-/* ── LOCKED ROUTE PANEL (shown in sidebar when route is locked) */
-.locked-panel { padding:20px 16px; text-align:center; }
-.locked-icon { font-size:1.8rem; margin-bottom:10px; }
-.locked-title { font-family:'Playfair Display',serif; font-size:0.95rem; font-weight:600; color:var(--carbon); margin-bottom:6px; }
-.locked-body { font-size:0.7rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.6; margin-bottom:16px; }
-.locked-cta { display:inline-block; border:none; border-radius:10px; padding:11px 20px; font-family:'Montserrat',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--parchment); cursor:pointer; background:var(--bordeaux); transition:all .2s; }
-.locked-cta:hover { filter:brightness(1.1); }
+.login-spam-note { display:flex; align-items:flex-start; gap:8px; margin-top:16px; background:rgba(184,154,90,0.1); border:1px solid rgba(184,154,90,0.28); border-radius:8px; padding:10px 12px; font-size:0.65rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.55; }
+.login-spam-note strong { color:var(--carbon); }
 
 @media(max-width:640px) {
   .menu-btn { display:flex; }
@@ -219,17 +208,24 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
     <h1 id="headerTitle">—</h1>
     <div class="route-sub" id="headerSub">—</div>
   </div>
-  <!-- Auth button: shows person icon when logged out, initials when logged in -->
-  <button class="auth-btn" id="authBtn" title="Sign in">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-    </svg>
-  </button>
+  <div class="header-right">
+    <!-- Auth button (left of locate) -->
+    <button class="icon-btn" id="authBtn" title="Sign in">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+    <!-- Locate button -->
+    <button class="icon-btn" id="locateBtn" title="Show my location">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+      </svg>
+    </button>
+  </div>
 </header>
 
 <div class="app-body">
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
   <aside class="sidebar" id="sidebar">
     <div class="route-tabs" id="routeTabs"></div>
     <div class="sb-head">
@@ -242,7 +238,6 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
     </div>
     <div class="stop-list" id="stopList"></div>
   </aside>
-
   <div class="map-wrap">
     <div id="map"></div>
     <div class="route-status" id="routeStatus">
@@ -252,86 +247,110 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
   </div>
 </div>
 
-<!-- Locate tooltip -->
 <div class="locate-tooltip" id="locateTooltip">
   Tap to see your location
   <button class="locate-tooltip-close" id="locateTooltipClose">Got it</button>
 </div>
 
-<!-- Stop panel -->
 <div class="stop-panel" id="stopPanel">
   <div class="panel-handle" onclick="closePanel()"></div>
   <button class="close-btn" onclick="closePanel()">&#10005;</button>
   <div class="p-inner" id="panelContent"></div>
 </div>
 
-<!-- Intro overlay -->
-<div class="intro-overlay" id="introOverlay">
-  <div class="intro-bg" id="introBg"></div>
-  <div class="intro-sheet">
-    <div class="intro-accent" id="introAccent"></div>
-    <div class="intro-scroll">
-      <div class="intro-eyebrow" id="introEyebrow">Amsterdam</div>
-      <div class="intro-title" id="introTitle">—</div>
-      <div class="intro-meta" id="introMeta"></div>
-      <div class="intro-divider"></div>
-      <div class="intro-body" id="introBody"></div>
+<!-- ── INTRO OVERLAY (unlocked routes) -->
+<div class="aw-overlay" id="introOverlay">
+  <div class="aw-overlay-bg"></div>
+  <div class="aw-sheet">
+    <div class="aw-accent" id="introAccent"></div>
+    <div class="aw-scroll">
+      <div class="aw-eyebrow" id="introEyebrow"></div>
+      <div class="aw-title" id="introTitle">—</div>
+      <div class="aw-meta" id="introMeta"></div>
+      <div class="aw-divider"></div>
+      <div class="aw-body" id="introBody"></div>
     </div>
-    <div class="intro-footer">
-      <button class="intro-cta" id="introCta">I am ready for this AnotherWalk!</button>
+    <div class="aw-footer">
+      <button class="aw-cta" id="introCta">I am ready for this AnotherWalk!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PREVIEW OVERLAY (locked routes) -->
+<div class="aw-overlay" id="previewOverlay">
+  <div class="aw-overlay-bg" id="previewBg"></div>
+  <div class="aw-sheet">
+    <div class="aw-accent" id="previewAccent"></div>
+    <button class="aw-close" id="previewClose">&#10005;</button>
+    <div class="aw-scroll">
+      <div class="preview-locked-badge">🔒 Locked route</div>
+      <div class="aw-eyebrow" id="previewEyebrow"></div>
+      <div class="aw-title" id="previewTitle">—</div>
+      <div class="aw-meta" id="previewMeta"></div>
+      <div class="aw-divider"></div>
+      <div class="aw-body" id="previewBody"></div>
+      <div class="preview-stop-hint" id="previewStopHint"></div>
+    </div>
+    <div class="aw-footer">
+      <button class="aw-cta" id="previewBuyBtn">Buy this route</button>
+      <button class="aw-cta-secondary" id="previewSignInBtn">Sign in to an existing account</button>
     </div>
   </div>
 </div>
 
 <!-- ── LOGIN OVERLAY -->
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-bg"></div>
-  <div class="login-sheet">
-    <div class="login-accent"></div>
-    <!-- Form state -->
-    <div class="login-body" id="loginForm">
-      <div class="login-logo">AnotherWalk</div>
-      <div class="login-tagline">Sign in to access your routes.<br>We'll send you a magic link — no password needed.</div>
-      <label class="login-label" for="loginEmail">Your email address</label>
-      <input class="login-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
-      <button class="login-submit" id="loginSubmit">Send me a magic link</button>
-      <div class="login-note">By signing in you agree to our terms of use.</div>
-    </div>
-    <!-- Sent confirmation state -->
-    <div class="login-sent" id="loginSent">
-      <div class="login-sent-icon">✉️</div>
-      <div class="login-sent-title">Check your inbox</div>
-      <div class="login-sent-body">
-        We've sent a magic link to<br>
-        <span class="login-sent-email" id="loginSentEmail"></span><br><br>
-        Click the link in that email to sign in. You can close this for now.
+<div class="aw-overlay" id="loginOverlay">
+  <div class="aw-overlay-bg" id="loginBg"></div>
+  <div class="aw-sheet">
+    <div class="aw-accent"></div>
+    <button class="aw-close" id="loginClose">&#10005;</button>
+    <div class="aw-scroll">
+      <div class="login-form-inner" id="loginFormInner">
+        <div class="login-logo">AnotherWalk</div>
+        <div class="login-tagline">Sign in to access your routes.<br>We'll send you a magic link — no password needed.</div>
+        <label class="login-label" for="loginEmail">Your email address</label>
+        <input class="login-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
       </div>
+      <div class="login-sent" id="loginSent">
+        <div class="login-sent-icon">✉️</div>
+        <div class="login-sent-title">Check your inbox</div>
+        <div class="login-sent-body">
+          We've sent a magic link to <span class="login-sent-email" id="loginSentEmail"></span>.<br><br>
+          Click the link to sign in — it's valid for 60 minutes.
+          <div class="login-spam-note">
+            <span>💡</span>
+            <span>Can't find it? Check your <strong>spam or junk folder</strong> — magic link emails sometimes end up there.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="aw-footer">
+      <button class="aw-cta" id="loginSubmit">Send me a magic link</button>
+      <div class="login-note" id="loginNote">By signing in you agree to our terms of use.</div>
     </div>
   </div>
 </div>
 
 <script>
-// ── SUPABASE CONFIG
-var SUPABASE_URL = 'https://wsutcrdespetoutyuddy.supabase.co';
+// ── SUPABASE
+var SUPABASE_URL      = 'https://wsutcrdespetoutyuddy.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzdXRjcmRlc3BldG91dHl1ZGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NDk0MDQsImV4cCI6MjA5NDQyNTQwNH0.vDUwFtgcpRY7AimSytoGeK7Rl1779_0ivXGWB0sG6KQ';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ── MAPBOX CONFIG
+// ── MAPBOX
 var MAPBOX_TOKEN = 'pk.eyJ1Ijoibmlja3BvbnRlIiwiYSI6ImNtb25hZGVvbTA3aXMycHM2Yms2ejNxaGcifQ.rTiwFe0d2LfVqGPaUbz8tA';
 var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
 
-// ── ROUTE REGISTRY
+// ── ROUTES
 var ROUTES = [
   { key:'route1', meta:R1_META, stops:R1_STOPS, unlocked:false, color:'#4a2060', viaPoints:R1_META.viaPoints||[] },
   { key:'route2', meta:R2_META, stops:R2_STOPS, unlocked:false, color:'#701321', viaPoints:R2_META.viaPoints||[] },
   { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[] }
 ];
 
-// ── AUTH STATE
-var currentUser = null;
-var currentProfile = null;
-
 // ── STATE
+var currentUser    = null;
+var currentProfile = null;
 var activeRouteKey = ROUTES[0].key;
 var activeFilter   = 'all';
 var markerObjects  = {};
@@ -342,156 +361,144 @@ var locateOn       = false;
 // ── MAP INIT
 mapboxgl.accessToken = MAPBOX_TOKEN;
 var map = new mapboxgl.Map({
-  container: 'map',
-  style: MAPBOX_STYLE,
-  center: ROUTES[0].meta.center,
-  zoom: ROUTES[0].meta.zoom,
-  attributionControl: true
+  container:'map', style:MAPBOX_STYLE,
+  center:ROUTES[0].meta.center, zoom:ROUTES[0].meta.zoom,
+  attributionControl:true
 });
-
-// ── BOOT: check session, then init map
-map.on('load', function() {
-  initAuth();
-});
+map.on('load', function() { initAuth(); });
 
 // ─────────────────────────────────────────────
 // AUTH
 // ─────────────────────────────────────────────
 
 function initAuth() {
-  // Listen for auth state changes (including magic link callback)
   supabase.auth.onAuthStateChange(function(event, session) {
     if (session && session.user) {
       currentUser = session.user;
       onSignedIn();
     } else {
-      currentUser = null;
-      currentProfile = null;
+      currentUser = null; currentProfile = null;
       onSignedOut();
     }
   });
 }
 
 function onSignedIn() {
-  // Update auth button to show signed-in state
   var btn = document.getElementById('authBtn');
   btn.classList.add('signed-in');
   btn.title = 'Sign out';
-  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="18" r="3" fill="currentColor" stroke="none"/><path d="M18 15v6M15 18h6" stroke="var(--parchment)" stroke-width="1.8"/></svg>';
-
-  // Close login overlay if open
-  document.getElementById('loginOverlay').classList.remove('show');
-
-  // Fetch profile + unlocked routes
+  closeOverlay('loginOverlay');
+  closeOverlay('previewOverlay');
   loadUserAccess();
 }
 
 function onSignedOut() {
-  // Reset auth button
   var btn = document.getElementById('authBtn');
   btn.classList.remove('signed-in');
   btn.title = 'Sign in';
-  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
-
-  // Lock all routes
   ROUTES.forEach(function(r) { r.unlocked = false; });
-
-  // Rebuild UI
   buildRouteTabs();
   loadRoute(activeRouteKey);
 }
 
 function loadUserAccess() {
-  // Fetch profile (for role check)
   supabase.from('profiles').select('*').eq('id', currentUser.id).single()
     .then(function(res) {
-      if (res.data) {
-        currentProfile = res.data;
-      }
-      // Fetch which routes this user has access to
+      if (res.data) currentProfile = res.data;
       return supabase.from('user_routes').select('route_id').eq('user_id', currentUser.id);
     })
     .then(function(res) {
-      var unlockedIds = [];
-
-      // Admin gets everything
+      var ids = [];
       if (currentProfile && currentProfile.role === 'admin') {
-        unlockedIds = ROUTES.map(function(r) { return r.key; });
+        ids = ROUTES.map(function(r) { return r.key; });
       } else if (res.data) {
-        unlockedIds = res.data.map(function(row) { return row.route_id; });
+        ids = res.data.map(function(row) { return row.route_id; });
       }
-
-      // Apply to ROUTES array
-      ROUTES.forEach(function(r) {
-        r.unlocked = unlockedIds.indexOf(r.key) !== -1;
-      });
-
-      // Rebuild UI with updated access
+      ROUTES.forEach(function(r) { r.unlocked = ids.indexOf(r.key) !== -1; });
       buildRouteTabs();
       loadRoute(activeRouteKey);
     });
 }
 
-// Auth button click: sign in or sign out
 document.getElementById('authBtn').addEventListener('click', function() {
   if (currentUser) {
-    // Confirm before signing out
-    if (confirm('Sign out of AnotherWalk?')) {
-      supabase.auth.signOut();
-    }
+    if (confirm('Sign out of AnotherWalk?')) supabase.auth.signOut();
   } else {
     openLoginOverlay();
   }
 });
 
-// ── LOGIN OVERLAY
+// ── LOGIN
 function openLoginOverlay() {
-  document.getElementById('loginOverlay').classList.add('show');
-  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('loginFormInner').classList.remove('hidden');
   document.getElementById('loginSent').classList.remove('show');
-  setTimeout(function() {
-    document.getElementById('loginEmail').focus();
-  }, 450);
+  var btn = document.getElementById('loginSubmit');
+  btn.disabled = false; btn.style.display = 'block';
+  btn.textContent = 'Send me a magic link';
+  document.getElementById('loginNote').style.display = 'block';
+  document.getElementById('loginOverlay').classList.add('show');
+  setTimeout(function() { document.getElementById('loginEmail').focus(); }, 450);
 }
 
 document.getElementById('loginSubmit').addEventListener('click', function() {
   var email = document.getElementById('loginEmail').value.trim();
-  if (!email || !email.includes('@')) {
-    document.getElementById('loginEmail').focus();
-    return;
-  }
+  if (!email || !email.includes('@')) { document.getElementById('loginEmail').focus(); return; }
   var btn = document.getElementById('loginSubmit');
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
+  btn.disabled = true; btn.textContent = 'Sending…';
   supabase.auth.signInWithOtp({
     email: email,
-    options: {
-      emailRedirectTo: window.location.href
-    }
+    options: { emailRedirectTo: window.location.href }
   }).then(function(res) {
     if (res.error) {
       alert('Something went wrong: ' + res.error.message);
-      btn.disabled = false;
-      btn.textContent = 'Send me a magic link';
+      btn.disabled = false; btn.textContent = 'Send me a magic link';
     } else {
-      // Show confirmation
-      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('loginFormInner').classList.add('hidden');
       document.getElementById('loginSentEmail').textContent = email;
       document.getElementById('loginSent').classList.add('show');
+      btn.style.display = 'none';
+      document.getElementById('loginNote').style.display = 'none';
     }
   });
 });
 
-// Allow pressing Enter in email field
 document.getElementById('loginEmail').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') document.getElementById('loginSubmit').click();
 });
+document.getElementById('loginClose').addEventListener('click', function() { closeOverlay('loginOverlay'); });
+document.getElementById('loginBg').addEventListener('click', function() { closeOverlay('loginOverlay'); });
 
-// Close login overlay by tapping background
-document.querySelector('.login-bg').addEventListener('click', function() {
-  document.getElementById('loginOverlay').classList.remove('show');
-});
+// ── PREVIEW (locked route)
+function openPreviewOverlay(route) {
+  document.getElementById('previewAccent').style.background = route.color;
+  document.getElementById('previewEyebrow').textContent = (route.meta.city || 'Amsterdam') + ' · ' + route.meta.label;
+  document.getElementById('previewTitle').textContent = route.meta.title;
+  document.getElementById('previewMeta').innerHTML =
+    '<span>🕐 ' + route.meta.duration + '</span><span>📍 ' + route.meta.stopCount + ' stops</span>';
+
+  var paragraphs = (route.meta.intro || '').split('<br><br>');
+  document.getElementById('previewBody').innerHTML = paragraphs.map(function(p) {
+    return '<p>' + p.replace(/<br>/g, ' ') + '</p>';
+  }).join('');
+
+  document.getElementById('previewStopHint').innerHTML =
+    'This route includes <strong>' + route.meta.stopCount + ' curated stops</strong> with detailed descriptions, local tips, and a guided walking path — all unlocked after purchase.';
+
+  var buyBtn = document.getElementById('previewBuyBtn');
+  buyBtn.style.background = route.color;
+  buyBtn.onclick = function() { alert('Purchasing coming soon!'); };
+
+  var signInBtn = document.getElementById('previewSignInBtn');
+  signInBtn.style.display = currentUser ? 'none' : 'block';
+  signInBtn.onclick = function() { closeOverlay('previewOverlay'); openLoginOverlay(); };
+
+  document.getElementById('previewOverlay').classList.add('show');
+}
+
+document.getElementById('previewClose').addEventListener('click', function() { closeOverlay('previewOverlay'); });
+document.getElementById('previewBg').addEventListener('click', function() { closeOverlay('previewOverlay'); });
+
+function closeOverlay(id) { document.getElementById(id).classList.remove('show'); }
 
 // ─────────────────────────────────────────────
 // ROUTE TABS
@@ -506,39 +513,13 @@ function buildRouteTabs() {
     btn.className = 'route-tab' + (isActive ? ' active' : '') + (!route.unlocked ? ' locked' : '');
     btn.dataset.key = route.key;
     btn.innerHTML = route.meta.title + (route.unlocked ? '' : '<span class="lock">🔒</span>');
-    if (isActive) {
-      btn.style.color = route.color;
-      btn.style.borderBottomColor = route.color;
-    }
+    if (isActive) { btn.style.color = route.color; btn.style.borderBottomColor = route.color; }
     btn.addEventListener('click', function() {
-      if (!route.unlocked) {
-        // If not signed in, prompt login; if signed in, prompt purchase (Stap 4)
-        if (!currentUser) {
-          openLoginOverlay();
-        } else {
-          showLockedPanel(route);
-        }
-        return;
-      }
+      if (!route.unlocked) { openPreviewOverlay(route); return; }
       switchRoute(route.key);
     });
     container.appendChild(btn);
   });
-}
-
-function showLockedPanel(route) {
-  // Show a locked message in the stop list area
-  var list = document.getElementById('stopList');
-  list.innerHTML = '<div class="locked-panel">'
-    + '<div class="locked-icon">🔒</div>'
-    + '<div class="locked-title">' + route.meta.title + '</div>'
-    + '<div class="locked-body">Purchase this route to unlock all stops, the walking path, and pro tips.</div>'
-    + '<button class="locked-cta" onclick="alert(\'Purchasing coming soon!\')">Buy this route</button>'
-    + '</div>';
-  // Switch tab highlight without loading route
-  document.querySelectorAll('.route-tab').forEach(function(t) { t.classList.remove('active'); });
-  var tab = document.querySelector('.route-tab[data-key="' + route.key + '"]');
-  if (tab) tab.classList.add('active');
 }
 
 // ─────────────────────────────────────────────
@@ -548,51 +529,33 @@ function showLockedPanel(route) {
 function switchRoute(key) {
   if (key === activeRouteKey) return;
   activeRouteKey = key;
-  closePanel();
-  clearMarkers();
-  clearRouteLayer();
-  buildRouteTabs();
-  loadRoute(key);
+  closePanel(); clearMarkers(); clearRouteLayer();
+  buildRouteTabs(); loadRoute(key);
   if (sidebarOpen) toggleSidebar();
 }
 
 function loadRoute(key) {
   var route = getRoute(key);
   if (!route) return;
-
-  // If locked, show locked state on map but don't load stops
   if (!route.unlocked) {
     document.getElementById('headerTitle').textContent = route.meta.title;
     document.getElementById('headerSub').textContent = route.meta.label + ' · locked';
-    map.flyTo({ center: route.meta.center, zoom: route.meta.zoom, speed: 1.4 });
+    map.flyTo({ center:route.meta.center, zoom:route.meta.zoom, speed:1.4 });
     buildList('all');
     return;
   }
-
   document.getElementById('headerTitle').textContent = route.meta.title;
-  document.getElementById('headerSub').textContent   = route.meta.label + ' · ' + route.meta.stopCount + ' stops';
+  document.getElementById('headerSub').textContent = route.meta.label + ' · ' + route.meta.stopCount + ' stops';
   document.documentElement.style.setProperty('--current-route-color', route.color);
   var pillStp = document.querySelector('.pill.stp');
   if (pillStp) { pillStp.style.borderColor = route.color; pillStp.style.color = route.color; }
-  map.flyTo({ center: route.meta.center, zoom: route.meta.zoom, speed: 1.4 });
-  buildList('all');
-  resetPills();
+  map.flyTo({ center:route.meta.center, zoom:route.meta.zoom, speed:1.4 });
+  buildList('all'); resetPills();
   addMarkers(route.stops, route.color);
-  if (route.meta.intro) {
-    openIntro(route);
-  } else {
-    fetchWalkingRoute(route);
-  }
+  if (route.meta.intro) { openIntro(route); } else { fetchWalkingRoute(route); }
 }
 
-function getRoute(key) {
-  return ROUTES.find(function(r) { return r.key === key; });
-}
-
-function getCurrentStops() {
-  var route = getRoute(activeRouteKey);
-  return route ? route.stops : [];
-}
+function getRoute(key) { return ROUTES.find(function(r) { return r.key === key; }); }
 
 // ─────────────────────────────────────────────
 // MARKERS
@@ -606,12 +569,9 @@ function clearMarkers() {
 function addMarkers(stops, routeColor) {
   stops.forEach(function(stop) {
     var el = document.createElement('div');
-    el.className = 'mk ' + (
-      stop.type === 'start' || stop.type === 'end' ? 'mk-se' :
-      stop.type === 'optional' ? 'mk-opt' : 'mk-stop'
-    );
-    if (stop.type === 'stop' && routeColor) el.style.background = routeColor;
-    el.textContent = stop.type === 'optional' ? (stop.icon || '✦') : stop.label;
+    el.className = 'mk ' + (stop.type==='start'||stop.type==='end' ? 'mk-se' : stop.type==='optional' ? 'mk-opt' : 'mk-stop');
+    if (stop.type==='stop' && routeColor) el.style.background = routeColor;
+    el.textContent = stop.type==='optional' ? (stop.icon||'✦') : stop.label;
     el.addEventListener('click', function(e) { e.stopPropagation(); openPanel(stop); });
     var marker = new mapboxgl.Marker({ element:el, anchor:'center' }).setLngLat([stop.lng, stop.lat]).addTo(map);
     markerObjects[stop.id] = { marker:marker, el:el };
@@ -623,9 +583,7 @@ function addMarkers(stops, routeColor) {
 // ─────────────────────────────────────────────
 
 function clearRouteLayer() {
-  ['route-line', 'route-glow'].forEach(function(id) {
-    if (map.getLayer(id)) map.removeLayer(id);
-  });
+  ['route-line','route-glow'].forEach(function(id) { if (map.getLayer(id)) map.removeLayer(id); });
   if (map.getSource('route')) map.removeSource('route');
 }
 
@@ -635,14 +593,11 @@ function fetchWalkingRoute(route) {
   var waypoints = [];
   mainStops.forEach(function(s) {
     waypoints.push({ lng:s.lng, lat:s.lat });
-    route.viaPoints.forEach(function(vp) {
-      if (String(vp.after) === String(s.id)) waypoints.push({ lng:vp.lng, lat:vp.lat });
-    });
+    route.viaPoints.forEach(function(vp) { if (String(vp.after)===String(s.id)) waypoints.push({ lng:vp.lng, lat:vp.lat }); });
   });
-  var chunks = [];
-  var i = 0;
+  var chunks = []; var i = 0;
   while (i < waypoints.length) {
-    var end = Math.min(i + 25, waypoints.length);
+    var end = Math.min(i+25, waypoints.length);
     chunks.push(waypoints.slice(i, end));
     if (end >= waypoints.length) break;
     i = end - 1;
@@ -650,22 +605,16 @@ function fetchWalkingRoute(route) {
   var results = new Array(chunks.length);
   var pending = chunks.length;
   chunks.forEach(function(chunk, idx) {
-    var coords = chunk.map(function(p) { return p.lng + ',' + p.lat; }).join(';');
-    fetch('https://api.mapbox.com/directions/v5/mapbox/walking/' + coords
-        + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN)
+    var coords = chunk.map(function(p) { return p.lng+','+p.lat; }).join(';');
+    fetch('https://api.mapbox.com/directions/v5/mapbox/walking/'+coords+'?geometries=geojson&overview=full&access_token='+MAPBOX_TOKEN)
       .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.routes && d.routes[0]) results[idx] = d.routes[0].geometry.coordinates;
-        onDone();
-      })
+      .then(function(d) { if (d.routes&&d.routes[0]) results[idx]=d.routes[0].geometry.coordinates; onDone(); })
       .catch(function() { onDone(); });
   });
   function onDone() {
     if (--pending > 0) return;
     var merged = [];
-    results.forEach(function(c, idx) {
-      if (c) merged = merged.concat(idx === 0 ? c : c.slice(1));
-    });
+    results.forEach(function(c, idx) { if (c) merged = merged.concat(idx===0 ? c : c.slice(1)); });
     if (!merged.length) merged = mainStops.map(function(s) { return [s.lng, s.lat]; });
     drawRoute(merged, route.color);
     document.getElementById('routeStatus').classList.remove('show');
@@ -702,21 +651,41 @@ document.getElementById('sidebarBackdrop').addEventListener('click', function() 
 var tooltipDismissed = false;
 var tooltip = document.getElementById('locateTooltip');
 setTimeout(function() { if (!tooltipDismissed) tooltip.classList.add('show'); }, 1200);
-document.getElementById('locateTooltipClose').addEventListener('click', function() {
+document.getElementById('locateTooltipClose').addEventListener('click', function() { tooltip.classList.remove('show'); tooltipDismissed = true; });
+
+document.getElementById('locateBtn').addEventListener('click', function() {
   tooltip.classList.remove('show'); tooltipDismissed = true;
+  if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+  if (locateOn) {
+    if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    if (userMarker) { userMarker.remove(); userMarker = null; }
+    locateOn = false; document.getElementById('locateBtn').classList.remove('active'); return;
+  }
+  locateOn = true; document.getElementById('locateBtn').classList.add('active');
+  navigator.geolocation.getCurrentPosition(
+    function(p) { setUserDot(p.coords.latitude, p.coords.longitude); map.flyTo({ center:[p.coords.longitude, p.coords.latitude], zoom:16 }); },
+    function() { locateOn = false; document.getElementById('locateBtn').classList.remove('active'); alert('Location unavailable. Check your browser permissions.'); },
+    { enableHighAccuracy:true }
+  );
+  watchId = navigator.geolocation.watchPosition(
+    function(p) { setUserDot(p.coords.latitude, p.coords.longitude); }, null, { enableHighAccuracy:true, maximumAge:5000 }
+  );
 });
 
-// Locate button is now the SVG button in header — but we removed it in this version.
-// Re-add locate functionality wired to a separate button if needed.
+function setUserDot(lat, lng) {
+  var el = document.createElement('div'); el.className = 'user-dot';
+  if (userMarker) userMarker.remove();
+  userMarker = new mapboxgl.Marker({ element:el, anchor:'center' }).setLngLat([lng, lat]).addTo(map);
+}
 
 // ─────────────────────────────────────────────
-// PANEL
+// STOP PANEL
 // ─────────────────────────────────────────────
 
 function openPanel(stop) {
   document.querySelectorAll('.si').forEach(function(e) { e.classList.remove('active'); });
-  var sEl = document.querySelector('.si[data-id="' + stop.id + '"]');
-  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  var sEl = document.querySelector('.si[data-id="'+stop.id+'"]');
+  if (sEl) { sEl.classList.add('active'); sEl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
   Object.values(markerObjects).forEach(function(m) { m.el.classList.remove('sel'); });
   if (markerObjects[stop.id]) markerObjects[stop.id].el.classList.add('sel');
   if (sidebarOpen) toggleSidebar();
@@ -739,28 +708,26 @@ function closePanel() {
 map.on('click', function() { closePanel(); });
 
 // ─────────────────────────────────────────────
-// INTRO PANEL
+// INTRO OVERLAY
 // ─────────────────────────────────────────────
 
 function openIntro(route) {
-  var overlay = document.getElementById('introOverlay');
   document.getElementById('introAccent').style.background = route.color;
-  document.getElementById('introEyebrow').textContent = route.meta.city + ' · ' + route.meta.label;
+  document.getElementById('introEyebrow').textContent = (route.meta.city || 'Amsterdam') + ' · ' + route.meta.label;
   document.getElementById('introTitle').textContent = route.meta.title;
   document.getElementById('introMeta').innerHTML =
-    '<span>🕐 ' + route.meta.duration + '</span>' +
-    '<span>📍 ' + route.meta.stopCount + ' stops</span>';
+    '<span>🕐 ' + route.meta.duration + '</span><span>📍 ' + route.meta.stopCount + ' stops</span>';
   var paragraphs = route.meta.intro.split('<br><br>');
   document.getElementById('introBody').innerHTML = paragraphs.map(function(p) {
     return '<p>' + p.replace(/<br>/g, ' ') + '</p>';
   }).join('');
   document.getElementById('introCta').style.background = route.color;
-  overlay.classList.add('show');
+  document.getElementById('introOverlay').classList.add('show');
   document.getElementById('introCta').onclick = function() { closeIntro(route); };
 }
 
 function closeIntro(route) {
-  document.getElementById('introOverlay').classList.remove('show');
+  closeOverlay('introOverlay');
   fetchWalkingRoute(route);
 }
 
@@ -772,23 +739,18 @@ function buildList(filter) {
   filter = filter || 'all';
   activeFilter = filter;
   var route = getRoute(activeRouteKey);
+  var list = document.getElementById('stopList');
 
-  // If route is locked, show locked panel
   if (!route || !route.unlocked) {
-    var list = document.getElementById('stopList');
-    list.innerHTML = '<div class="locked-panel">'
-      + '<div class="locked-icon">🔒</div>'
-      + '<div class="locked-title">' + (route ? route.meta.title : '') + '</div>'
-      + '<div class="locked-body">Purchase this route to unlock all stops, the walking path, and pro tips.</div>'
-      + (!currentUser
-          ? '<button class="locked-cta" onclick="openLoginOverlay()">Sign in to buy</button>'
-          : '<button class="locked-cta" onclick="alert(\'Purchasing coming soon!\')">Buy this route</button>')
+    list.innerHTML = '<div style="padding:24px 16px; text-align:center;">'
+      + '<div style="font-size:1.5rem; margin-bottom:10px;">🔒</div>'
+      + '<div style="font-family:\'Playfair Display\',serif; font-size:0.9rem; font-weight:600; color:var(--carbon); margin-bottom:8px;">'+(route?route.meta.title:'')+'</div>'
+      + '<div style="font-size:0.68rem; color:var(--muted); font-family:\'Montserrat\',sans-serif; line-height:1.6;">Tap the route name above<br>to preview and purchase.</div>'
       + '</div>';
     return;
   }
 
   var stops = route.stops;
-  var list = document.getElementById('stopList');
   list.innerHTML = '';
   var routeColor = route.color || '#701321';
   stops.forEach(function(stop) {
@@ -798,14 +760,12 @@ function buildList(filter) {
     var isOpt = stop.type==='optional';
     var tag = isOpt ? (stop.icon+' optional detour') : stop.type==='start' ? 'Starting point' : stop.type==='end' ? 'End point' : 'Stop '+stop.label;
     var el = document.createElement('div');
-    el.className  = 'si' + (isOpt ? ' opt-item' : '');
+    el.className = 'si'+(isOpt?' opt-item':'');
     el.dataset.id = stop.id;
     el.style.setProperty('--route-color', routeColor);
-    el.innerHTML  = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
-                  + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
-    el.addEventListener('click', function() {
-      openPanel(stop); map.flyTo({center:[stop.lng, stop.lat], zoom:17});
-    });
+    el.innerHTML = '<div class="dot" style="background:'+c+'">'+(isOpt?stop.icon:stop.label)+'</div>'
+                 + '<div class="si-info"><h3>'+stop.name+'</h3><div class="si-tag">'+tag+'</div></div>';
+    el.addEventListener('click', function() { openPanel(stop); map.flyTo({ center:[stop.lng,stop.lat], zoom:17 }); });
     list.appendChild(el);
   });
 }
