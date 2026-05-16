@@ -543,28 +543,10 @@ var buyBtn = document.getElementById('previewBuyBtn');
 buyBtn.style.background = route.color;
 buyBtn.onclick = function() {
   if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(); return; }
-  buyBtn.textContent = 'Redirecting to checkout…';
-  buyBtn.disabled = true;
-  fetch('https://wsutcrdespetoutyuddy.supabase.co/functions/v1/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      route_id: route.key,
-      user_id: currentUser.id,
-      return_url: window.location.href
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    console.log('Checkout response:', data);
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      buyBtn.textContent = 'Buy this route';
-      buyBtn.disabled = false;
-      alert('Something went wrong. Please try again.');
-    }
-  })
+  var baseUrl = 'https://buy.stripe.com/test_9B6bJ1gKE4t07Rr7j91gs00';
+  var params = '?client_reference_id=' + currentUser.id + '&metadata[route_id]=' + route.key;
+  window.location.href = baseUrl + params;
+};
   .catch(function() {
     buyBtn.textContent = 'Buy this route';
     buyBtn.disabled = false;
