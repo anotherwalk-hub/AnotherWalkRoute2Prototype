@@ -42,12 +42,21 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .menu-btn.open span:nth-child(1){ width:20px; transform:translateY(6.5px) rotate(45deg); }
 .menu-btn.open span:nth-child(2){ opacity:0; width:0; }
 .menu-btn.open span:nth-child(3){ width:20px; transform:translateY(-6.5px) rotate(-45deg); }
-.header-right { display:flex; align-items:center; gap:4px; }
+.header-right { display:flex; align-items:center; gap:4px; position:relative; }
 .icon-btn { width:34px; height:34px; flex-shrink:0; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:rgba(241,234,222,0.5); border-radius:8px; transition:all .2s; }
 .icon-btn:hover { color:rgba(241,234,222,0.85); }
 .icon-btn.active { color:var(--blue); }
 .icon-btn.signed-in { color:var(--gold); }
 .header-spacer { width:36px; flex-shrink:0; }
+
+/* ── ACCOUNT DROPDOWN */
+.account-menu { position:absolute; top:calc(100% + 8px); right:38px; background:var(--carbon); border:1px solid rgba(112,19,33,0.35); border-radius:10px; padding:6px; min-width:150px; box-shadow:0 6px 24px rgba(25,25,25,0.4); z-index:2100; display:none; flex-direction:column; gap:2px; }
+.account-menu.show { display:flex; }
+.account-menu-email { font-size:0.6rem; color:var(--muted); font-family:'Montserrat',sans-serif; padding:6px 10px 8px; border-bottom:1px solid rgba(112,19,33,0.2); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
+.account-menu-btn { background:transparent; border:none; border-radius:7px; padding:9px 10px; font-family:'Montserrat',sans-serif; font-size:0.72rem; font-weight:500; color:var(--parchment); cursor:pointer; text-align:left; transition:background .15s; display:flex; align-items:center; gap:8px; }
+.account-menu-btn:hover { background:rgba(112,19,33,0.35); }
+.account-menu-btn.danger { color:#f87171; }
+.account-menu-btn.danger:hover { background:rgba(248,113,113,0.15); }
 
 /* ── LAYOUT */
 .app-body { display:flex; flex:1; overflow:hidden; min-height:0; position:relative; }
@@ -73,6 +82,15 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .stop-list { overflow-y:auto; flex:1; padding:5px 0; }
 .stop-list::-webkit-scrollbar { width:3px; }
 .stop-list::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.2); border-radius:2px; }
+
+/* ── STOP LIST ITEMS */
+.si { display:flex; align-items:flex-start; gap:10px; padding:8px 16px; cursor:pointer; border-left:3px solid transparent; transition:background .14s; }
+.si:hover { background:rgba(112,19,33,0.05); }
+.si.active { background:rgba(112,19,33,0.08); border-left-color:var(--route-color, #701321); }
+.si.active.opt-item { border-left-color:var(--green); background:rgba(122,158,126,0.07); }
+.dot { width:20px; height:20px; border-radius:50%; color:white; font-size:8.5px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
+.si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
 
 /* ── MAP */
 .map-wrap { flex:1; position:relative; overflow:hidden; min-height:0; }
@@ -109,13 +127,10 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .stop-panel { position:fixed; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(calc(100% + 40px)); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:500; }
 .stop-panel.open { transform:translateY(0); }
 .panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
-.p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; }
-/* ── scrollbar: stop panel */
+.p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .p-inner::-webkit-scrollbar { width:4px; }
 .p-inner::-webkit-scrollbar-track { background:rgba(112,19,33,0.08); border-radius:2px; }
 .p-inner::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.35); border-radius:2px; }
-/* Firefox */
-.p-inner { scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .p-label { font-size:0.57rem; letter-spacing:0.13em; text-transform:uppercase; font-weight:600; margin-bottom:3px; font-family:'Montserrat',sans-serif; }
 .p-title { font-family:'Playfair Display',serif; font-size:1.22rem; font-weight:600; line-height:1.2; margin-bottom:8px; color:var(--carbon); }
 .p-body { font-size:0.78rem; line-height:1.76; color:#2e2e2e; max-width:660px; font-family:'Montserrat',sans-serif; font-weight:400; }
@@ -131,31 +146,17 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 /* ── USER DOT */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
-/* ── SHARED OVERLAY BASE
-     z-index ladder:
-     200  = header
-     250  = sidebar backdrop
-     300  = sidebar
-     500  = stop panel
-     1000 = intro overlay
-     1100 = preview overlay
-     2000 = login overlay
-     Overlays must always sit above the header (200) so the header
-     never bleeds through. The login overlay is highest so it covers everything.
-*/
+/* ── SHARED OVERLAY BASE */
 .aw-overlay { position:fixed; inset:0; display:flex; align-items:flex-end; pointer-events:none; opacity:0; transition:opacity .4s ease; }
 .aw-overlay.show { pointer-events:all; opacity:1; }
 .aw-overlay-bg { position:absolute; inset:0; background:rgba(25,25,25,0.75); backdrop-filter:blur(3px); }
 .aw-sheet { position:relative; width:100%; background:var(--parchment); border-radius:24px 24px 0 0; max-height:88vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .45s cubic-bezier(.4,0,.2,1); overflow:hidden; }
 .aw-overlay.show .aw-sheet { transform:translateY(0); }
 .aw-accent { height:4px; flex-shrink:0; background:var(--bordeaux); }
-.aw-scroll { overflow-y:auto; flex:1; padding:28px 28px 0; }
-/* ── scrollbar: all overlays */
+.aw-scroll { overflow-y:auto; flex:1; padding:28px 28px 0; scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .aw-scroll::-webkit-scrollbar { width:4px; }
 .aw-scroll::-webkit-scrollbar-track { background:rgba(112,19,33,0.08); border-radius:2px; }
 .aw-scroll::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.35); border-radius:2px; }
-/* Firefox */
-.aw-scroll { scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .aw-footer { padding:20px 28px 36px; flex-shrink:0; background:var(--parchment); }
 .aw-cta { display:block; width:100%; border:none; border-radius:12px; padding:16px 24px; font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--parchment); cursor:pointer; background:var(--bordeaux); transition:all .2s; position:relative; overflow:hidden; }
 .aw-cta::after { content:'→'; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:1.1rem; opacity:0.7; }
@@ -200,7 +201,6 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .login-sent-email { color:var(--bordeaux); font-weight:600; }
 .login-spam-note { display:flex; align-items:flex-start; gap:8px; margin-top:16px; background:rgba(184,154,90,0.1); border:1px solid rgba(184,154,90,0.28); border-radius:8px; padding:10px 12px; font-size:0.65rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.55; }
 .login-spam-note strong { color:var(--carbon); }
-/* Rate limit error state */
 .login-error { display:none; margin-top:12px; padding:10px 14px; background:rgba(112,19,33,0.07); border:1px solid rgba(112,19,33,0.2); border-radius:8px; font-size:0.7rem; color:var(--bordeaux-d); font-family:'Montserrat',sans-serif; line-height:1.6; }
 .login-error.show { display:block; }
 
@@ -230,6 +230,14 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
         <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
       </svg>
     </button>
+    <!-- Account dropdown menu -->
+    <div class="account-menu" id="accountMenu">
+      <div class="account-menu-email" id="accountMenuEmail"></div>
+      <button class="account-menu-btn danger" id="accountSignOut">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign out
+      </button>
+    </div>
     <button class="icon-btn" id="locateBtn" title="Show my location">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
@@ -364,14 +372,17 @@ var ROUTES = [
 ];
 
 // ── STATE
-var currentUser    = null;
-var currentProfile = null;
-var activeRouteKey = ROUTES[0].key;
-var activeFilter   = 'all';
-var markerObjects  = {};
-var userMarker     = null;
-var watchId        = null;
-var locateOn       = false;
+var currentUser     = null;
+var currentProfile  = null;
+var activeRouteKey  = ROUTES[0].key;
+var activeFilter    = 'all';
+var markerObjects   = {};
+var userMarker      = null;
+var watchId         = null;
+var locateOn        = false;
+// FIX: track whether the user explicitly switched routes this session
+// so we don't re-show the intro when auth re-triggers loadRoute
+var introShownForRoute = {};
 
 // ── MAP INIT
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -400,7 +411,8 @@ function initAuth() {
 
 function onSignedIn() {
   document.getElementById('authBtn').classList.add('signed-in');
-  document.getElementById('authBtn').title = 'Sign out';
+  document.getElementById('authBtn').title = 'Account';
+  document.getElementById('accountMenuEmail').textContent = currentUser.email;
   closeOverlay('loginOverlay');
   closeOverlay('previewOverlay');
   loadUserAccess();
@@ -409,9 +421,10 @@ function onSignedIn() {
 function onSignedOut() {
   document.getElementById('authBtn').classList.remove('signed-in');
   document.getElementById('authBtn').title = 'Sign in';
+  closeAccountMenu();
   ROUTES.forEach(function(r) { r.unlocked = false; });
   buildRouteTabs();
-  loadRoute(activeRouteKey);
+  loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
 }
 
 function loadUserAccess() {
@@ -429,17 +442,40 @@ function loadUserAccess() {
       }
       ROUTES.forEach(function(r) { r.unlocked = ids.indexOf(r.key) !== -1; });
       buildRouteTabs();
-      loadRoute(activeRouteKey);
+      loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
     });
 }
 
-document.getElementById('authBtn').addEventListener('click', function() {
+// ── ACCOUNT DROPDOWN
+var accountMenuOpen = false;
+
+document.getElementById('authBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
   if (currentUser) {
-    if (confirm('Sign out of AnotherWalk?')) supabase.auth.signOut();
+    toggleAccountMenu();
   } else {
     openLoginOverlay();
   }
 });
+
+function toggleAccountMenu() {
+  accountMenuOpen = !accountMenuOpen;
+  document.getElementById('accountMenu').classList.toggle('show', accountMenuOpen);
+}
+
+function closeAccountMenu() {
+  accountMenuOpen = false;
+  document.getElementById('accountMenu').classList.remove('show');
+}
+
+document.getElementById('accountSignOut').addEventListener('click', function() {
+  closeAccountMenu();
+  supabase.auth.signOut();
+});
+
+// Close menu when clicking anywhere else
+document.addEventListener('click', function() { closeAccountMenu(); });
+document.getElementById('accountMenu').addEventListener('click', function(e) { e.stopPropagation(); });
 
 // ── LOGIN
 function openLoginOverlay() {
@@ -462,14 +498,12 @@ document.getElementById('loginSubmit').addEventListener('click', function() {
   var errEl = document.getElementById('loginError');
   errEl.classList.remove('show');
   btn.disabled = true; btn.textContent = 'Sending…';
-
   supabase.auth.signInWithOtp({
     email: email,
     options: { emailRedirectTo: window.location.href }
   }).then(function(res) {
     if (res.error) {
       btn.disabled = false; btn.textContent = 'Send me a magic link';
-      // Show a friendly message instead of a raw error
       if (res.error.message && res.error.message.toLowerCase().includes('rate limit')) {
         errEl.textContent = "You've requested several links in a short time. Please wait a few minutes before trying again.";
       } else {
@@ -545,15 +579,16 @@ function buildRouteTabs() {
 // SWITCH / LOAD ROUTE
 // ─────────────────────────────────────────────
 
+// showIntro = true only when user explicitly switches routes
 function switchRoute(key) {
   if (key === activeRouteKey) return;
   activeRouteKey = key;
   closePanel(); clearMarkers(); clearRouteLayer();
-  buildRouteTabs(); loadRoute(key);
+  buildRouteTabs(); loadRoute(key, true); // true = user chose this route, show intro
   if (sidebarOpen) toggleSidebar();
 }
 
-function loadRoute(key) {
+function loadRoute(key, showIntro) {
   var route = getRoute(key);
   if (!route) return;
   if (!route.unlocked) {
@@ -571,7 +606,13 @@ function loadRoute(key) {
   map.flyTo({ center:route.meta.center, zoom:route.meta.zoom, speed:1.4 });
   buildList('all'); resetPills();
   addMarkers(route.stops, route.color);
-  if (route.meta.intro) { openIntro(route); } else { fetchWalkingRoute(route); }
+
+  // Only show intro when user explicitly navigates to this route
+  if (showIntro && route.meta.intro) {
+    openIntro(route);
+  } else {
+    fetchWalkingRoute(route);
+  }
 }
 
 function getRoute(key) { return ROUTES.find(function(r) { return r.key === key; }); }
