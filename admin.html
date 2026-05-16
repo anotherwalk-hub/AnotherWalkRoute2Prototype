@@ -522,13 +522,18 @@
 
   // ── Auth ─────────────────────────────────────────────────
   async function signIn() {
-    const email = prompt('Vul je admin e-mailadres in:');
-    if (!email) return;
-    const { error } = await db.auth.signInWithOtp({ email });
-    document.getElementById('auth-msg').textContent = error
-      ? '❌ ' + error.message
-      : '✉️ Check je inbox voor de magic link.';
-  }
+  const email = prompt('Vul je admin e-mailadres in:');
+  if (!email) return;
+  const { error } = await db.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: 'https://anotherwalk-hub.github.io/AnotherWalkRoute2Prototype/admin.html'
+    }
+  });
+  document.getElementById('auth-msg').textContent = error
+    ? '❌ ' + error.message
+    : '✉️ Check je inbox voor de magic link.';
+}
 
   async function signOut() {
     await db.auth.signOut();
