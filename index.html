@@ -556,6 +556,7 @@ buyBtn.onclick = function() {
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
+    console.log('Checkout response:', data);
     if (data.url) {
       window.location.href = data.url;
     } else {
