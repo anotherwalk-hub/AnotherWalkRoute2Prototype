@@ -471,7 +471,7 @@ document.getElementById('loginSubmit').addEventListener('click', function() {
       btn.disabled = false; btn.textContent = 'Send me a magic link';
       // Show a friendly message instead of a raw error
       if (res.error.message && res.error.message.toLowerCase().includes('rate limit')) {
-        errEl.textContent = 'You've requested several links in a short time. Please wait a few minutes before trying again.';
+        errEl.textContent = "You've requested several links in a short time. Please wait a few minutes before trying again.";
       } else {
         errEl.textContent = 'Something went wrong. Please try again in a moment.';
       }
