@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AnotherWalk — Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --parchment:  #f1eade;
+      --parchment2: #e8e0cf;
+      --carbon:     #191919;
+      --bordeaux:   #701321;
+      --bordeaux-light: #8e1a2b;
+      --gold:       #b89a5a;
+      --white:      #ffffff;
+      --success:    #2d6a4f;
+      --danger:     #c0392b;
+      --shadow:     rgba(25,25,25,0.10);
+
+      --font-head: 'Playfair Display', Georgia, serif;
+      --font-body: 'Montserrat', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--parchment);
+      color: var(--carbon);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ── Auth screen ── */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--parchment);
+    }
+
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--parchment2);
+      border-radius: 2px;
+      padding: 48px 40px;
+      width: 360px;
+      box-shadow: 0 4px 24px var(--shadow);
+      text-align: center;
+    }
+
+    .auth-card .logo {
+      font-family: var(--font-head);
+      font-size: 26px;
+      color: var(--bordeaux);
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .auth-card .subtitle {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 32px;
+    }
+
+    .auth-card p {
+      color: #666;
+      margin-bottom: 24px;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 1px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      padding: 11px 22px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--bordeaux);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: var(--bordeaux-light); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--bordeaux);
+      border: 1px solid var(--bordeaux);
+    }
+    .btn-ghost:hover { background: var(--bordeaux); color: var(--white); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      font-size: 11px;
+      padding: 7px 14px;
+    }
+    .btn-danger:hover { background: var(--danger); color: var(--white); }
+
+    .btn-success {
+      background: var(--success);
+      color: var(--white);
+      font-size: 11px;
+      padding: 7px 14px;
+    }
+    .btn-success:hover { opacity: 0.88; }
+
+    .btn-sm {
+      font-size: 11px;
+      padding: 7px 14px;
+    }
+
+    /* ── App shell ── */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--carbon);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .header-logo {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+
+    .header-logo span {
+      color: var(--bordeaux);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-left: 10px;
+      vertical-align: middle;
+      border: 1px solid var(--bordeaux);
+      padding: 2px 7px;
+      border-radius: 1px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .header-right strong { color: var(--white); }
+
+    /* ── Main layout ── */
+    main {
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 32px;
+      width: 100%;
+    }
+
+    /* ── Page title ── */
+    .page-title {
+      font-family: var(--font-head);
+      font-size: 28px;
+      color: var(--bordeaux);
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: #888;
+      letter-spacing: 0.05em;
+      margin-bottom: 36px;
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--parchment2);
+      border-radius: 2px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .stat-card .stat-value {
+      font-family: var(--font-head);
+      font-size: 32px;
+      color: var(--bordeaux);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    /* ── Section ── */
+    .section {
+      background: var(--white);
+      border: 1px solid var(--parchment2);
+      border-radius: 2px;
+      box-shadow: 0 2px 8px var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--parchment2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 16px;
+      color: var(--carbon);
+    }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #999;
+      padding: 12px 24px;
+      text-align: left;
+      background: var(--parchment);
+      font-weight: 600;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--parchment);
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #faf8f4; }
+
+    tbody td {
+      padding: 14px 24px;
+      vertical-align: middle;
+    }
+
+    .user-email {
+      font-weight: 500;
+      color: var(--carbon);
+    }
+
+    .user-id {
+      font-size: 11px;
+      color: #aaa;
+      font-family: monospace;
+    }
+
+    /* ── Route badges ── */
+    .route-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    .badge-active {
+      background: #eaf4ef;
+      color: var(--success);
+      border: 1px solid #b2d8c4;
+    }
+
+    .badge-none {
+      background: var(--parchment);
+      color: #aaa;
+      font-style: italic;
+    }
+
+    .badge-remove {
+      cursor: pointer;
+      color: #aaa;
+      font-weight: 700;
+      padding: 0;
+      background: none;
+      border: none;
+      font-size: 13px;
+      line-height: 1;
+      margin-left: 2px;
+    }
+
+    .badge-remove:hover { color: var(--danger); }
+
+    /* ── Assign form ── */
+    .assign-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    select {
+      font-family: var(--font-body);
+      font-size: 12px;
+      padding: 7px 10px;
+      border: 1px solid var(--parchment2);
+      border-radius: 1px;
+      background: var(--parchment);
+      color: var(--carbon);
+      cursor: pointer;
+    }
+
+    select:focus { outline: 1px solid var(--bordeaux); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--carbon);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: 2px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.22s ease;
+      pointer-events: none;
+      z-index: 9999;
+      max-width: 300px;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #toast.toast-success { border-left: 3px solid #5dbf8a; }
+    #toast.toast-error   { border-left: 3px solid var(--danger); }
+
+    /* ── Loading ── */
+    .loading-row td {
+      text-align: center;
+      color: #aaa;
+      padding: 32px;
+      font-style: italic;
+    }
+
+    /* ── Access denied ── */
+    #access-denied {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .denied-card {
+      background: var(--white);
+      border: 1px solid var(--parchment2);
+      border-radius: 2px;
+      padding: 48px 40px;
+      box-shadow: 0 4px 24px var(--shadow);
+    }
+
+    .denied-card .icon { font-size: 40px; margin-bottom: 16px; }
+
+    .denied-card h2 {
+      font-family: var(--font-head);
+      color: var(--bordeaux);
+      margin-bottom: 10px;
+    }
+
+    .denied-card p { color: #666; font-size: 13px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<!-- Auth screen -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="logo">AnotherWalk</div>
+    <div class="subtitle">Admin Panel</div>
+    <p>Log in met je admin-account om door te gaan.</p>
+    <button class="btn btn-primary" onclick="signIn()">Inloggen met Magic Link</button>
+    <div id="auth-msg" style="margin-top:16px;font-size:12px;color:#888;"></div>
+  </div>
+</div>
+
+<!-- Access denied -->
+<div id="access-denied">
+  <div class="denied-card">
+    <div class="icon">🔒</div>
+    <h2>Geen toegang</h2>
+    <p>Dit account heeft geen admin-rechten.</p>
+    <button class="btn btn-ghost" onclick="signOut()">Uitloggen</button>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <header>
+    <div class="header-logo">
+      AnotherWalk <span>Admin</span>
+    </div>
+    <div class="header-right">
+      Ingelogd als <strong id="admin-email">—</strong>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Uitloggen</button>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="page-title">Gebruikersbeheer</h1>
+    <p class="page-subtitle">Overzicht van alle gebruikers en hun route-toegang</p>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-users">—</div>
+        <div class="stat-label">Gebruikers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-routes">—</div>
+        <div class="stat-label">Routes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-assignments">—</div>
+        <div class="stat-label">Toegewezen routes</div>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Gebruikers & route-toegang</span>
+        <button class="btn btn-ghost btn-sm" onclick="loadData()">↺ Vernieuwen</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Gebruiker</th>
+            <th>Toegewezen routes</th>
+            <th>Route toewijzen</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr class="loading-row"><td colspan="4">Gebruikers laden…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────
+  const SUPABASE_URL  = 'https://wsutcrdespetoutyuddy.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzdXRjcmRlc3BldG91dHl1ZGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NDk0MDQsImV4cCI6MjA5NDQyNTQwNH0.vDUwFtgcpRY7AimSytoGeK7Rl1779_0ivXGWB0sG6KQ';
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // ── State ────────────────────────────────────────────────
+  let allRoutes = [];
+  let currentSession = null;
+
+  // ── Auth ─────────────────────────────────────────────────
+  async function signIn() {
+    const email = prompt('Vul je admin e-mailadres in:');
+    if (!email) return;
+    const { error } = await db.auth.signInWithOtp({ email });
+    document.getElementById('auth-msg').textContent = error
+      ? '❌ ' + error.message
+      : '✉️ Check je inbox voor de magic link.';
+  }
+
+  async function signOut() {
+    await db.auth.signOut();
+    location.reload();
+  }
+
+  async function isAdmin(userId) {
+    const { data } = await db.from('profiles').select('role').eq('id', userId).single();
+    return data?.role === 'admin';
+  }
+
+  // ── UI switching ─────────────────────────────────────────
+  function show(id) {
+    ['auth-screen','access-denied','app'].forEach(s => {
+      document.getElementById(s).style.display = 'none';
+    });
+    const el = document.getElementById(id);
+    el.style.display = id === 'app' ? 'flex' : 'flex';
+  }
+
+  // ── Toast ────────────────────────────────────────────────
+  function toast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `show toast-${type}`;
+    setTimeout(() => { t.className = ''; }, 3200);
+  }
+
+  // ── Data loading ─────────────────────────────────────────
+  async function loadData() {
+    document.getElementById('users-tbody').innerHTML =
+      '<tr class="loading-row"><td colspan="4">Laden…</td></tr>';
+
+    // Fetch all routes
+    const { data: routes, error: rErr } = await db.from('routes').select('*').order('id');
+    if (rErr) { toast('Fout bij laden routes: ' + rErr.message, 'error'); return; }
+    allRoutes = routes || [];
+
+    // Fetch all profiles
+    const { data: profiles, error: pErr } = await db.from('profiles').select('*');
+    if (pErr) { toast('Fout bij laden gebruikers: ' + pErr.message, 'error'); return; }
+
+    // Fetch all user_routes
+    const { data: userRoutes, error: urErr } = await db.from('user_routes').select('*');
+    if (urErr) { toast('Fout bij laden user_routes: ' + urErr.message, 'error'); return; }
+
+    // Stats
+    document.getElementById('stat-users').textContent = (profiles || []).length;
+    document.getElementById('stat-routes').textContent = allRoutes.length;
+    document.getElementById('stat-assignments').textContent = (userRoutes || []).length;
+
+    // Build user → routes map
+    const userRouteMap = {};
+    (userRoutes || []).forEach(ur => {
+      if (!userRouteMap[ur.user_id]) userRouteMap[ur.user_id] = [];
+      userRouteMap[ur.user_id].push(ur);
+    });
+
+    // Render rows
+    const tbody = document.getElementById('users-tbody');
+    if (!profiles || profiles.length === 0) {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="4">Geen gebruikers gevonden.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = '';
+    profiles.forEach(profile => {
+      const assigned = userRouteMap[profile.id] || [];
+      const assignedRouteIds = assigned.map(ur => String(ur.route_id));
+
+      const row = document.createElement('tr');
+
+      // Col 1: user info
+      const tdUser = document.createElement('td');
+      tdUser.innerHTML = `
+        <div class="user-email">${profile.email || '—'}</div>
+        <div class="user-id">${profile.id}</div>
+      `;
+
+      // Col 2: assigned route badges
+      const tdBadges = document.createElement('td');
+      if (assigned.length === 0) {
+        tdBadges.innerHTML = '<span class="badge badge-none">Geen routes</span>';
+      } else {
+        const badgesDiv = document.createElement('div');
+        badgesDiv.className = 'route-badges';
+        assigned.forEach(ur => {
+          const route = allRoutes.find(r => String(r.id) === String(ur.route_id));
+          const name = route ? route.name : ur.route_id;
+          const badge = document.createElement('span');
+          badge.className = 'badge badge-active';
+          const sourceLabel = ur.source === 'admin' ? ' · admin' : ur.source === 'stripe' ? ' · betaald' : '';
+          badge.innerHTML = `${name}<span style="opacity:.55;font-weight:400">${sourceLabel}</span><button class="badge-remove" title="Toegang intrekken" onclick="revokeAccess('${profile.id}','${ur.route_id}','${name}')">×</button>`;
+          badgesDiv.appendChild(badge);
+        });
+        tdBadges.appendChild(badgesDiv);
+      }
+
+      // Col 3: assign dropdown
+      const tdAssign = document.createElement('td');
+      const unassigned = allRoutes.filter(r => !assignedRouteIds.includes(String(r.id)));
+      if (unassigned.length === 0) {
+        tdAssign.innerHTML = '<span style="color:#bbb;font-size:12px;font-style:italic">Alle routes toegewezen</span>';
+      } else {
+        const wrap = document.createElement('div');
+        wrap.className = 'assign-row';
+        const sel = document.createElement('select');
+        sel.id = `sel-${profile.id}`;
+        sel.innerHTML = '<option value="">Kies route…</option>' +
+          unassigned.map(r => `<option value="${r.id}">${r.name} (${r.city})</option>`).join('');
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-success btn-sm';
+        btn.textContent = 'Toewijzen';
+        btn.onclick = () => assignRoute(profile.id, sel.value, profile.email);
+        wrap.appendChild(sel);
+        wrap.appendChild(btn);
+        tdAssign.appendChild(wrap);
+      }
+
+      // Col 4: empty (revoke is inline on badge)
+      const tdActions = document.createElement('td');
+
+      row.appendChild(tdUser);
+      row.appendChild(tdBadges);
+      row.appendChild(tdAssign);
+      row.appendChild(tdActions);
+      tbody.appendChild(row);
+    });
+  }
+
+  // ── Assign route ─────────────────────────────────────────
+  async function assignRoute(userId, routeId, userEmail) {
+    if (!routeId) { toast('Selecteer eerst een route.', 'error'); return; }
+    const route = allRoutes.find(r => String(r.id) === String(routeId));
+    const { error } = await db.from('user_routes').insert({
+      user_id: userId,
+      route_id: routeId,
+      source: 'admin',
+    });
+    if (error) {
+      toast('Fout: ' + error.message, 'error');
+    } else {
+      toast(`✓ "${route?.name}" toegewezen aan ${userEmail}`);
+      loadData();
+    }
+  }
+
+  // ── Revoke access ─────────────────────────────────────────
+  async function revokeAccess(userId, routeId, routeName) {
+    if (!confirm(`Toegang tot "${routeName}" intrekken voor deze gebruiker?`)) return;
+    const { error } = await db.from('user_routes')
+      .delete()
+      .eq('user_id', userId)
+      .eq('route_id', routeId);
+    if (error) {
+      toast('Fout: ' + error.message, 'error');
+    } else {
+      toast(`✓ Toegang tot "${routeName}" ingetrokken.`);
+      loadData();
+    }
+  }
+
+  // ── Init ─────────────────────────────────────────────────
+  async function init() {
+    const { data: { session } } = await db.auth.getSession();
+    currentSession = session;
+
+    if (!session) {
+      show('auth-screen');
+      return;
+    }
+
+    const email = session.user.email;
+    const admin = await isAdmin(session.user.id);
+    if (!admin) {
+      show('access-denied');
+      return;
+    }
+
+    document.getElementById('admin-email').textContent = email;
+    show('app');
+    loadData();
+  }
+
+  // Listen for auth changes (magic link redirect)
+  db.auth.onAuthStateChange((_event, session) => {
+    if (session && !currentSession) {
+      currentSession = session;
+      init();
+    }
+  });
+
+  init();
+</script>
+</body>
+</html>
