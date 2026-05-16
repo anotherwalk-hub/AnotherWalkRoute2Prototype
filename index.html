@@ -547,12 +547,6 @@ buyBtn.onclick = function() {
   var params = '?client_reference_id=' + currentUser.id + '&metadata_route_id=' + route.key;
   window.location.href = baseUrl + params;
 };
-  .catch(function() {
-    buyBtn.textContent = 'Buy this route';
-    buyBtn.disabled = false;
-    alert('Something went wrong. Please try again.');
-  });
-};
   var signInBtn = document.getElementById('previewSignInBtn');
   signInBtn.style.display = currentUser ? 'none' : 'block';
   signInBtn.onclick = function() { closeOverlay('previewOverlay'); openLoginOverlay(); };
