@@ -544,7 +544,7 @@ buyBtn.style.background = route.color;
 buyBtn.onclick = function() {
   if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(); return; }
   var baseUrl = 'https://buy.stripe.com/test_9B6bJ1gKE4t07Rr7j91gs00';
-  var params = '?client_reference_id=' + currentUser.id + '&metadata[route_id]=' + route.key;
+  var params = '?client_reference_id=' + currentUser.id + '&metadata_route_id=' + route.key;
   window.location.href = baseUrl + params;
 };
   .catch(function() {
