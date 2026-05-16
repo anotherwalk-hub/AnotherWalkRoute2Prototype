@@ -73,13 +73,6 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .stop-list { overflow-y:auto; flex:1; padding:5px 0; }
 .stop-list::-webkit-scrollbar { width:3px; }
 .stop-list::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.2); border-radius:2px; }
-.si { display:flex; align-items:flex-start; gap:10px; padding:8px 16px; cursor:pointer; border-left:3px solid transparent; transition:background .14s; }
-.si:hover { background:rgba(112,19,33,0.05); }
-.si.active { background:rgba(112,19,33,0.08); border-left-color:var(--route-color, #701321); }
-.si.active.opt-item { border-left-color:var(--green); background:rgba(122,158,126,0.07); }
-.dot { width:20px; height:20px; border-radius:50%; color:white; font-size:8.5px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
-.si-info h3 { font-size:0.75rem; font-weight:500; line-height:1.3; color:var(--carbon); }
-.si-tag { font-size:0.58rem; color:var(--muted); margin-top:1px; font-weight:400; }
 
 /* ── MAP */
 .map-wrap { flex:1; position:relative; overflow:hidden; min-height:0; }
@@ -117,8 +110,12 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .stop-panel.open { transform:translateY(0); }
 .panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
 .p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; }
-.p-inner::-webkit-scrollbar { width:3px; }
-.p-inner::-webkit-scrollbar-thumb { background:rgba(112,19,33,.2); }
+/* ── scrollbar: stop panel */
+.p-inner::-webkit-scrollbar { width:4px; }
+.p-inner::-webkit-scrollbar-track { background:rgba(112,19,33,0.08); border-radius:2px; }
+.p-inner::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.35); border-radius:2px; }
+/* Firefox */
+.p-inner { scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .p-label { font-size:0.57rem; letter-spacing:0.13em; text-transform:uppercase; font-weight:600; margin-bottom:3px; font-family:'Montserrat',sans-serif; }
 .p-title { font-family:'Playfair Display',serif; font-size:1.22rem; font-weight:600; line-height:1.2; margin-bottom:8px; color:var(--carbon); }
 .p-body { font-size:0.78rem; line-height:1.76; color:#2e2e2e; max-width:660px; font-family:'Montserrat',sans-serif; font-weight:400; }
@@ -134,19 +131,33 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 /* ── USER DOT */
 .user-dot { width:16px; height:16px; border-radius:50%; background:var(--blue); border:3px solid white; box-shadow:0 0 0 5px rgba(59,130,246,.2); will-change:transform; }
 
-/* ── SHARED OVERLAY BASE */
-.aw-overlay { position:fixed; inset:0; z-index:1000; display:flex; align-items:flex-end; pointer-events:none; opacity:0; transition:opacity .4s ease; }
+/* ── SHARED OVERLAY BASE
+     z-index ladder:
+     200  = header
+     250  = sidebar backdrop
+     300  = sidebar
+     500  = stop panel
+     1000 = intro overlay
+     1100 = preview overlay
+     2000 = login overlay
+     Overlays must always sit above the header (200) so the header
+     never bleeds through. The login overlay is highest so it covers everything.
+*/
+.aw-overlay { position:fixed; inset:0; display:flex; align-items:flex-end; pointer-events:none; opacity:0; transition:opacity .4s ease; }
 .aw-overlay.show { pointer-events:all; opacity:1; }
 .aw-overlay-bg { position:absolute; inset:0; background:rgba(25,25,25,0.75); backdrop-filter:blur(3px); }
 .aw-sheet { position:relative; width:100%; background:var(--parchment); border-radius:24px 24px 0 0; max-height:88vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .45s cubic-bezier(.4,0,.2,1); overflow:hidden; }
 .aw-overlay.show .aw-sheet { transform:translateY(0); }
 .aw-accent { height:4px; flex-shrink:0; background:var(--bordeaux); }
 .aw-scroll { overflow-y:auto; flex:1; padding:28px 28px 0; }
+/* ── scrollbar: all overlays */
 .aw-scroll::-webkit-scrollbar { width:4px; }
-.aw-scroll::-webkit-scrollbar-track { background:rgba(112,19,33,0.05); }
-.aw-scroll::-webkit-scrollbar-thumb { background:rgba(112,19,33,.3); border-radius:2px; }
+.aw-scroll::-webkit-scrollbar-track { background:rgba(112,19,33,0.08); border-radius:2px; }
+.aw-scroll::-webkit-scrollbar-thumb { background:rgba(112,19,33,0.35); border-radius:2px; }
+/* Firefox */
+.aw-scroll { scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .aw-footer { padding:20px 28px 36px; flex-shrink:0; background:var(--parchment); }
-.aw-cta { display:block; width:100%; border:none; border-radius:12px; padding:16px 24px; font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--parchment); cursor:pointer; background:var(--bordeaux); transition:all .2s; position:relative; overflow:hidden; margin-bottom:0; }
+.aw-cta { display:block; width:100%; border:none; border-radius:12px; padding:16px 24px; font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--parchment); cursor:pointer; background:var(--bordeaux); transition:all .2s; position:relative; overflow:hidden; }
 .aw-cta::after { content:'→'; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:1.1rem; opacity:0.7; }
 .aw-cta:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 6px 20px rgba(112,19,33,.3); }
 .aw-cta:active { transform:translateY(0); }
@@ -163,13 +174,16 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .aw-close { position:absolute; top:14px; right:14px; width:28px; height:28px; border:1px solid rgba(112,19,33,.2); border-radius:50%; background:transparent; cursor:pointer; font-size:0.8rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .18s; z-index:10; }
 .aw-close:hover { background:var(--bordeaux); color:var(--parchment); border-color:var(--bordeaux); }
 
-/* ── PREVIEW OVERLAY extras */
+/* ── INTRO OVERLAY */
+#introOverlay { z-index:1000; }
+
+/* ── PREVIEW OVERLAY */
 #previewOverlay { z-index:1100; }
 .preview-locked-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(112,19,33,0.07); border:1px solid rgba(112,19,33,0.18); border-radius:20px; padding:4px 12px; font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--bordeaux); font-family:'Montserrat',sans-serif; margin-bottom:16px; }
 .preview-stop-hint { margin-top:18px; padding-top:16px; border-top:1px solid rgba(112,19,33,.1); font-size:0.72rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.65; }
 .preview-stop-hint strong { color:var(--carbon); }
 
-/* ── LOGIN OVERLAY extras */
+/* ── LOGIN OVERLAY */
 #loginOverlay { z-index:2000; }
 .login-logo { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600; color:var(--bordeaux); margin-bottom:6px; }
 .login-tagline { font-size:0.72rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.65; margin-bottom:28px; }
@@ -177,7 +191,6 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .login-input { width:100%; padding:14px 16px; border:1.5px solid rgba(112,19,33,0.25); border-radius:10px; background:white; font-family:'Montserrat',sans-serif; font-size:0.9rem; color:var(--carbon); outline:none; transition:border-color .2s; }
 .login-input:focus { border-color:var(--bordeaux); }
 .login-note { font-size:0.62rem; color:var(--muted-light); font-family:'Montserrat',sans-serif; text-align:center; line-height:1.6; margin-top:12px; }
-/* Sent state */
 .login-form-inner.hidden { display:none; }
 .login-sent { display:none; }
 .login-sent.show { display:block; }
@@ -187,6 +200,9 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .login-sent-email { color:var(--bordeaux); font-weight:600; }
 .login-spam-note { display:flex; align-items:flex-start; gap:8px; margin-top:16px; background:rgba(184,154,90,0.1); border:1px solid rgba(184,154,90,0.28); border-radius:8px; padding:10px 12px; font-size:0.65rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.55; }
 .login-spam-note strong { color:var(--carbon); }
+/* Rate limit error state */
+.login-error { display:none; margin-top:12px; padding:10px 14px; background:rgba(112,19,33,0.07); border:1px solid rgba(112,19,33,0.2); border-radius:8px; font-size:0.7rem; color:var(--bordeaux-d); font-family:'Montserrat',sans-serif; line-height:1.6; }
+.login-error.show { display:block; }
 
 @media(max-width:640px) {
   .menu-btn { display:flex; }
@@ -209,13 +225,11 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
     <div class="route-sub" id="headerSub">—</div>
   </div>
   <div class="header-right">
-    <!-- Auth button (left of locate) -->
     <button class="icon-btn" id="authBtn" title="Sign in">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
       </svg>
     </button>
-    <!-- Locate button -->
     <button class="icon-btn" id="locateBtn" title="Show my location">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
@@ -258,7 +272,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
   <div class="p-inner" id="panelContent"></div>
 </div>
 
-<!-- ── INTRO OVERLAY (unlocked routes) -->
+<!-- ── INTRO OVERLAY -->
 <div class="aw-overlay" id="introOverlay">
   <div class="aw-overlay-bg"></div>
   <div class="aw-sheet">
@@ -276,7 +290,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
   </div>
 </div>
 
-<!-- ── PREVIEW OVERLAY (locked routes) -->
+<!-- ── PREVIEW OVERLAY -->
 <div class="aw-overlay" id="previewOverlay">
   <div class="aw-overlay-bg" id="previewBg"></div>
   <div class="aw-sheet">
@@ -310,6 +324,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
         <div class="login-tagline">Sign in to access your routes.<br>We'll send you a magic link — no password needed.</div>
         <label class="login-label" for="loginEmail">Your email address</label>
         <input class="login-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+        <div class="login-error" id="loginError"></div>
       </div>
       <div class="login-sent" id="loginSent">
         <div class="login-sent-icon">✉️</div>
@@ -384,18 +399,16 @@ function initAuth() {
 }
 
 function onSignedIn() {
-  var btn = document.getElementById('authBtn');
-  btn.classList.add('signed-in');
-  btn.title = 'Sign out';
+  document.getElementById('authBtn').classList.add('signed-in');
+  document.getElementById('authBtn').title = 'Sign out';
   closeOverlay('loginOverlay');
   closeOverlay('previewOverlay');
   loadUserAccess();
 }
 
 function onSignedOut() {
-  var btn = document.getElementById('authBtn');
-  btn.classList.remove('signed-in');
-  btn.title = 'Sign in';
+  document.getElementById('authBtn').classList.remove('signed-in');
+  document.getElementById('authBtn').title = 'Sign in';
   ROUTES.forEach(function(r) { r.unlocked = false; });
   buildRouteTabs();
   loadRoute(activeRouteKey);
@@ -432,6 +445,8 @@ document.getElementById('authBtn').addEventListener('click', function() {
 function openLoginOverlay() {
   document.getElementById('loginFormInner').classList.remove('hidden');
   document.getElementById('loginSent').classList.remove('show');
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('loginError').textContent = '';
   var btn = document.getElementById('loginSubmit');
   btn.disabled = false; btn.style.display = 'block';
   btn.textContent = 'Send me a magic link';
@@ -444,14 +459,23 @@ document.getElementById('loginSubmit').addEventListener('click', function() {
   var email = document.getElementById('loginEmail').value.trim();
   if (!email || !email.includes('@')) { document.getElementById('loginEmail').focus(); return; }
   var btn = document.getElementById('loginSubmit');
+  var errEl = document.getElementById('loginError');
+  errEl.classList.remove('show');
   btn.disabled = true; btn.textContent = 'Sending…';
+
   supabase.auth.signInWithOtp({
     email: email,
     options: { emailRedirectTo: window.location.href }
   }).then(function(res) {
     if (res.error) {
-      alert('Something went wrong: ' + res.error.message);
       btn.disabled = false; btn.textContent = 'Send me a magic link';
+      // Show a friendly message instead of a raw error
+      if (res.error.message && res.error.message.toLowerCase().includes('rate limit')) {
+        errEl.textContent = 'You've requested several links in a short time. Please wait a few minutes before trying again.';
+      } else {
+        errEl.textContent = 'Something went wrong. Please try again in a moment.';
+      }
+      errEl.classList.add('show');
     } else {
       document.getElementById('loginFormInner').classList.add('hidden');
       document.getElementById('loginSentEmail').textContent = email;
@@ -468,30 +492,25 @@ document.getElementById('loginEmail').addEventListener('keydown', function(e) {
 document.getElementById('loginClose').addEventListener('click', function() { closeOverlay('loginOverlay'); });
 document.getElementById('loginBg').addEventListener('click', function() { closeOverlay('loginOverlay'); });
 
-// ── PREVIEW (locked route)
+// ── PREVIEW
 function openPreviewOverlay(route) {
   document.getElementById('previewAccent').style.background = route.color;
   document.getElementById('previewEyebrow').textContent = (route.meta.city || 'Amsterdam') + ' · ' + route.meta.label;
   document.getElementById('previewTitle').textContent = route.meta.title;
   document.getElementById('previewMeta').innerHTML =
     '<span>🕐 ' + route.meta.duration + '</span><span>📍 ' + route.meta.stopCount + ' stops</span>';
-
   var paragraphs = (route.meta.intro || '').split('<br><br>');
   document.getElementById('previewBody').innerHTML = paragraphs.map(function(p) {
     return '<p>' + p.replace(/<br>/g, ' ') + '</p>';
   }).join('');
-
   document.getElementById('previewStopHint').innerHTML =
     'This route includes <strong>' + route.meta.stopCount + ' curated stops</strong> with detailed descriptions, local tips, and a guided walking path — all unlocked after purchase.';
-
   var buyBtn = document.getElementById('previewBuyBtn');
   buyBtn.style.background = route.color;
   buyBtn.onclick = function() { alert('Purchasing coming soon!'); };
-
   var signInBtn = document.getElementById('previewSignInBtn');
   signInBtn.style.display = currentUser ? 'none' : 'block';
   signInBtn.onclick = function() { closeOverlay('previewOverlay'); openLoginOverlay(); };
-
   document.getElementById('previewOverlay').classList.add('show');
 }
 
