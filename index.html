@@ -539,9 +539,37 @@ function openPreviewOverlay(route) {
   }).join('');
   document.getElementById('previewStopHint').innerHTML =
     'This route includes <strong>' + route.meta.stopCount + ' curated stops</strong> with detailed descriptions, local tips, and a guided walking path — all unlocked after purchase.';
-  var buyBtn = document.getElementById('previewBuyBtn');
-  buyBtn.style.background = route.color;
-  buyBtn.onclick = function() { alert('Purchasing coming soon!'); };
+var buyBtn = document.getElementById('previewBuyBtn');
+buyBtn.style.background = route.color;
+buyBtn.onclick = function() {
+  if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(); return; }
+  buyBtn.textContent = 'Redirecting to checkout…';
+  buyBtn.disabled = true;
+  fetch('https://wsutcrdespetoutyuddy.supabase.co/functions/v1/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      route_id: route.key,
+      user_id: currentUser.id,
+      return_url: window.location.href
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      buyBtn.textContent = 'Buy this route';
+      buyBtn.disabled = false;
+      alert('Something went wrong. Please try again.');
+    }
+  })
+  .catch(function() {
+    buyBtn.textContent = 'Buy this route';
+    buyBtn.disabled = false;
+    alert('Something went wrong. Please try again.');
+  });
+};
   var signInBtn = document.getElementById('previewSignInBtn');
   signInBtn.style.display = currentUser ? 'none' : 'block';
   signInBtn.onclick = function() { closeOverlay('previewOverlay'); openLoginOverlay(); };
