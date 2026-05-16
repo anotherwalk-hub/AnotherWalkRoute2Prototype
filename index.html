@@ -366,9 +366,9 @@ var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
 
 // ── ROUTES
 var ROUTES = [
-  { key:'route1', meta:R1_META, stops:R1_STOPS, unlocked:false, color:'#4a2060', viaPoints:R1_META.viaPoints||[] },
-  { key:'route2', meta:R2_META, stops:R2_STOPS, unlocked:false, color:'#701321', viaPoints:R2_META.viaPoints||[] },
-  { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[] }
+  { key:'route1', meta:R1_META, stops:R1_STOPS, unlocked:false, color:'#4a2060', viaPoints:R1_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B6bJ1gKE4t07Rr7j91gs00' },
+  { key:'route2', meta:R2_META, stops:R2_STOPS, unlocked:false, color:'#701321', viaPoints:R2_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_3cIeVdeCwaRognX6f51gs01' },
+  { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B614nbqk0cKc7H6f51gs02' }
 ];
 
 // ── STATE
@@ -543,7 +543,7 @@ var buyBtn = document.getElementById('previewBuyBtn');
 buyBtn.style.background = route.color;
 buyBtn.onclick = function() {
   if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(); return; }
-  var baseUrl = 'https://buy.stripe.com/test_9B6bJ1gKE4t07Rr7j91gs00';
+  var baseUrl = route.buyUrl;
   var params = '?client_reference_id=' + currentUser.id + '__' + route.key;
   window.location.href = baseUrl + params;
 };
