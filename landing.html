@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AnotherWalk — Walk Amsterdam like you live there.</title>
+  <meta name="description" content="Self-guided walking routes through Amsterdam. Discover hidden stories, local favourites and why the city is the way it is — at your own pace, from €5,99." />
+  <meta property="og:title" content="AnotherWalk — Walk Amsterdam like you live there." />
+  <meta property="og:description" content="Curated self-guided walking routes through Amsterdam. Discover the city like a local, not a tourist." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://anotherwalk.city" />
+  <meta property="og:image" content="https://anotherwalk.city/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AnotherWalk — Walk Amsterdam like you live there." />
+  <meta name="twitter:description" content="Self-guided walking routes through Amsterdam. From €5,99." />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Product","name":"AnotherWalk Amsterdam","description":"Curated self-guided walking routes through Amsterdam","url":"https://anotherwalk.city","offers":{"@type":"Offer","price":"5.99","priceCurrency":"EUR"}}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --parchment:  #f1eade;
+      --parchment2: #e8dece;
+      --parchment3: #ddd3be;
+      --carbon:     #191919;
+      --bordeaux:   #701321;
+      --bordeaux-d: #560f1a;
+      --gold:       #b89a5a;
+      --muted:      #7a7060;
+      --muted-light:#a09880;
+      --white:      #ffffff;
+      --green:      #4a7a50;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Montserrat', sans-serif; background: var(--parchment); color: var(--carbon); overflow-x: hidden; }
+
+    /* ── ANNOUNCEMENT BAR ── */
+    .announcement-bar {
+      background: var(--bordeaux); color: var(--white);
+      padding: 10px 24px; font-size: 0.68rem; letter-spacing: 0.07em; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+    }
+    .bar-cta {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.15); color: var(--white); text-decoration: none;
+      padding: 4px 12px; border-radius: 2px; font-size: 0.63rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.3); transition: background 0.18s; white-space: nowrap;
+    }
+    .bar-cta:hover { background: rgba(255,255,255,0.25); }
+    .bar-cta::after { content: '→'; margin-left: 2px; }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(241,234,222,0.95); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(112,19,33,0.1);
+      padding: 0 48px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: box-shadow 0.3s;
+    }
+    header.scrolled { box-shadow: 0 2px 20px rgba(25,25,25,0.08); }
+
+    .header-logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .header-logo-icon { width: 36px; height: 36px; flex-shrink: 0; }
+    .header-logo-text {
+      font-family: 'Playfair Display', serif; font-size: 1.15rem;
+      font-weight: 600; color: var(--bordeaux); letter-spacing: 0.01em;
+    }
+
+    nav { display: flex; align-items: center; gap: 36px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    nav a {
+      font-size: 0.67rem; font-weight: 500; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.15s;
+    }
+    nav a:hover { color: var(--carbon); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--carbon); color: var(--parchment) !important;
+      padding: 9px 20px; border-radius: 2px;
+      font-size: 0.64rem !important; font-weight: 600 !important;
+      letter-spacing: 0.1em !important; transition: background 0.18s !important;
+    }
+    .nav-cta:hover { background: var(--bordeaux) !important; }
+    .nav-cta::after { content: '↗'; font-size: 0.68rem; }
+
+    /* ── STICKY SCROLL HERO ── */
+    /* Outer container sets scroll height — 300vh gives plenty of scroll room */
+    .hero-scroll-container {
+      position: relative;
+      height: 300vh;
+    }
+    /* The sticky panel stays fixed while user scrolls through the container */
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    .hero-left {
+      padding: 80px 64px 80px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 600; color: var(--gold); margin-bottom: 24px;
+      opacity: 0; animation: fadeUp 0.8s ease forwards 0.3s;
+    }
+    .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--gold); opacity: 0.6; }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 4vw, 4rem); font-weight: 600; line-height: 1.1;
+      color: var(--carbon); margin-bottom: 18px;
+      opacity: 0; animation: fadeUp 0.9s ease forwards 0.45s;
+    }
+    .hero-title em { font-style: italic; color: var(--bordeaux); display: block; }
+    .hero-sub {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted-light); font-weight: 500; margin-bottom: 32px;
+      opacity: 0; animation: fadeUp 0.9s ease forwards 0.58s;
+    }
+    .hero-desc {
+      font-size: 0.82rem; line-height: 1.82; color: var(--muted); max-width: 400px;
+      margin-bottom: 40px; font-weight: 400;
+      opacity: 0; animation: fadeUp 0.9s ease forwards 0.68s;
+    }
+    .hero-actions {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.9s ease forwards 0.78s;
+    }
+    .hero-price {
+      margin-top: 20px; font-size: 0.65rem; color: var(--muted-light); letter-spacing: 0.04em;
+      opacity: 0; animation: fadeUp 0.9s ease forwards 0.88s;
+    }
+    .hero-price strong { color: var(--carbon); font-weight: 600; }
+
+    /* Scroll progress indicator on left side */
+    .hero-progress {
+      position: absolute;
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards 1.5s;
+    }
+    .hero-progress-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(112,19,33,0.2);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .hero-progress-dot.active {
+      background: var(--bordeaux);
+      transform: scale(1.4);
+    }
+
+    /* Right panel — dark map side */
+    .hero-right {
+      position: relative; height: 100%;
+      background: var(--carbon); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-right::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(112,19,33,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 70%, rgba(184,154,90,0.12) 0%, transparent 45%);
+    }
+    .hero-right::after {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(241,234,222,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(241,234,222,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .route-map-wrap {
+      position: relative; z-index: 2; width: 100%;
+      display: flex; align-items: center; justify-content: center; padding: 60px 40px;
+    }
+    .route-map-wrap svg { width: 100%; max-width: 360px; height: auto; }
+
+    /* Scroll hint arrow */
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards 2s;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .scroll-hint-text {
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      font-weight: 600;
+    }
+    .scroll-hint-arrow {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--muted-light), transparent);
+      animation: scrollArrow 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollArrow {
+      0%, 100% { opacity: 0.4; transform: scaleY(0.6) translateY(-4px); }
+      50% { opacity: 1; transform: scaleY(1) translateY(4px); }
+    }
+
+    /* Route path animation — controlled by JS */
+    #routePath {
+      stroke-dasharray: 900;
+      stroke-dashoffset: 900;
+    }
+    /* Stop dots: use SVG-native animation via inner circle scale */
+    .route-stop-dot { opacity: 0; transition: opacity 0.2s ease; }
+    .route-stop-dot.visible { opacity: 1; }
+    .route-stop-dot .dot-inner {
+      transform: scale(0);
+      transform-origin: center;
+      transform-box: fill-box;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .route-stop-dot.visible .dot-inner { transform: scale(1); }
+    .route-stop-label { opacity: 0; transition: opacity 0.3s ease 0.2s; }
+    .route-stop-label.visible { opacity: 1; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bordeaux); color: var(--white); text-decoration: none;
+      padding: 14px 28px; border-radius: 2px; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(112,19,33,0.3);
+    }
+    .btn-primary:hover { background: var(--bordeaux-d); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(112,19,33,0.38); }
+    .btn-primary::after { content: '→'; }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--carbon); text-decoration: none;
+      padding: 13px 24px; border-radius: 2px; border: 1px solid rgba(25,25,25,0.18);
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--bordeaux); color: var(--bordeaux); }
+    .btn-light {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(241,234,222,0.1); color: var(--parchment); text-decoration: none;
+      padding: 13px 24px; border-radius: 2px; border: 1px solid rgba(241,234,222,0.2);
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.2s;
+    }
+    .btn-light:hover { background: rgba(241,234,222,0.18); }
+
+    /* ── STATS BAR ── */
+    .stats-label {
+      text-align: center; padding: 20px 40px 0;
+      font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600; background: var(--parchment2);
+    }
+    .stats-bar {
+      background: var(--parchment2); border-top: 1px solid var(--parchment3);
+      border-bottom: 1px solid var(--parchment3);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .stat {
+      padding: 28px 40px; text-align: center;
+      border-right: 1px solid var(--parchment3); transition: background 0.2s;
+    }
+    .stat:last-child { border-right: none; }
+    .stat:hover { background: rgba(112,19,33,0.03); }
+    .stat-value { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--bordeaux); line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+    /* ── INTRO STRIP ── */
+    .intro-strip {
+      background: var(--carbon); color: var(--parchment);
+      padding: 72px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .intro-strip h2 {
+      font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+      font-weight: 400; font-style: italic; line-height: 1.35; color: var(--parchment);
+    }
+    .intro-strip h2 strong { font-style: normal; font-weight: 700; color: var(--gold); }
+    .intro-right p { font-size: 0.8rem; line-height: 1.9; color: rgba(241,234,222,0.55); margin-bottom: 16px; font-weight: 400; }
+    .intro-right p:last-child { margin-bottom: 0; }
+
+    /* ── SECTIONS ── */
+    .section { padding: 96px 80px; max-width: 1200px; margin: 0 auto; }
+    .section-eyebrow { font-size: 0.59rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; color: var(--bordeaux); margin-bottom: 12px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 600; line-height: 1.15; color: var(--carbon); margin-bottom: 56px; max-width: 560px; }
+
+    /* ── HOW IT WORKS — custom icons ── */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid rgba(112,19,33,0.12); border-radius: 4px; overflow: hidden; }
+    .step { padding: 48px 40px; border-right: 1px solid rgba(112,19,33,0.1); position: relative; transition: background 0.2s; background: var(--white); }
+    .step:last-child { border-right: none; }
+    .step:hover { background: #fdf9f4; }
+    .step-number { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 700; color: rgba(112,19,33,0.07); line-height: 1; margin-bottom: 20px; transition: color 0.3s; }
+    .step:hover .step-number { color: rgba(112,19,33,0.13); }
+    .step-icon { width: 48px; height: 48px; margin-bottom: 16px; }
+    .step-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; color: var(--carbon); margin-bottom: 10px; }
+    .step-body { font-size: 0.76rem; line-height: 1.85; color: var(--muted); font-weight: 400; }
+
+    /* ── ROUTE PREVIEW ── */
+    .route-section { background: var(--carbon); padding: 96px 80px; }
+    .route-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 5fr 4fr; gap: 80px; align-items: start; }
+    .route-left .section-eyebrow { color: var(--gold); }
+    .route-left .section-title { color: var(--parchment); margin-bottom: 20px; }
+    .route-desc { font-size: 0.8rem; line-height: 1.9; color: rgba(241,234,222,0.5); margin-bottom: 32px; font-weight: 400; }
+    .route-meta { display: flex; gap: 0; margin-bottom: 36px; border: 1px solid rgba(241,234,222,0.08); border-radius: 2px; overflow: hidden; }
+    .route-meta-item { flex: 1; padding: 18px 20px; border-right: 1px solid rgba(241,234,222,0.08); text-align: center; }
+    .route-meta-item:last-child { border-right: none; }
+    .route-meta-value { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--parchment); display: block; margin-bottom: 4px; }
+    .route-meta-label { font-size: 0.57rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(241,234,222,0.3); font-weight: 600; }
+    .route-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .route-price-note { margin-top: 14px; font-size: 0.63rem; color: rgba(241,234,222,0.3); letter-spacing: 0.04em; }
+    .route-stops { background: rgba(241,234,222,0.03); border: 1px solid rgba(241,234,222,0.07); border-radius: 4px; overflow: hidden; }
+    .stops-header { padding: 16px 20px; border-bottom: 1px solid rgba(241,234,222,0.07); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(241,234,222,0.3); font-weight: 600; }
+    .route-stop { display: flex; align-items: flex-start; gap: 14px; padding: 14px 20px; border-bottom: 1px solid rgba(241,234,222,0.05); transition: background 0.15s; }
+    .route-stop:last-child { border-bottom: none; }
+    .route-stop:hover { background: rgba(241,234,222,0.04); }
+    .stop-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--bordeaux); color: var(--white); font-size: 8.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .stop-dot.start { background: rgba(241,234,222,0.12); color: var(--gold); font-size: 10px; }
+    .stop-dot.opt   { background: var(--green); font-size: 12px; }
+    .stop-info h4 { font-size: 0.78rem; font-weight: 500; color: rgba(241,234,222,0.85); margin-bottom: 2px; line-height: 1.3; }
+    .stop-info p { font-size: 0.62rem; color: rgba(241,234,222,0.28); font-weight: 400; }
+    .locked-banner { padding: 14px 20px; background: rgba(112,19,33,0.15); border-top: 1px solid rgba(112,19,33,0.2); display: flex; align-items: center; gap: 10px; font-size: 0.65rem; color: rgba(241,234,222,0.4); letter-spacing: 0.04em; }
+
+    /* ── REVIEWS ── */
+    .reviews-section { padding: 96px 80px; background: var(--parchment2); }
+    .reviews-inner { max-width: 1200px; margin: 0 auto; }
+    .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+    .review-card { background: var(--white); border: 1px solid rgba(112,19,33,0.08); border-radius: 4px; padding: 32px; transition: transform 0.2s, box-shadow 0.2s; }
+    .review-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(112,19,33,0.1); }
+    .review-stars { display: flex; gap: 3px; margin-bottom: 16px; color: var(--gold); font-size: 0.85rem; }
+    .review-text { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.9rem; line-height: 1.7; color: var(--carbon); margin-bottom: 20px; }
+    .review-author { display: flex; align-items: center; gap: 10px; }
+    .review-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--parchment2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: var(--bordeaux); flex-shrink: 0; border: 1px solid rgba(112,19,33,0.1); }
+    .review-name { font-size: 0.72rem; font-weight: 600; color: var(--carbon); }
+    .review-origin { font-size: 0.62rem; color: var(--muted-light); font-weight: 400; }
+
+    /* ── FOR WHO ── */
+    .forwho-section { padding: 96px 80px; max-width: 1200px; margin: 0 auto; }
+    .forwho-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 56px; }
+    .forwho-card { padding: 48px 40px; border: 1px solid rgba(112,19,33,0.1); border-radius: 4px; background: var(--white); transition: all 0.2s; position: relative; overflow: hidden; }
+    .forwho-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--bordeaux); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+    .forwho-card:hover::before { transform: scaleX(1); }
+    .forwho-card:hover { box-shadow: 0 8px 32px rgba(112,19,33,0.08); }
+    .forwho-icon { width: 56px; height: 56px; margin-bottom: 20px; }
+    .forwho-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 600; color: var(--carbon); margin-bottom: 12px; }
+    .forwho-body { font-size: 0.78rem; line-height: 1.9; color: var(--muted); font-weight: 400; margin-bottom: 20px; }
+    .forwho-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .forwho-tag { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; padding: 4px 10px; border-radius: 2px; background: rgba(112,19,33,0.05); color: var(--bordeaux); border: 1px solid rgba(112,19,33,0.1); }
+
+    /* ── MANIFESTO ── */
+    .manifesto { padding: 100px 80px; text-align: center; background: var(--carbon); position: relative; overflow: hidden; }
+    .manifesto::before { content: '"'; position: absolute; top: -60px; left: 50%; transform: translateX(-50%); font-family: 'Playfair Display', serif; font-size: 22rem; color: rgba(241,234,222,0.025); line-height: 1; pointer-events: none; user-select: none; }
+    .manifesto blockquote { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2.4rem); font-weight: 400; font-style: italic; line-height: 1.5; color: var(--parchment); max-width: 780px; margin: 0 auto 24px; position: relative; }
+    .manifesto cite { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); font-style: normal; font-weight: 600; }
+
+    /* ── CTA ── */
+    .cta-section { padding: 100px 80px; text-align: center; max-width: 760px; margin: 0 auto; }
+    .cta-section .section-eyebrow { text-align: center; margin-bottom: 16px; }
+    .cta-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 600; line-height: 1.12; color: var(--carbon); margin-bottom: 20px; }
+    .cta-title em { font-style: italic; color: var(--bordeaux); }
+    .cta-body { font-size: 0.8rem; line-height: 1.85; color: var(--muted); margin-bottom: 40px; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .price-note { margin-top: 20px; font-size: 0.64rem; color: var(--muted-light); letter-spacing: 0.04em; }
+    .price-note strong { color: var(--carbon); }
+    .trust-row { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 28px; flex-wrap: wrap; }
+    .trust-item { display: flex; align-items: center; gap: 7px; font-size: 0.63rem; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; }
+    .trust-item::before { content: '✓'; color: var(--green); font-weight: 700; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--carbon); padding: 56px 80px 32px; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-brand { }
+    .footer-logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .footer-logo-icon { width: 32px; height: 32px; }
+    .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--parchment); }
+    .footer-tagline { font-size: 0.68rem; color: rgba(241,234,222,0.35); line-height: 1.7; max-width: 220px; }
+    .footer-col h4 { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: rgba(241,234,222,0.4); margin-bottom: 16px; }
+    .footer-col a { display: block; font-size: 0.72rem; color: rgba(241,234,222,0.5); text-decoration: none; margin-bottom: 10px; transition: color 0.15s; }
+    .footer-col a:hover { color: var(--parchment); }
+    .footer-bottom { padding-top: 24px; border-top: 1px solid rgba(241,234,222,0.07); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-copy { font-size: 0.62rem; color: rgba(241,234,222,0.25); letter-spacing: 0.04em; }
+    .footer-legal-links { display: flex; gap: 20px; }
+    .footer-legal-links a { font-size: 0.62rem; color: rgba(241,234,222,0.25); text-decoration: none; transition: color 0.15s; }
+    .footer-legal-links a:hover { color: rgba(241,234,222,0.5); }
+
+    /* ── LEGAL PAGES ── */
+    .legal-page { display: none; position: fixed; inset: 0; z-index: 9000; background: var(--parchment); overflow-y: auto; }
+    .legal-page.open { display: block; }
+    .legal-header { background: var(--carbon); padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .legal-header .logo-text { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--parchment); font-weight: 600; }
+    .legal-close { background: transparent; border: 1px solid rgba(241,234,222,0.2); color: rgba(241,234,222,0.6); padding: 7px 16px; border-radius: 2px; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+    .legal-close:hover { background: rgba(241,234,222,0.1); color: var(--parchment); }
+    .legal-content { max-width: 720px; margin: 0 auto; padding: 56px 48px 80px; }
+    .legal-content h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 600; color: var(--bordeaux); margin-bottom: 8px; }
+    .legal-content .legal-date { font-size: 0.65rem; color: var(--muted-light); letter-spacing: 0.06em; margin-bottom: 36px; display: block; }
+    .legal-content h2 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 600; color: var(--carbon); margin: 32px 0 12px; }
+    .legal-content p { font-size: 0.8rem; line-height: 1.85; color: var(--muted); margin-bottom: 14px; }
+    .legal-content a { color: var(--bordeaux); }
+    .legal-placeholder { background: rgba(112,19,33,0.05); border: 1px solid rgba(112,19,33,0.12); border-radius: 4px; padding: 20px 24px; margin: 20px 0; font-size: 0.75rem; color: var(--bordeaux); font-style: italic; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.24s; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      header { padding: 0 24px; }
+      .nav-links { display: none; }
+      /* Mobile: full-bleed sticky scroll — map fills screen, text overlays */
+      .hero-scroll-container { height: 260vh; }
+      .hero-sticky {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
+      .hero-left {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        padding: 48px 28px 0;
+        z-index: 10;
+        background: linear-gradient(to bottom, rgba(25,25,25,0.82) 0%, rgba(25,25,25,0.6) 60%, transparent 100%);
+      }
+      .hero-eyebrow { color: var(--gold); }
+      .hero-title { color: var(--parchment); font-size: clamp(2rem, 8vw, 3rem); }
+      .hero-title em { color: #c94a5e; }
+      .hero-sub { color: rgba(241,234,222,0.55); }
+      .hero-desc { color: rgba(241,234,222,0.65); }
+      .hero-price { color: rgba(241,234,222,0.45); }
+      .hero-price strong { color: var(--parchment); }
+      .hero-right {
+        grid-column: 1;
+        grid-row: 1;
+        min-height: 100vh;
+        width: 100%;
+      }
+      .hero-progress {
+        left: 16px;
+        top: auto;
+        bottom: 48px;
+        transform: none;
+        flex-direction: row;
+        gap: 8px;
+      }
+      .hero-progress-dot { width: 8px; height: 8px; }
+      .scroll-hint { bottom: 20px; }
+      .route-map-wrap { padding: 0; align-items: center; justify-content: center; }
+      .route-map-wrap svg { max-width: 260px; margin: 0 auto; }
+      .stats-label { padding: 16px 24px 0; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .stat { border-bottom: 1px solid var(--parchment3); }
+      .intro-strip { grid-template-columns: 1fr; gap: 32px; padding: 56px 28px; }
+      .section { padding: 64px 28px; }
+      .steps { grid-template-columns: 1fr; }
+      .step { border-right: none; border-bottom: 1px solid rgba(112,19,33,0.1); }
+      .step:last-child { border-bottom: none; }
+      .route-section { padding: 64px 28px; }
+      .route-inner { grid-template-columns: 1fr; gap: 48px; }
+      .reviews-section { padding: 64px 28px; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .forwho-section { padding: 64px 28px; }
+      .forwho-grid { grid-template-columns: 1fr; }
+      .manifesto { padding: 72px 28px; }
+      .cta-section { padding: 72px 28px; }
+      footer { padding: 48px 28px 28px; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .legal-content { padding: 40px 28px 60px; }
+      .legal-header { padding: 16px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── ANNOUNCEMENT BAR ── -->
+<div class="announcement-bar">
+  <span>✦ 3 Amsterdam walking routes now live</span>
+  <a href="https://app.anotherwalk.city" class="bar-cta">Open the app</a>
+</div>
+
+<!-- ── HEADER ── -->
+<header id="header">
+  <a href="/" class="header-logo">
+    <svg class="header-logo-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="76" height="76" rx="14" fill="#f1eade" stroke="#701321" stroke-width="2.5"/>
+      <!-- Grid streets -->
+      <line x1="2"  y1="26" x2="78" y2="26" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+      <line x1="2"  y1="44" x2="78" y2="44" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+      <line x1="2"  y1="62" x2="78" y2="62" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+      <line x1="20" y1="2"  x2="20" y2="78" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+      <line x1="40" y1="2"  x2="40" y2="78" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+      <line x1="60" y1="2"  x2="60" y2="78" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+      <!-- Organic diagonal street -->
+      <path d="M2 62 Q24 52 40 44 Q56 36 60 2" stroke="#701321" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.28"/>
+      <!-- Route -->
+      <path d="M16 68 C20 56 28 46 40 36 C50 28 58 18 60 8" stroke="#701321" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <!-- Stops -->
+      <circle cx="16" cy="68" r="6" fill="#701321"/>
+      <circle cx="40" cy="36" r="5" fill="#f1eade" stroke="#701321" stroke-width="2.5"/>
+      <circle cx="40" cy="36" r="2" fill="#701321"/>
+      <circle cx="60" cy="8"  r="6" fill="#701321"/>
+    </svg>
+    <span class="header-logo-text">AnotherWalk</span>
+  </a>
+  <nav>
+    <div class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#routes">Routes</a>
+      <a href="#reviews">Reviews</a>
+    </div>
+    <a href="https://app.anotherwalk.city" class="nav-cta">Open app</a>
+  </nav>
+</header>
+
+<!-- ── STICKY SCROLL HERO ── -->
+<div class="hero-scroll-container" id="heroScrollContainer">
+  <div class="hero-sticky" id="heroSection">
+    <div class="hero-left">
+      <div class="hero-progress" id="heroProgress">
+        <div class="hero-progress-dot active" id="pdot0"></div>
+        <div class="hero-progress-dot" id="pdot1"></div>
+        <div class="hero-progress-dot" id="pdot2"></div>
+        <div class="hero-progress-dot" id="pdot3"></div>
+        <div class="hero-progress-dot" id="pdot4"></div>
+      </div>
+      <div class="hero-eyebrow">Amsterdam · Self-guided walks</div>
+      <h1 class="hero-title">Walk Amsterdam<br><em>like you live there.</em></h1>
+      <p class="hero-sub">The city, curated.</p>
+      <p class="hero-desc">Curated walking routes that reveal Amsterdam's hidden stories, best local spots, and the reasons why this city is unlike anywhere else on earth.</p>
+      <div class="hero-actions">
+        <a href="https://app.anotherwalk.city" class="btn-primary">Explore the routes</a>
+        <a href="https://app.anotherwalk.city" class="btn-ghost">Try free route</a>
+      </div>
+      <p class="hero-price">Routes from <strong>€5,99</strong> · No subscription · Yours forever</p>
+    </div>
+    <div class="hero-right" id="heroRight">
+      <div class="route-map-wrap">
+        <svg id="routeSvg" viewBox="0 0 320 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 90 Q80 70 160 95 Q240 120 320 100" stroke="rgba(184,154,90,0.07)" stroke-width="14" fill="none"/>
+          <path d="M0 160 Q90 140 160 165 Q240 190 320 170" stroke="rgba(184,154,90,0.06)" stroke-width="10" fill="none"/>
+          <path d="M0 230 Q80 210 160 235 Q245 260 320 240" stroke="rgba(184,154,90,0.06)" stroke-width="8" fill="none"/>
+          <path d="M0 300 Q85 282 160 305 Q248 328 320 308" stroke="rgba(184,154,90,0.05)" stroke-width="7" fill="none"/>
+          <path d="M160 450 L160 390 Q160 360 140 340 L110 310 Q90 290 95 265 L105 235 Q112 210 130 198 L155 182 Q172 168 168 145 L160 118 Q155 98 168 82 L185 62 Q198 48 195 30" stroke="#701321" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.08"/>
+          <path id="routePath" d="M160 450 L160 390 Q160 360 140 340 L110 310 Q90 290 95 265 L105 235 Q112 210 130 198 L155 182 Q172 168 168 145 L160 118 Q155 98 168 82 L185 62 Q198 48 195 30" stroke="#701321" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 4" fill="none"/>
+          <!-- Stop 0: Start — positioned on route path at y=450 -->
+          <g class="route-stop-dot" id="dot0" transform="translate(160,450)">
+            <g class="dot-inner">
+              <circle r="14" fill="#191919" stroke="white" stroke-width="2.5"/>
+              <text x="0" y="5" text-anchor="middle" fill="#b89a5a" font-size="10" font-family="Montserrat" font-weight="700">&#9658;</text>
+            </g>
+          </g>
+          <g class="route-stop-label" id="lbl0" transform="translate(180,443)">
+            <rect x="0" y="-12" width="122" height="20" rx="2" fill="rgba(25,25,25,0.85)"/>
+            <text x="8" y="3" fill="#b89a5a" font-size="8.5" font-family="Montserrat" font-weight="600">Homomonument</text>
+          </g>
+
+          <!-- Stop 1: on route at ~y=315, x=110 -->
+          <g class="route-stop-dot" id="dot1" transform="translate(110,315)">
+            <g class="dot-inner">
+              <circle r="11" fill="#701321" stroke="white" stroke-width="2.5"/>
+              <text x="0" y="4" text-anchor="middle" fill="white" font-size="8" font-family="Montserrat" font-weight="700">2</text>
+            </g>
+          </g>
+          <g class="route-stop-label" id="lbl1" transform="translate(128,308)">
+            <rect x="0" y="-12" width="82" height="20" rx="2" fill="rgba(25,25,25,0.85)"/>
+            <text x="8" y="3" fill="rgba(241,234,222,0.9)" font-size="8.5" font-family="Montserrat" font-weight="600">Westerkerk</text>
+          </g>
+
+          <!-- Stop 2: optional cafe — on route at ~y=258, x=95 -->
+          <g class="route-stop-dot" id="dot2" transform="translate(95,258)">
+            <g class="dot-inner">
+              <circle r="13" fill="#4a7a50" stroke="white" stroke-width="2.5"/>
+              <text x="0" y="5" text-anchor="middle" fill="white" font-size="11" font-family="Montserrat" font-weight="600">cf</text>
+            </g>
+          </g>
+          <g class="route-stop-label" id="lbl2" transform="translate(113,251)">
+            <rect x="0" y="-12" width="97" height="20" rx="2" fill="rgba(25,25,25,0.85)"/>
+            <text x="8" y="3" fill="rgba(241,234,222,0.9)" font-size="8.5" font-family="Montserrat" font-weight="600">Cafe Winkel 43</text>
+          </g>
+
+          <!-- Stop 3: on route at ~y=198, x=130 -->
+          <g class="route-stop-dot" id="dot3" transform="translate(130,198)">
+            <g class="dot-inner">
+              <circle r="11" fill="#701321" stroke="white" stroke-width="2.5"/>
+              <text x="0" y="4" text-anchor="middle" fill="white" font-size="8" font-family="Montserrat" font-weight="700">3</text>
+            </g>
+          </g>
+          <g class="route-stop-label" id="lbl3" transform="translate(148,191)">
+            <rect x="0" y="-12" width="106" height="20" rx="2" fill="rgba(25,25,25,0.85)"/>
+            <text x="8" y="3" fill="rgba(241,234,222,0.9)" font-size="8.5" font-family="Montserrat" font-weight="600">Anne Frank House</text>
+          </g>
+
+          <!-- Stop 4: on route at ~y=118, x=160 -->
+          <g class="route-stop-dot" id="dot4" transform="translate(160,118)">
+            <g class="dot-inner">
+              <circle r="11" fill="#701321" stroke="white" stroke-width="2.5"/>
+              <text x="0" y="4" text-anchor="middle" fill="white" font-size="8" font-family="Montserrat" font-weight="700">4</text>
+            </g>
+          </g>
+          <g class="route-stop-label" id="lbl4" transform="translate(178,111)">
+            <rect x="0" y="-12" width="90" height="20" rx="2" fill="rgba(25,25,25,0.85)"/>
+            <text x="8" y="3" fill="rgba(241,234,222,0.9)" font-size="8.5" font-family="Montserrat" font-weight="600">Jordaan Hofjes</text>
+          </g>
+
+          <!-- Stop 5: locked top — on route at ~y=30, x=195 -->
+          <g class="route-stop-dot" id="dot5" transform="translate(195,30)">
+            <g class="dot-inner">
+              <circle r="20" fill="rgba(112,19,33,0.35)" stroke="rgba(112,19,33,0.55)" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <text x="0" y="5" text-anchor="middle" fill="rgba(241,234,222,0.6)" font-size="9" font-family="Montserrat" font-weight="600">+13</text>
+            </g>
+          </g>
+          <g class="route-stop-label" id="lbl5" transform="translate(120,22)">
+            <rect x="0" y="-12" width="66" height="20" rx="2" fill="rgba(112,19,33,0.45)"/>
+            <text x="8" y="3" fill="rgba(241,234,222,0.6)" font-size="8" font-family="Montserrat" font-weight="600">locked</text>
+          </g>
+        </svg>
+      </div>
+      <div class="scroll-hint">
+        <span class="scroll-hint-text">Scroll</span>
+        <div class="scroll-hint-arrow"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-label reveal">What a typical route looks like</div>
+<div class="stats-bar reveal">
+  <div class="stat">
+    <div class="stat-value">18</div>
+    <div class="stat-label">Curated stops</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">4 km</div>
+    <div class="stat-label">Walking distance</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">2–3h</div>
+    <div class="stat-label">At your own pace</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">€5,99</div>
+    <div class="stat-label">Once, yours forever</div>
+  </div>
+</div>
+
+<!-- ── INTRO STRIP ── -->
+<div class="intro-strip reveal">
+  <h2>Most guides show you <strong>what to see.</strong><br>AnotherWalk shows you <strong>why it matters.</strong></h2>
+  <div class="intro-right">
+    <p>Every stop on an AnotherWalk route comes with context — the history, the story, the reason this particular corner of the city is worth your time.</p>
+    <p>We weave together architecture, culture, food, and the everyday life of a neighbourhood so you leave understanding the city, not just having visited it.</p>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="section" id="how-it-works">
+  <div class="reveal">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-title">Three steps to walking a city like you live there.</h2>
+  </div>
+  <div class="steps">
+
+    <div class="step reveal">
+      <div class="step-number">01</div>
+      <!-- Custom icon: map/route -->
+      <svg class="step-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="42" height="42" rx="6" stroke="#701321" stroke-width="2"/>
+        <path d="M10 18 Q14 12 18 18 Q22 24 26 18 Q30 12 34 18 Q38 24 38 24" stroke="#701321" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="34" cy="30" r="4" stroke="#701321" stroke-width="2" fill="none"/>
+        <line x1="34" y1="34" x2="34" y2="40" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+        <line x1="10" y1="30" x2="26" y2="30" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+        <line x1="10" y1="36" x2="22" y2="36" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h3 class="step-title">Choose your route</h3>
+      <p class="step-body">Pick from our curated collection. Each route is built around a neighbourhood, a theme, or a story worth telling — with a free mini route to start.</p>
+    </div>
+
+    <div class="step reveal reveal-delay-1">
+      <div class="step-number">02</div>
+      <!-- Custom icon: phone with map pin -->
+      <svg class="step-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="13" y="3" width="22" height="38" rx="4" stroke="#701321" stroke-width="2"/>
+        <line x1="13" y1="9" x2="35" y2="9" stroke="#701321" stroke-width="2"/>
+        <line x1="13" y1="36" x2="35" y2="36" stroke="#701321" stroke-width="2"/>
+        <circle cx="24" cy="20" r="4" stroke="#701321" stroke-width="2" fill="none"/>
+        <path d="M24 24 Q20 28 20 30 Q20 32 24 32 Q28 32 28 30 Q28 28 24 24Z" stroke="#701321" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+      </svg>
+      <h3 class="step-title">Open the app</h3>
+      <p class="step-body">No download needed. Open the app in your browser and get an interactive map, rich stop descriptions, and local pro tips at every turn.</p>
+    </div>
+
+    <div class="step reveal reveal-delay-2">
+      <div class="step-number">03</div>
+      <!-- Custom icon: walking figure with dotted path -->
+      <svg class="step-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="8" r="4" stroke="#701321" stroke-width="2" fill="none"/>
+        <path d="M30 12 L28 20 L22 26" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+        <path d="M28 20 L32 26 L30 34" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+        <path d="M22 26 L18 32" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+        <!-- Dotted path on ground -->
+        <circle cx="8" cy="38" r="2" fill="#701321" opacity="0.4"/>
+        <circle cx="14" cy="36" r="2" fill="#701321" opacity="0.55"/>
+        <circle cx="20" cy="38" r="2" fill="#701321" opacity="0.7"/>
+        <circle cx="26" cy="36" r="2" fill="#701321" opacity="0.85"/>
+        <circle cx="32" cy="38" r="2" fill="#701321"/>
+      </svg>
+      <h3 class="step-title">Walk your way</h3>
+      <p class="step-body">Skip stops, linger over a coffee, take a detour. AnotherWalk is a guide, not a schedule. The city is yours to explore at your own pace.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ROUTE PREVIEW ── -->
+<section class="route-section" id="routes">
+  <div class="route-inner">
+    <div class="route-left reveal">
+      <div class="section-eyebrow">Amsterdam · 3 routes available</div>
+      <h2 class="section-title">Three walks.<br>One city. Endless stories.</h2>
+      <p class="route-desc">Each AnotherWalk route explores Amsterdam through a different lens — a neighbourhood, an era, a way of life. Pick one, or walk them all. Every route comes with a curated map, rich stop descriptions, local tips, and optional detours.</p>
+      <div class="route-meta">
+        <div class="route-meta-item">
+          <span class="route-meta-value">2–3h</span>
+          <span class="route-meta-label">Duration</span>
+        </div>
+        <div class="route-meta-item">
+          <span class="route-meta-value">18</span>
+          <span class="route-meta-label">Stops</span>
+        </div>
+        <div class="route-meta-item">
+          <span class="route-meta-value">4 km</span>
+          <span class="route-meta-label">Distance</span>
+        </div>
+        <div class="route-meta-item">
+          <span class="route-meta-value">€5,99</span>
+          <span class="route-meta-label">Per route</span>
+        </div>
+      </div>
+      <div class="route-actions">
+        <a href="https://app.anotherwalk.city" class="btn-primary">Browse all routes</a>
+        <a href="https://app.anotherwalk.city" class="btn-light">Try free first</a>
+      </div>
+      <p class="route-price-note">One-time purchase · No subscription · Works on any phone</p>
+    </div>
+
+    <div class="route-stops reveal reveal-delay-1">
+      <div class="stops-header">Example stops · from the Jordaan route</div>
+      <div class="route-stop">
+        <div class="stop-dot start">▶</div>
+        <div class="stop-info"><h4>Homomonument</h4><p>Starting point · Westermarkt</p></div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot">2</div>
+        <div class="stop-info"><h4>Westerkerk</h4><p>Stop · History &amp; architecture</p></div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot">3</div>
+        <div class="stop-info"><h4>Anne Frank House</h4><p>Stop · History &amp; culture</p></div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot opt">☕</div>
+        <div class="stop-info"><h4>Café Winkel 43</h4><p>Optional · Best appeltaart in Amsterdam</p></div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot">5</div>
+        <div class="stop-info"><h4>Jordaan Hofjes</h4><p>Stop · Hidden courtyards</p></div>
+      </div>
+      <div class="locked-banner">🔒 More stops unlocked after purchase</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REVIEWS ── -->
+<section class="reviews-section" id="reviews">
+  <div class="reviews-inner">
+    <div class="reveal">
+      <div class="section-eyebrow">What walkers say</div>
+      <h2 class="section-title">Real people. Real walks.</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"I've been to Amsterdam three times. This walk showed me a side of the city I never knew existed. The stories behind each stop made everything come alive."</p>
+        <div class="review-author">
+          <div class="review-avatar">SL</div>
+          <div><div class="review-name">Sarah L.</div><div class="review-origin">London, UK · Amsterdam walk</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal reveal-delay-1">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"As an Amsterdam local, I was sceptical. But I learned things about my own neighbourhood I genuinely didn't know. The tips for coffee and food are spot on."</p>
+        <div class="review-author">
+          <div class="review-avatar">MV</div>
+          <div><div class="review-name">Maarten V.</div><div class="review-origin">Amsterdam · AnotherWalk</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal reveal-delay-2">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Perfect for our trip. We did it over two hours, stopped for lunch, went back to a few spots. The app works beautifully on your phone. So much better than a guidebook."</p>
+        <div class="review-author">
+          <div class="review-avatar">JT</div>
+          <div><div class="review-name">Julie T.</div><div class="review-origin">New York, US · Amsterdam walk</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOR WHO ── -->
+<section class="forwho-section" id="for-who">
+  <div class="reveal">
+    <div class="section-eyebrow">For who</div>
+    <h2 class="section-title">Not every traveller is the same. AnotherWalk isn't either.</h2>
+  </div>
+  <div class="forwho-grid">
+
+    <div class="forwho-card reveal">
+      <!-- Custom icon: traveller/plane + city -->
+      <svg class="forwho-icon" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="24" stroke="#701321" stroke-width="2" fill="none"/>
+        <!-- Globe lines -->
+        <ellipse cx="28" cy="28" rx="10" ry="24" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <line x1="4" y1="28" x2="52" y2="28" stroke="#701321" stroke-width="1.5"/>
+        <path d="M8 18 Q28 22 48 18" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <path d="M8 38 Q28 34 48 38" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <!-- Pin -->
+        <circle cx="38" cy="16" r="3.5" stroke="#701321" stroke-width="2" fill="none"/>
+        <line x1="38" y1="19.5" x2="38" y2="24" stroke="#701321" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h3 class="forwho-title">The curious traveller</h3>
+      <p class="forwho-body">You've been to Amsterdam before, or this is your first visit — but you're done with the tourist trail. You want to understand a place, not just photograph it. AnotherWalk is built for you.</p>
+      <div class="forwho-tags">
+        <span class="forwho-tag">Cultural depth</span>
+        <span class="forwho-tag">Local favourites</span>
+        <span class="forwho-tag">Off the beaten path</span>
+      </div>
+    </div>
+
+    <div class="forwho-card reveal reveal-delay-1">
+      <!-- Custom icon: house + route -->
+      <svg class="forwho-icon" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- House -->
+        <path d="M10 26 L28 10 L46 26" stroke="#701321" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <rect x="16" y="26" width="24" height="20" rx="1" stroke="#701321" stroke-width="2" fill="none"/>
+        <rect x="23" y="34" width="10" height="12" rx="1" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <!-- Discovery dots radiating out -->
+        <circle cx="8" cy="44" r="2.5" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <circle cx="48" cy="44" r="2.5" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <circle cx="8" cy="14" r="2.5" stroke="#701321" stroke-width="1.5" fill="none"/>
+        <path d="M10 43 L16 38" stroke="#701321" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+        <path d="M46 43 L40 38" stroke="#701321" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+        <path d="M10 15 L18 22" stroke="#701321" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+      </svg>
+      <h3 class="forwho-title">The Amsterdam local</h3>
+      <p class="forwho-body">You've lived here for years, but there are still streets you've never turned down, stories you haven't heard. AnotherWalk helps you rediscover the city you call home — through fresh eyes.</p>
+      <div class="forwho-tags">
+        <span class="forwho-tag">Hidden history</span>
+        <span class="forwho-tag">New discoveries</span>
+        <span class="forwho-tag">City rediscovered</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MANIFESTO ── -->
+<div class="manifesto reveal">
+  <blockquote>
+    "A city reveals itself to those who walk slowly enough to notice."
+  </blockquote>
+  <cite>— The AnotherWalk philosophy</cite>
+</div>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="reveal">
+    <div class="section-eyebrow">Ready to walk?</div>
+    <h2 class="cta-title">Your next great<br><em>Amsterdam walk</em><br>starts here.</h2>
+    <p class="cta-body">Try the free mini route first, or dive straight into one of our three Amsterdam walks. No app download needed — open on your phone and start walking.</p>
+    <div class="cta-actions">
+      <a href="https://app.anotherwalk.city" class="btn-primary">Open the app</a>
+      <a href="https://app.anotherwalk.city" class="btn-ghost">Try the free route</a>
+    </div>
+    <p class="price-note">Routes from <strong>€5,99</strong> · One-time purchase · No subscription</p>
+    <div class="trust-row">
+      <span class="trust-item">Works on any phone</span>
+      <span class="trust-item">No download needed</span>
+      <span class="trust-item">Yours forever</span>
+      <span class="trust-item">Offline capable</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo-wrap">
+        <svg class="footer-logo-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="76" height="76" rx="14" fill="#f1eade" stroke="#701321" stroke-width="2.5"/>
+          <line x1="2"  y1="26" x2="78" y2="26" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+          <line x1="2"  y1="44" x2="78" y2="44" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+          <line x1="2"  y1="62" x2="78" y2="62" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+          <line x1="20" y1="2"  x2="20" y2="78" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+          <line x1="40" y1="2"  x2="40" y2="78" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+          <line x1="60" y1="2"  x2="60" y2="78" stroke="#701321" stroke-width="1.5" opacity="0.22"/>
+          <path d="M2 62 Q24 52 40 44 Q56 36 60 2" stroke="#701321" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.28"/>
+          <path d="M16 68 C20 56 28 46 40 36 C50 28 58 18 60 8" stroke="#701321" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <circle cx="16" cy="68" r="6" fill="#701321"/>
+          <circle cx="40" cy="36" r="5" fill="#f1eade" stroke="#701321" stroke-width="2.5"/>
+          <circle cx="40" cy="36" r="2" fill="#701321"/>
+          <circle cx="60" cy="8"  r="6" fill="#701321"/>
+        </svg>
+        <span class="footer-logo-text">AnotherWalk</span>
+      </div>
+      <p class="footer-tagline">Walk cities like you live there.<br>Amsterdam · More cities coming.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="https://app.anotherwalk.city">Open the app</a>
+      <a href="https://app.anotherwalk.city">Browse routes</a>
+      <a href="https://app.anotherwalk.city">Free mini route</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>About</h4>
+      <a href="#how-it-works">How it works</a>
+      <a href="#for-who">For who</a>
+      <a href="#reviews">Reviews</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#" onclick="openLegal('privacy'); return false;">Privacy Policy</a>
+      <a href="#" onclick="openLegal('terms'); return false;">Terms of Use</a>
+      <a href="#" onclick="openLegal('cookies'); return false;">Cookie Policy</a>
+      <a href="mailto:hello@anotherwalk.city">Contact</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 AnotherWalk · Amsterdam, Netherlands · KvK: [nummer invullen]</span>
+    <div class="footer-legal-links">
+      <a href="#" onclick="openLegal('privacy'); return false;">Privacy</a>
+      <a href="#" onclick="openLegal('terms'); return false;">Terms</a>
+      <a href="#" onclick="openLegal('cookies'); return false;">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── PRIVACY POLICY ── -->
+<div class="legal-page" id="legal-privacy">
+  <div class="legal-header">
+    <span class="logo-text">AnotherWalk</span>
+    <button class="legal-close" onclick="closeLegal('privacy')">✕ Close</button>
+  </div>
+  <div class="legal-content">
+    <h1>Privacy Policy</h1>
+    <span class="legal-date">Last updated: [datum invullen]</span>
+    <div class="legal-placeholder">📝 Dit is een placeholder. Laat deze tekst opstellen door een jurist of gebruik een AVG-conforme template voor jouw situatie als kleine ondernemer in Nederland.</div>
+    <h2>Who we are</h2>
+    <p>AnotherWalk is operated by [jouw naam / bedrijfsnaam], registered in the Netherlands (KvK: [nummer]). Contact: <a href="mailto:hello@anotherwalk.city">hello@anotherwalk.city</a>.</p>
+    <h2>What data we collect</h2>
+    <p>We collect your email address when you create an account or sign in via magic link. We also collect purchase information processed securely through Stripe. We do not store payment details ourselves.</p>
+    <p>When you use the app, we may collect anonymised usage data (e.g. which routes are viewed) to improve the product.</p>
+    <h2>How we use your data</h2>
+    <p>Your email address is used solely to authenticate you and to send transactional emails (e.g. your magic link). We do not send marketing emails without your explicit consent. We do not sell your data to third parties.</p>
+    <h2>Third-party services</h2>
+    <p>We use the following third-party services: Supabase (authentication and database), Stripe (payments), Mapbox (map rendering), Resend (transactional email). Each of these has their own privacy policy.</p>
+    <h2>Your rights (AVG/GDPR)</h2>
+    <p>You have the right to access, correct, or delete your personal data at any time. To exercise these rights, contact us at <a href="mailto:hello@anotherwalk.city">hello@anotherwalk.city</a>.</p>
+    <h2>Cookies</h2>
+    <p>We use only functional cookies necessary for authentication. We do not use tracking or advertising cookies. See our <a href="#" onclick="closeLegal('privacy'); openLegal('cookies'); return false;">Cookie Policy</a> for details.</p>
+    <h2>Contact</h2>
+    <p>Questions about this policy? Email <a href="mailto:hello@anotherwalk.city">hello@anotherwalk.city</a>.</p>
+  </div>
+</div>
+
+<!-- ── TERMS OF USE ── -->
+<div class="legal-page" id="legal-terms">
+  <div class="legal-header">
+    <span class="logo-text">AnotherWalk</span>
+    <button class="legal-close" onclick="closeLegal('terms')">✕ Close</button>
+  </div>
+  <div class="legal-content">
+    <h1>Terms of Use</h1>
+    <span class="legal-date">Last updated: [datum invullen]</span>
+    <div class="legal-placeholder">📝 Dit is een placeholder. Laat deze tekst opstellen door een jurist voor je live gaat met betalende gebruikers.</div>
+    <h2>Acceptance of terms</h2>
+    <p>By using AnotherWalk, you agree to these Terms of Use. If you do not agree, please do not use the service.</p>
+    <h2>The service</h2>
+    <p>AnotherWalk provides curated self-guided walking routes accessible via a web application. Routes are purchased on a one-time basis and remain accessible indefinitely in your account.</p>
+    <h2>Purchases and refunds</h2>
+    <p>Routes are priced as indicated at the time of purchase. Payments are processed via Stripe. Due to the digital nature of the product, routes are non-refundable once accessed. If you experience technical issues, contact us at <a href="mailto:hello@anotherwalk.city">hello@anotherwalk.city</a>.</p>
+    <h2>Intellectual property</h2>
+    <p>All route content, descriptions, and associated materials are the intellectual property of AnotherWalk. You may not reproduce, distribute, or resell any content without written permission.</p>
+    <h2>Liability</h2>
+    <p>AnotherWalk routes are provided for informational and entertainment purposes. We are not responsible for any incidents, injuries, or losses that may occur during a walk. Always exercise personal judgement when navigating urban environments.</p>
+    <h2>Changes to these terms</h2>
+    <p>We reserve the right to update these Terms at any time. Continued use of the service after changes constitutes acceptance of the updated Terms.</p>
+    <h2>Contact</h2>
+    <p>Questions? Email <a href="mailto:hello@anotherwalk.city">hello@anotherwalk.city</a>.</p>
+  </div>
+</div>
+
+<!-- ── COOKIE POLICY ── -->
+<div class="legal-page" id="legal-cookies">
+  <div class="legal-header">
+    <span class="logo-text">AnotherWalk</span>
+    <button class="legal-close" onclick="closeLegal('cookies')">✕ Close</button>
+  </div>
+  <div class="legal-content">
+    <h1>Cookie Policy</h1>
+    <span class="legal-date">Last updated: [datum invullen]</span>
+    <h2>What are cookies?</h2>
+    <p>Cookies are small text files stored on your device by your browser. They are used to remember information about your visit.</p>
+    <h2>Cookies we use</h2>
+    <p>AnotherWalk uses only strictly necessary cookies. These are required for the app to function — specifically for authentication (keeping you signed in). We do not use advertising, analytics, or tracking cookies.</p>
+    <h2>Third-party cookies</h2>
+    <p>Supabase (our authentication provider) and Mapbox (our map provider) may set their own cookies. We have no control over these but they are limited to functional use only.</p>
+    <h2>Your choices</h2>
+    <p>Because we only use strictly necessary cookies, no consent banner is required under Dutch/EU law. You can always clear cookies via your browser settings, but this will sign you out of the app.</p>
+    <h2>Contact</h2>
+    <p>Questions? Email <a href="mailto:hello@anotherwalk.city">hello@anotherwalk.city</a>.</p>
+  </div>
+</div>
+
+<script>
+  // ── HEADER SCROLL SHADOW
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ── SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => revealObserver.observe(el));
+
+  // ── STICKY SCROLL ROUTE ANIMATION
+  const routePathEl = document.getElementById('routePath');
+  const numProgressDots = 5;
+
+  // Measure actual SVG path length on load
+  const actualPathLength = routePathEl.getTotalLength();
+  routePathEl.style.strokeDasharray = actualPathLength;
+  routePathEl.style.strokeDashoffset = actualPathLength;
+
+  // For each stop, find what fraction along the path it sits
+  // by finding the closest point on the path to each stop's SVG coordinates
+  const stopCoords = [
+    {x: 160, y: 450}, // dot0 start
+    {x: 110, y: 315}, // dot1
+    {x:  95, y: 258}, // dot2 cafe
+    {x: 130, y: 198}, // dot3
+    {x: 160, y: 118}, // dot4
+    {x: 195, y:  30}, // dot5 locked
+  ];
+
+  // Find the path fraction for each stop by binary searching closest point
+  function getPathFractionForPoint(px, py) {
+    const steps = 200;
+    let closest = 0;
+    let minDist = Infinity;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const len = t * actualPathLength;
+      const pt = routePathEl.getPointAtLength(len);
+      const d = Math.hypot(pt.x - px, pt.y - py);
+      if (d < minDist) { minDist = d; closest = t; }
+    }
+    return closest;
+  }
+
+  // Calculate fractions once on load
+  const stopFractions = stopCoords.map(c => getPathFractionForPoint(c.x, c.y));
+
+  function getStickyScrollProgress() {
+    const container = document.getElementById('heroScrollContainer');
+    if (!container) return 0;
+    const rect = container.getBoundingClientRect();
+    const containerH = container.offsetHeight;
+    const windowH = window.innerHeight;
+    const scrolled = -rect.top;
+    const maxScroll = containerH - windowH;
+    return Math.max(0, Math.min(1, scrolled / Math.max(maxScroll, 1)));
+  }
+
+  function updateRouteAnim() {
+    const p = getStickyScrollProgress();
+
+    // Draw route — offset goes from full (hidden) to 0 (fully drawn)
+    routePathEl.style.strokeDashoffset = actualPathLength * (1 - p);
+
+    // Trigger each stop when the drawn portion of the path reaches it
+    stopFractions.forEach((fraction, i) => {
+      const dot = document.getElementById('dot' + i);
+      const lbl = document.getElementById('lbl' + i);
+      const active = p >= fraction;
+      dot && dot.classList.toggle('visible', active);
+      lbl && lbl.classList.toggle('visible', active);
+    });
+
+    // Update side progress dots
+    for (let i = 0; i < numProgressDots; i++) {
+      const pd = document.getElementById('pdot' + i);
+      if (pd) pd.classList.toggle('active', p >= i / numProgressDots);
+    }
+
+    // On mobile: fade out the text overlay as route draws
+    if (window.innerWidth <= 900) {
+      const heroLeft = document.querySelector('.hero-left');
+      if (heroLeft) {
+        const fadeOut = Math.max(0, Math.min(1, (p - 0.05) / 0.17));
+        heroLeft.style.opacity = 1 - fadeOut;
+        heroLeft.style.transform = `translateY(${-fadeOut * 24}px)`;
+      }
+    }
+
+    // Hide scroll hint once user has started scrolling
+    const hint = document.querySelector('.scroll-hint');
+    if (hint) hint.style.opacity = p > 0.05 ? '0' : '';
+  }
+
+  window.addEventListener('scroll', updateRouteAnim, { passive: true });
+  setTimeout(updateRouteAnim, 600);
+
+  // ── LEGAL PAGES
+  function openLegal(type) {
+    document.getElementById('legal-' + type).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLegal(type) {
+    document.getElementById('legal-' + type).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Close legal pages with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      ['privacy','terms','cookies'].forEach(t => closeLegal(t));
+    }
+  });
+</script>
+
+</body>
+</html>
