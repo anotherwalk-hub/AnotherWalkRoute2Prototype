@@ -126,7 +126,9 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 /* ── STOP PANEL */
 .stop-panel { position:fixed; bottom:0; left:0; right:0; max-height:48vh; background:var(--panel); border-top:2px solid var(--bordeaux); transform:translateY(calc(100% + 40px)); transition:transform .32s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; box-shadow:0 -6px 32px rgba(25,25,25,.14); z-index:500; }
 .stop-panel.open { transform:translateY(0); }
-.panel-handle { width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; margin:9px auto 0; flex-shrink:0; cursor:pointer; }
+.panel-handle { width:100%; padding:9px 0 7px; display:flex; justify-content:center; flex-shrink:0; cursor:grab; touch-action:none; }
+.panel-handle:active { cursor:grabbing; }
+.panel-handle::before { content:''; width:32px; height:3px; background:rgba(112,19,33,.25); border-radius:2px; }
 .p-inner { padding:10px 24px 24px; overflow-y:auto; flex:1; scrollbar-width:thin; scrollbar-color:rgba(112,19,33,0.35) rgba(112,19,33,0.08); }
 .p-inner::-webkit-scrollbar { width:4px; }
 .p-inner::-webkit-scrollbar-track { background:rgba(112,19,33,0.08); border-radius:2px; }
@@ -275,7 +277,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 </div>
 
 <div class="stop-panel" id="stopPanel">
-  <div class="panel-handle" onclick="closePanel()"></div>
+  <div class="panel-handle" id="panelHandle"></div>
   <button class="close-btn" onclick="closePanel()">&#10005;</button>
   <div class="p-inner" id="panelContent"></div>
 </div>
@@ -380,6 +382,7 @@ var markerObjects   = {};
 var userMarker      = null;
 var watchId         = null;
 var locateOn        = false;
+var lastPos         = null; // last known GPS position {lat, lng}
 // FIX: track whether the user explicitly switched routes this session
 // so we don't re-show the intro when auth re-triggers loadRoute
 var introShownForRoute = {};
@@ -397,8 +400,21 @@ map.on('load', function() { initAuth(); });
 // AUTH
 // ─────────────────────────────────────────────
 
+// FIX: Supabase fires auth events (TOKEN_REFRESHED / SIGNED_IN) every time the
+// tab regains focus. Previously this re-ran loadRoute() -> map.flyTo(), zooming
+// the map back out to the route overview. We now only act when the signed-in
+// user actually changes; token refreshes for the same user are ignored.
+var authInitialized = false;
+
 function initAuth() {
   supabase.auth.onAuthStateChange(function(event, session) {
+    var newId = (session && session.user) ? session.user.id : null;
+    var oldId = currentUser ? currentUser.id : null;
+    if (authInitialized && newId === oldId) {
+      if (session && session.user) currentUser = session.user; // keep fresh token, change nothing else
+      return;
+    }
+    authInitialized = true;
     if (session && session.user) {
       currentUser = session.user;
       onSignedIn();
@@ -721,11 +737,20 @@ document.getElementById('locateTooltipClose').addEventListener('click', function
 document.getElementById('locateBtn').addEventListener('click', function() {
   tooltip.classList.remove('show'); tooltipDismissed = true;
   if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+
+  // Already active: just re-center on the current location (no toggle-off)
   if (locateOn) {
-    if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-    if (userMarker) { userMarker.remove(); userMarker = null; }
-    locateOn = false; document.getElementById('locateBtn').classList.remove('active'); return;
+    if (lastPos) {
+      map.flyTo({ center:[lastPos.lng, lastPos.lat], zoom:16 });
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        function(p) { setUserDot(p.coords.latitude, p.coords.longitude); map.flyTo({ center:[p.coords.longitude, p.coords.latitude], zoom:16 }); },
+        null, { enableHighAccuracy:true }
+      );
+    }
+    return;
   }
+
   locateOn = true; document.getElementById('locateBtn').classList.add('active');
   navigator.geolocation.getCurrentPosition(
     function(p) { setUserDot(p.coords.latitude, p.coords.longitude); map.flyTo({ center:[p.coords.longitude, p.coords.latitude], zoom:16 }); },
@@ -738,6 +763,7 @@ document.getElementById('locateBtn').addEventListener('click', function() {
 });
 
 function setUserDot(lat, lng) {
+  lastPos = { lat:lat, lng:lng };
   var el = document.createElement('div'); el.className = 'user-dot';
   if (userMarker) userMarker.remove();
   userMarker = new mapboxgl.Marker({ element:el, anchor:'center' }).setLngLat([lng, lat]).addTo(map);
@@ -771,6 +797,39 @@ function closePanel() {
 }
 
 map.on('click', function() { closePanel(); });
+
+// ── PANEL HANDLE: drag down to dismiss (tap also closes)
+(function() {
+  var handle = document.getElementById('panelHandle');
+  var panel  = document.getElementById('stopPanel');
+  var dragging = false, startY = 0, delta = 0;
+
+  handle.addEventListener('pointerdown', function(e) {
+    dragging = true; startY = e.clientY; delta = 0;
+    panel.style.transition = 'none';
+    handle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  handle.addEventListener('pointermove', function(e) {
+    if (!dragging) return;
+    delta = Math.max(0, e.clientY - startY);
+    panel.style.transform = 'translateY(' + delta + 'px)';
+  });
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    panel.style.transition = '';
+    panel.style.transform = '';
+    // far enough down = dismiss; a simple tap (no movement) also closes
+    if (delta > 60 || delta < 5) closePanel();
+  }
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', function() {
+    dragging = false;
+    panel.style.transition = '';
+    panel.style.transform = '';
+  });
+})();
 
 // ─────────────────────────────────────────────
 // INTRO OVERLAY
