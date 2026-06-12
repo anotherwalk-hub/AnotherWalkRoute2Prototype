@@ -2,13 +2,14 @@
 //  AnotherWalk — Route data
 //  Route: The Pijp, in Between
 //  City:  Amsterdam
-//  File:  route3-stops.js
+//  File:  route3-stops.js   (v2 — field test feedback verwerkt)
 //
-//  NOTES:
-//  - Two stops were numbered '20' in the source text.
-//    Rise Bakery = stop 20, Mezzave = stop 21, rest shifted accordingly.
-//  - viaPoints: add coordinates here to steer the walking route
-//    through specific streets. Format: { after: stopId, lat, lng }
+//  ⚠️ GESCHATTE COÖRDINATEN — graag verifiëren:
+//  - opt5 INDEBT Broedplaats (na stop 16)
+//  - Stop 22 Sarphatipark oost-ingang
+//  - opt6 Oranjekerk
+//  - opt7 Ceintuurtheater
+//  - Stop 27 groene transformatie (Frans Halsstraat-omgeving)
 // ─────────────────────────────────────────────────────────────
 
 var ROUTE_META = {
@@ -16,7 +17,7 @@ var ROUTE_META = {
   title: 'The Pijp, in Between',
   city: 'Amsterdam',
   label: 'Amsterdam · Route 3',
-  stopCount: 28,
+  stopCount: 30,
   duration: '±2.5 hr',
   center: [4.895, 52.360],
   zoom: 14,
@@ -204,7 +205,7 @@ var ROUTE_STOPS = [
     name: 'Buildings in De Pijp',
     lat: 52.355785,
     lng: 4.8991033,
-    body: 'Look at the buildings around you. They\'re all roughly the same height, the same materials, the same rhythm. That\'s not a coincidence.<br><br>These blocks were designed for maximum efficiency: as many apartments as possible, built quickly, and affordable for workers. Uniform height made construction cheaper and faster.<br><br>It may look repetitive — and there\'s beauty in that too — but it was once a practical solution to a housing crisis.'
+    body: 'Look at the buildings around you. Notice the rhythm in the streets: similar materials, repeating façades, and long continuous housing blocks. That\'s not a coincidence.<br><br>These blocks were designed for maximum efficiency: as many apartments as possible, built quickly, and affordable for workers. Uniformity made construction cheaper and faster.<br><br>It may look repetitive — and there\'s beauty in that too — but it was once a practical solution to a housing crisis.'
   },
   {
     id: 16,
@@ -214,6 +215,17 @@ var ROUTE_STOPS = [
     lat: 52.3558303,
     lng: 4.898079099999999,
     body: 'Little Collins is one of the cafés that helped define De Pijp\'s modern brunch culture.<br><br>Open daily from morning until late afternoon, the restaurant has built a reputation around creative dishes that go far beyond a standard breakfast menu. You\'ll find combinations like buttermilk fried halloumi, 18-hour slow-cooked beef short rib, or ricotta French toast with pumpkin.<br><br>The space itself is usually lively, especially on weekends. Reservations are not accepted, so everything works on a walk-in basis only. That means you may have to wait for a table — or, if you\'re lucky, you might walk straight into one of the most popular brunch spots in the neighbourhood.'
+  },
+  {
+    id: 'opt5',
+    type: 'optional',
+    label: '🎨',
+    icon: '🎨',
+    name: 'INDEBT Broedplaats',
+    // ⚠️ GESCHAT — graag verifiëren
+    lat: 52.35595,
+    lng: 4.89775,
+    body: 'On your left, you\'ll notice a striking old school building. This is INDEBT, a "broedplaats" — literally a breeding ground.<br><br>Amsterdam has a long tradition of converting empty buildings into subsidised studios for artists and creative entrepreneurs. Spaces like this one keep room for creativity in a neighbourhood where rents keep climbing.<br><br>The building itself, with its characteristic brickwork and large windows, is a beautiful example of early 20th-century school architecture. A quiet reminder that not everything in De Pijp has been converted into apartments or cafés.'
   },
   {
     id: 17,
@@ -231,7 +243,8 @@ var ROUTE_STOPS = [
     name: 'Albert Cuyp Market',
     lat: 52.3565345,
     lng: 4.8973601,
-    body: 'You are now entering the famous Albert Cuyp market. Feel free to take it all in, stroll along the stalls, and feel how lively the center of De Pijp can be.<br><br>The Albert Cuyp market didn\'t appear randomly. It developed here because this was a dense working-class neighbourhood — exactly the kind of place where street markets thrive. People needed affordable food, daily supplies, and easy access. Over time, the market grew into one of the busiest in Europe.<br><br>Today it serves a different audience too, but some of the products and its location still reflect the original logic of the neighbourhood.'
+    body: 'You are now entering the famous Albert Cuyp market. Feel free to take it all in, stroll along the stalls, and feel how lively the center of De Pijp can be.<br><br>The Albert Cuyp market didn\'t appear randomly. It developed here because this was a dense working-class neighbourhood — exactly the kind of place where street markets thrive. People needed affordable food, daily supplies, and easy access. Over time, the market grew into one of the busiest in Europe.<br><br>Today it serves a different audience too, but some of the products and its location still reflect the original logic of the neighbourhood.',
+    tip: 'Don\'t just stick to the stalls. Behind them, on both sides of the street, you\'ll find a surprising mix of independent shops, cafés, and restaurants — many locals actually come here for those rather than the market itself.'
   },
   {
     id: 19,
@@ -249,7 +262,8 @@ var ROUTE_STOPS = [
     name: 'Rise Bakery',
     lat: 52.3560554,
     lng: 4.8961991,
-    body: 'At Rise Bakery, everything revolves around dough.<br><br>The bakery is especially known for its sourdough breads and French-style pastries, both made with a strong focus on patience and traditional techniques. Their sourdough bread undergoes a slow 48-hour fermentation process, creating the characteristic flavour and chewy texture that sourdough lovers look for.<br><br>In a fast-moving city, there\'s something almost countercultural about that approach: slowing things down to improve the final result.<br><br>Like many of the newer bakeries in De Pijp, Rise reflects a broader shift in Amsterdam\'s food culture: away from convenience, and back towards craftsmanship.'
+    body: 'At Rise Bakery, everything revolves around dough.<br><br>The bakery is especially known for its sourdough breads and French-style pastries, both made with a strong focus on patience and traditional techniques. Their sourdough bread undergoes a slow 48-hour fermentation process, creating the characteristic flavour and chewy texture that sourdough lovers look for.<br><br>In a fast-moving city, there\'s something almost countercultural about that approach: slowing things down to improve the final result.<br><br>Like many of the newer bakeries in De Pijp, Rise reflects a broader shift in Amsterdam\'s food culture: away from convenience, and back towards craftsmanship.',
+    tip: 'Rise closes at 15:00, so if you\'re walking in the late afternoon, you may want to plan ahead — or save it for another morning.'
   },
   {
     id: 21,
@@ -265,9 +279,21 @@ var ROUTE_STOPS = [
     type: 'stop',
     label: '22',
     name: 'Sarphatipark',
-    lat: 52.3544402,
-    lng: 4.8938149,
+    // ⚠️ GESCHAT — oost-ingang van het park, graag verifiëren
+    lat: 52.3545,
+    lng: 4.8957,
     body: 'Sarphatipark is a rectangular park located right in the middle of De Pijp.<br><br>It was named after Samuel Sarphati — a doctor, urban thinker, and philanthropist who played an important role in improving Amsterdam during the 19th century. The park itself was laid out starting in 1885, as part of the city\'s rapid expansion.<br><br>One unusual detail: unlike the surrounding streets, the park was never raised to the same level. As a result, the park still sits slightly lower than the neighbourhood around it, with the exception of the monument dedicated to Sarphati himself.<br><br>Today, the park functions as one of the green lungs of De Pijp. Especially during warmer months, the grass fills with residents relaxing, meeting friends, or simply escaping their small apartments for a while. Many people in Amsterdam do not have private gardens, which helps explain why parks like this become such important public living rooms when the weather is good.'
+  },
+  {
+    id: 'opt6',
+    type: 'optional',
+    label: '⛪',
+    icon: '⛪',
+    name: 'Oranjekerk',
+    // ⚠️ GESCHAT — graag verifiëren
+    lat: 52.3528,
+    lng: 4.8951,
+    body: 'Just before you reach Massimo, look across the street. The Oranjekerk is a beautifully renovated church that no longer serves a religious function — today it operates as a neighbourhood community center.<br><br>It\'s a typical Amsterdam solution: rather than demolishing old buildings when their original purpose fades, the city repurposes them. The building stays, the meaning changes.'
   },
   {
     id: 23,
@@ -287,6 +313,17 @@ var ROUTE_STOPS = [
     lat: 52.3523867,
     lng: 4.8914357,
     body: 'Kwekkeboom is a true Dutch classic.<br><br>Originally founded in the city of Enschede, the bakery expanded to Amsterdam in the early 1900s and has since become a well-known name in the city for more than 120 years.<br><br>Inside, you\'ll find a mix of savoury snacks, pastries, chocolate, cakes, cookies, and seasonal products around holidays like Easter and Christmas. The atmosphere is refreshingly straightforward: no trendy concepts or elaborate presentation, just traditional Dutch bakery culture focused on quality and familiarity.<br><br>Places like this are part of the everyday fabric of the city; quietly surviving while trends around them continue to change.'
+  },
+  {
+    id: 'opt7',
+    type: 'optional',
+    label: '🎭',
+    icon: '🎭',
+    name: 'Ceintuurtheater',
+    // ⚠️ GESCHAT — graag verifiëren
+    lat: 52.3526,
+    lng: 4.8910,
+    body: 'A few steps further stands the Ceintuurtheater, one of the most striking buildings in this part of De Pijp.<br><br>Built in 1921 as a cinema and theatre, its expressive façade still dominates the street corner. Over the decades it has had many lives — cinema, church, and now a mix of contemporary uses.<br><br>It\'s worth pausing to look up at the details. Buildings like this show how De Pijp was never just housing: it always had its own places for entertainment and gathering.'
   },
   {
     id: 25,
@@ -322,15 +359,25 @@ var ROUTE_STOPS = [
     id: 27,
     type: 'stop',
     label: '27',
+    name: 'The Green Transformation',
+    // ⚠️ GESCHAT — Frans Halsstraat-omgeving, graag verifiëren
+    lat: 52.3553,
+    lng: 4.8885,
+    body: 'Notice how green this street feels compared to the dense blocks you walked through earlier. This is no accident.<br><br>In recent years, De Pijp has been undergoing a quiet green transformation. Residents and the city have been removing paving stones to make room for plants ("geveltuintjes" — façade gardens), adding trees, and redesigning streets to handle heavy rainfall. The neighbourhood that was once built purely for efficiency is slowly being softened.<br><br>From here, the route turns right, back toward the lively streets and the end point. But if this quieter atmosphere suits you better, feel free to continue straight ahead instead — you\'ll pass some lovely local cafés and restaurants — and simply turn right at the end to reach the final stop.'
+  },
+  {
+    id: 28,
+    type: 'stop',
+    label: '28',
     name: 'Neo Bistro',
     lat: 52.3556779,
     lng: 4.8884041,
     body: 'Neo is a bistro with classical foundations, approached in a more modern and relaxed way.<br><br>The food is refined and carefully prepared, but without the formality often associated with fine dining. Instead of traditional courses, the menu is built around smaller dishes designed for sharing, guided by seasonality, craftsmanship, and strong flavours.<br><br>The wine list follows the same philosophy, with a focus on organic, biodynamic, and natural wines chosen to complement the food.<br><br>Places like Neo reflect a broader shift in Amsterdam\'s dining culture: away from rigid fine dining traditions, and towards something more informal, social, and experience-driven — while still taking the food itself very seriously.'
   },
   {
-    id: 28,
+    id: 29,
     type: 'stop',
-    label: '28',
+    label: '29',
     name: 'Layers Bakery & Deli',
     lat: 52.3556284,
     lng: 4.8889362,
@@ -338,9 +385,9 @@ var ROUTE_STOPS = [
     tip: 'If there\'s one thing especially worth trying, it\'s the croissant with beef patty: essentially a hamburger served on a croissant instead of a bun. It sounds slightly ridiculous. And somehow, it works very well.'
   },
   {
-    id: 29,
+    id: 30,
     type: 'stop',
-    label: '29',
+    label: '30',
     name: 'Kaasbar Amsterdam',
     lat: 52.35728599999999,
     lng: 4.8905666,
