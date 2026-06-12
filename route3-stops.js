@@ -23,10 +23,9 @@ var ROUTE_META = {
   zoom: 14,
   intro: 'This walk begins at the edge of the old city, near the Munttoren. Amsterdam still feels compact and historic here, shaped by canals, trade, and centuries of gradual growth. But as you move forward, the city begins to shift.<br><br>Around Rembrandtplein, the atmosphere becomes livelier. Streets that once served markets and theatres now host nightlife, cafés, and visitors from around the world. The city again reinventing itself without changing its structure.<br><br>Further along, Utrechtsestraat acts as a kind of transition. It\'s still part of the historic expansion, but more local, more everyday. A place where Amsterdam feels lived-in rather than a touristic checklist.<br><br>As you enter De Pijp, you will notice a difference. This neighbourhood was not shaped over centuries, but built quickly — in the late 19th century, when Amsterdam\'s population was growing rapidly. It was designed to house workers, efficiently and densely, close to where they worked.<br><br>Before De Pijp became known for brunch spots, bakeries, and terraces, it was partly an industrial area. The industry has mostly disappeared. The small apartments have been renovated. And the streets that once served workers now attract a different kind of daily life: slower, more social, more focused on experience.<br><br>This route is about noticing that shift.',
   viaPoints: [
-    { after: 2,      lat: 52.3663500, lng: 4.8924000 }, // stop 2→3: via Reguliersdwarsstraat/Vijzelstraat naar Tuschinski
-    { after: 3,      lat: 52.3664500, lng: 4.8953000 }, // stop 3→4: kortste route over Rembrandtplein, geen lus
-    { after: 4,      lat: 52.3655000, lng: 4.8961000 }, // stop 4→5: via Thorbeckeplein
-    { after: 'opt2', lat: 52.3650000, lng: 4.8975000 }  // Pitaqueen→stop 6: via Utrechtsestraat
+    { after: 2, lat: 52.3663500, lng: 4.8924000 }, // stop 2→3: via Reguliersdwarsstraat/Vijzelstraat naar Tuschinski
+    { after: 4, lat: 52.3655000, lng: 4.8961000 }, // stop 4→5: via Thorbeckeplein
+    { after: 5, lat: 52.3654042, lng: 4.8976007 }  // stop 5→6: via Pitaqueen, dan Utrechtsestraat
   ]
 };
 
@@ -222,9 +221,8 @@ var ROUTE_STOPS = [
     label: '🎨',
     icon: '🎨',
     name: 'INDEBT Broedplaats',
-    // ⚠️ GESCHAT — graag verifiëren
-    lat: 52.35595,
-    lng: 4.89775,
+    lat: 52.355959538300645,
+    lng: 4.897654542138039,
     body: 'On your left, you\'ll notice a striking old school building. This is INDEBT, a "broedplaats" — literally a breeding ground.<br><br>Amsterdam has a long tradition of converting empty buildings into subsidised studios for artists and creative entrepreneurs. Spaces like this one keep room for creativity in a neighbourhood where rents keep climbing.<br><br>The building itself, with its characteristic brickwork and large windows, is a beautiful example of early 20th-century school architecture. A quiet reminder that not everything in De Pijp has been converted into apartments or cafés.'
   },
   {
@@ -279,9 +277,8 @@ var ROUTE_STOPS = [
     type: 'stop',
     label: '22',
     name: 'Sarphatipark',
-    // ⚠️ GESCHAT — oost-ingang van het park, graag verifiëren
-    lat: 52.3545,
-    lng: 4.8957,
+    lat: 52.353919194113985,
+    lng: 4.8941851366055475,
     body: 'Sarphatipark is a rectangular park located right in the middle of De Pijp.<br><br>It was named after Samuel Sarphati — a doctor, urban thinker, and philanthropist who played an important role in improving Amsterdam during the 19th century. The park itself was laid out starting in 1885, as part of the city\'s rapid expansion.<br><br>One unusual detail: unlike the surrounding streets, the park was never raised to the same level. As a result, the park still sits slightly lower than the neighbourhood around it, with the exception of the monument dedicated to Sarphati himself.<br><br>Today, the park functions as one of the green lungs of De Pijp. Especially during warmer months, the grass fills with residents relaxing, meeting friends, or simply escaping their small apartments for a while. Many people in Amsterdam do not have private gardens, which helps explain why parks like this become such important public living rooms when the weather is good.'
   },
   {
@@ -320,9 +317,8 @@ var ROUTE_STOPS = [
     label: '🎭',
     icon: '🎭',
     name: 'Ceintuurtheater',
-    // ⚠️ GESCHAT — graag verifiëren
-    lat: 52.3526,
-    lng: 4.8910,
+    lat: 52.35261767885419,
+    lng: 4.891426030351239,
     body: 'A few steps further stands the Ceintuurtheater, one of the most striking buildings in this part of De Pijp.<br><br>Built in 1921 as a cinema and theatre, its expressive façade still dominates the street corner. Over the decades it has had many lives — cinema, church, and now a mix of contemporary uses.<br><br>It\'s worth pausing to look up at the details. Buildings like this show how De Pijp was never just housing: it always had its own places for entertainment and gathering.'
   },
   {
@@ -359,20 +355,19 @@ var ROUTE_STOPS = [
     id: 27,
     type: 'stop',
     label: '27',
-    name: 'The Green Transformation',
-    // ⚠️ GESCHAT — Frans Halsstraat-omgeving, graag verifiëren
-    lat: 52.3553,
-    lng: 4.8885,
-    body: 'Notice how green this street feels compared to the dense blocks you walked through earlier. This is no accident.<br><br>In recent years, De Pijp has been undergoing a quiet green transformation. Residents and the city have been removing paving stones to make room for plants ("geveltuintjes" — façade gardens), adding trees, and redesigning streets to handle heavy rainfall. The neighbourhood that was once built purely for efficiency is slowly being softened.<br><br>From here, the route turns right, back toward the lively streets and the end point. But if this quieter atmosphere suits you better, feel free to continue straight ahead instead — you\'ll pass some lovely local cafés and restaurants — and simply turn right at the end to reach the final stop.'
+    name: 'Neo Bistro',
+    lat: 52.3556779,
+    lng: 4.8884041,
+    body: 'Neo is a bistro with classical foundations, approached in a more modern and relaxed way.<br><br>The food is refined and carefully prepared, but without the formality often associated with fine dining. Instead of traditional courses, the menu is built around smaller dishes designed for sharing, guided by seasonality, craftsmanship, and strong flavours.<br><br>The wine list follows the same philosophy, with a focus on organic, biodynamic, and natural wines chosen to complement the food.<br><br>Places like Neo reflect a broader shift in Amsterdam\'s dining culture: away from rigid fine dining traditions, and towards something more informal, social, and experience-driven — while still taking the food itself very seriously.'
   },
   {
     id: 28,
     type: 'stop',
     label: '28',
-    name: 'Neo Bistro',
-    lat: 52.3556779,
-    lng: 4.8884041,
-    body: 'Neo is a bistro with classical foundations, approached in a more modern and relaxed way.<br><br>The food is refined and carefully prepared, but without the formality often associated with fine dining. Instead of traditional courses, the menu is built around smaller dishes designed for sharing, guided by seasonality, craftsmanship, and strong flavours.<br><br>The wine list follows the same philosophy, with a focus on organic, biodynamic, and natural wines chosen to complement the food.<br><br>Places like Neo reflect a broader shift in Amsterdam\'s dining culture: away from rigid fine dining traditions, and towards something more informal, social, and experience-driven — while still taking the food itself very seriously.'
+    name: 'The Green Transformation',
+    lat: 52.35599228604786,
+    lng: 4.888623188455682,
+    body: 'Notice how green this street feels compared to the dense blocks you walked through earlier. This is no accident.<br><br>In recent years, De Pijp has been undergoing a quiet green transformation. Residents and the city have been removing paving stones to make room for plants ("geveltuintjes" — façade gardens), adding trees, and redesigning streets to handle heavy rainfall. The neighbourhood that was once built purely for efficiency is slowly being softened.<br><br>From here, the route turns right, back toward the lively streets and the end point. But if this quieter atmosphere suits you better, feel free to continue straight ahead instead — you\'ll pass some lovely local cafés and restaurants — and simply turn right at the end to reach the final stop.'
   },
   {
     id: 29,
