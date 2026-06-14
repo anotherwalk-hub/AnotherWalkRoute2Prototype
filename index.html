@@ -17,6 +17,8 @@
 <script>var R2_META = ROUTE_META; var R2_STOPS = ROUTE_STOPS;</script>
 <script src="route3-stops.js"></script>
 <script>var R3_META = ROUTE_META; var R3_STOPS = ROUTE_STOPS;</script>
+<script src="route4-stops.js"></script>
+<script>var R4_META = ROUTE_META; var R4_STOPS = ROUTE_STOPS;</script>
 
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -370,7 +372,8 @@ var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
 var ROUTES = [
   { key:'route1', meta:R1_META, stops:R1_STOPS, unlocked:false, color:'#4a2060', viaPoints:R1_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B6bJ1gKE4t07Rr7j91gs00' },
   { key:'route2', meta:R2_META, stops:R2_STOPS, unlocked:false, color:'#701321', viaPoints:R2_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_3cIeVdeCwaRognX6f51gs01' },
-  { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B614nbqk0cKc7H6f51gs02' }
+  { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B614nbqk0cKc7H6f51gs02' },
+  { key:'route4', meta:R4_META, stops:R4_STOPS, unlocked:true,  color:'#b89a5a', viaPoints:R4_META.viaPoints||[], buyUrl:null, free:true }
 ];
 
 // ── STATE
@@ -438,7 +441,7 @@ function onSignedOut() {
   document.getElementById('authBtn').classList.remove('signed-in');
   document.getElementById('authBtn').title = 'Sign in';
   closeAccountMenu();
-  ROUTES.forEach(function(r) { r.unlocked = false; });
+  ROUTES.forEach(function(r) { r.unlocked = !!r.free; });
   buildRouteTabs();
   loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
 }
@@ -456,7 +459,7 @@ function loadUserAccess() {
       } else if (res.data) {
         ids = res.data.map(function(row) { return row.route_id; });
       }
-      ROUTES.forEach(function(r) { r.unlocked = ids.indexOf(r.key) !== -1; });
+      ROUTES.forEach(function(r) { r.unlocked = !!r.free || ids.indexOf(r.key) !== -1; });
       buildRouteTabs();
       loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
     });
