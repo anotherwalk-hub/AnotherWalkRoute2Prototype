@@ -225,6 +225,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 /* ── PREVIEW OVERLAY */
 #previewOverlay { z-index:1100; }
 .preview-locked-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(112,19,33,0.07); border:1px solid rgba(112,19,33,0.18); border-radius:20px; padding:4px 12px; font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--bordeaux); font-family:'Montserrat',sans-serif; margin-bottom:16px; }
+.preview-locked-badge.free { background:rgba(122,158,126,0.12); border-color:rgba(122,158,126,0.4); color:#3f6b46; }
 .preview-stop-hint { margin-top:18px; padding-top:16px; border-top:1px solid rgba(112,19,33,.1); font-size:0.72rem; color:var(--muted); font-family:'Montserrat',sans-serif; line-height:1.65; }
 .preview-stop-hint strong { color:var(--carbon); }
 
@@ -354,7 +355,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
     <div class="aw-accent" id="previewAccent"></div>
     <button class="aw-close" id="previewClose">&#10005;</button>
     <div class="aw-scroll">
-      <div class="preview-locked-badge">🔒 Locked route</div>
+      <div class="preview-locked-badge" id="previewBadge">🔒 Locked route</div>
       <div class="aw-eyebrow" id="previewEyebrow"></div>
       <div class="aw-title" id="previewTitle">—</div>
       <div class="aw-meta" id="previewMeta"></div>
@@ -378,7 +379,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
     <div class="aw-scroll">
       <div class="login-form-inner" id="loginFormInner">
         <div class="login-logo">AnotherWalk</div>
-        <div class="login-tagline">Sign in to access your routes.<br>We'll send you a magic link — no password needed.</div>
+        <div class="login-tagline" id="loginTagline">Sign in to access your routes.<br>We'll send you a magic link — no password needed.</div>
         <label class="login-label" for="loginEmail">Your email address</label>
         <input class="login-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
         <div class="login-error" id="loginError"></div>
@@ -418,7 +419,7 @@ var ROUTES = [
   { key:'route1', meta:R1_META, stops:R1_STOPS, unlocked:false, color:'#4a2060', viaPoints:R1_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B6bJ1gKE4t07Rr7j91gs00' },
   { key:'route2', meta:R2_META, stops:R2_STOPS, unlocked:false, color:'#701321', viaPoints:R2_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_3cIeVdeCwaRognX6f51gs01' },
   { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B614nbqk0cKc7H6f51gs02' },
-  { key:'route4', meta:R4_META, stops:R4_STOPS, unlocked:true,  color:'#b89a5a', viaPoints:R4_META.viaPoints||[], buyUrl:null, free:true }
+  { key:'route4', meta:R4_META, stops:R4_STOPS, unlocked:false, color:'#b89a5a', viaPoints:R4_META.viaPoints||[], buyUrl:null, free:true }
 ];
 
 // ── STATE
@@ -486,7 +487,9 @@ function onSignedOut() {
   document.getElementById('authBtn').classList.remove('signed-in');
   document.getElementById('authBtn').title = 'Sign in';
   closeAccountMenu();
-  ROUTES.forEach(function(r) { r.unlocked = !!r.free; });
+  // Logged out: nothing is unlocked. Free routes require a (free) account too —
+  // the user must register their email via magic link before they can open them.
+  ROUTES.forEach(function(r) { r.unlocked = false; });
   buildRoutePicker();
   loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
 }
@@ -504,6 +507,8 @@ function loadUserAccess() {
       } else if (res.data) {
         ids = res.data.map(function(row) { return row.route_id; });
       }
+      // A free route unlocks automatically for any signed-in user (no purchase needed).
+      // Paid routes unlock only if present in user_routes (or the user is admin).
       ROUTES.forEach(function(r) { r.unlocked = !!r.free || ids.indexOf(r.key) !== -1; });
       buildRoutePicker();
       loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
@@ -542,11 +547,15 @@ document.addEventListener('click', function() { closeAccountMenu(); });
 document.getElementById('accountMenu').addEventListener('click', function(e) { e.stopPropagation(); });
 
 // ── LOGIN
-function openLoginOverlay() {
+function openLoginOverlay(isFreeRoute) {
   document.getElementById('loginFormInner').classList.remove('hidden');
   document.getElementById('loginSent').classList.remove('show');
   document.getElementById('loginError').classList.remove('show');
   document.getElementById('loginError').textContent = '';
+  // Tagline adapts: a free-route entry makes the "free + instant unlock" promise explicit.
+  document.getElementById('loginTagline').innerHTML = isFreeRoute
+    ? 'Register your email to unlock this <strong>free</strong> route.<br>We\'ll send you a magic link — confirm it and the route unlocks right away. No password, no payment.'
+    : 'Sign in to access your routes.<br>We\'ll send you a magic link — no password needed.';
   var btn = document.getElementById('loginSubmit');
   btn.disabled = false; btn.style.display = 'block';
   btn.textContent = 'Send me a magic link';
@@ -601,19 +610,46 @@ function openPreviewOverlay(route) {
   document.getElementById('previewBody').innerHTML = paragraphs.map(function(p) {
     return '<p>' + p.replace(/<br>/g, ' ') + '</p>';
   }).join('');
-  document.getElementById('previewStopHint').innerHTML =
-    'This route includes <strong>' + route.meta.stopCount + ' curated stops</strong> with detailed descriptions, local tips, and a guided walking path — all unlocked after purchase.';
-var buyBtn = document.getElementById('previewBuyBtn');
-buyBtn.style.background = route.color;
-buyBtn.onclick = function() {
-  if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(); return; }
-  var baseUrl = route.buyUrl;
-  var params = '?client_reference_id=' + currentUser.id + '__' + route.key;
-  window.location.href = baseUrl + params;
-};
+
+  var badge = document.getElementById('previewBadge');
+  var buyBtn = document.getElementById('previewBuyBtn');
   var signInBtn = document.getElementById('previewSignInBtn');
-  signInBtn.style.display = currentUser ? 'none' : 'block';
-  signInBtn.onclick = function() { closeOverlay('previewOverlay'); openLoginOverlay(); };
+
+  if (route.free) {
+    // ── FREE ROUTE: no payment, just (free) registration via magic link
+    badge.className = 'preview-locked-badge free';
+    badge.innerHTML = '✦ Free route';
+    document.getElementById('previewStopHint').innerHTML =
+      'This route includes <strong>' + route.meta.stopCount + ' curated stops</strong> with detailed descriptions, local tips, and a guided walking path. It\'s <strong>completely free</strong> — just register your email and it unlocks the moment you confirm your magic link.';
+    buyBtn.style.background = route.color;
+    buyBtn.textContent = currentUser ? 'Unlock this route' : 'Register free to unlock';
+    buyBtn.onclick = function() {
+      if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(true); return; }
+      // Already signed in: free route is already unlocked, just open it.
+      closeOverlay('previewOverlay');
+      switchRoute(route.key);
+    };
+    // No separate "sign in to existing account" button needed for a free route —
+    // the single button already routes to the magic-link login.
+    signInBtn.style.display = 'none';
+  } else {
+    // ── PAID ROUTE
+    badge.className = 'preview-locked-badge';
+    badge.innerHTML = '🔒 Locked route';
+    document.getElementById('previewStopHint').innerHTML =
+      'This route includes <strong>' + route.meta.stopCount + ' curated stops</strong> with detailed descriptions, local tips, and a guided walking path — all unlocked after purchase.';
+    buyBtn.style.background = route.color;
+    buyBtn.textContent = 'Buy this route';
+    buyBtn.onclick = function() {
+      if (!currentUser) { closeOverlay('previewOverlay'); openLoginOverlay(false); return; }
+      var baseUrl = route.buyUrl;
+      var params = '?client_reference_id=' + currentUser.id + '__' + route.key;
+      window.location.href = baseUrl + params;
+    };
+    signInBtn.style.display = currentUser ? 'none' : 'block';
+    signInBtn.onclick = function() { closeOverlay('previewOverlay'); openLoginOverlay(false); };
+  }
+
   document.getElementById('previewOverlay').classList.add('show');
 }
 
@@ -689,9 +725,15 @@ function buildRoutePicker() {
         ? '<span class="route-free">Free</span>'
         : (!route.unlocked ? '<span class="route-lock">🔒</span>' : '');
 
-      var detail = route.unlocked
-        ? (route.meta.stopCount + ' stops · ' + (route.meta.duration || ''))
-        : 'Locked · ' + route.meta.stopCount + ' stops';
+      var detail;
+      if (route.unlocked) {
+        detail = route.meta.stopCount + ' stops · ' + (route.meta.duration || '');
+      } else if (route.free) {
+        // Free route, not yet unlocked: invite rather than say "Locked"
+        detail = 'Register to unlock · ' + route.meta.stopCount + ' stops';
+      } else {
+        detail = 'Locked · ' + route.meta.stopCount + ' stops';
+      }
 
       row.innerHTML =
         '<span class="route-swatch" style="background:' + route.color + ';"></span>' +
