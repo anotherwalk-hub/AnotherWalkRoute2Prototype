@@ -63,6 +63,21 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .icon-btn.signed-in { color:var(--gold); }
 .header-spacer { width:36px; flex-shrink:0; }
 
+/* ── PURCHASE FALLBACK BANNER */
+.purchase-fallback {
+  display:none; position:fixed; top:0; left:0; right:0; z-index:3000;
+  background:var(--bordeaux); color:var(--parchment);
+  font-family:'Montserrat',sans-serif; font-size:0.72rem;
+  padding:10px 40px 10px 16px; text-align:center; line-height:1.5;
+}
+.purchase-fallback.show { display:block; }
+.purchase-fallback a { color:var(--gold); text-decoration:underline; }
+.purchase-fallback #purchaseFallbackClose {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  background:transparent; border:none; color:var(--parchment);
+  font-size:1.1rem; cursor:pointer; opacity:0.7;
+}
+
 /* ── ACCOUNT DROPDOWN */
 .account-menu { position:absolute; top:calc(100% + 8px); right:38px; background:var(--carbon); border:1px solid rgba(112,19,33,0.35); border-radius:10px; padding:6px; min-width:150px; box-shadow:0 6px 24px rgba(25,25,25,0.4); z-index:2100; display:none; flex-direction:column; gap:2px; }
 .account-menu.show { display:flex; }
@@ -262,6 +277,14 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 </head>
 <body>
 
+<div id="purchaseFallback" class="purchase-fallback">
+  Route not unlocked yet? Give it a moment and refresh —
+  still locked after a minute? Email
+  <a href="mailto:support@anotherwalk.city">support@anotherwalk.city</a>
+  and we'll sort it out within a day.
+  <button id="purchaseFallbackClose" aria-label="Dismiss">&times;</button>
+</div>
+
 <header class="app-header">
   <button class="menu-btn" id="menuBtn" aria-label="Open stop list">
     <span></span><span></span><span></span>
@@ -422,6 +445,42 @@ var ROUTES = [
   { key:'route3', meta:R3_META, stops:R3_STOPS, unlocked:false, color:'#2d5a3d', viaPoints:R3_META.viaPoints||[], buyUrl:'https://buy.stripe.com/test_9B614nbqk0cKc7H6f51gs02' }
 ];
 
+// ── PURCHASE RETURN HANDLING
+// Stripe redirects here with ?purchase=success&route=routeX after payment.
+// We check (with one retry) whether the webhook has already unlocked it;
+// if not, we show a fallback message instead of leaving the user guessing.
+var _purchaseParams = new URLSearchParams(window.location.search);
+var purchasedRouteKey = _purchaseParams.get('purchase') === 'success'
+  ? _purchaseParams.get('route') : null;
+if (purchasedRouteKey) {
+  // Clean the URL immediately so a refresh doesn't re-trigger this.
+  history.replaceState(null, '', window.location.pathname);
+}
+
+function checkPurchaseUnlock() {
+  if (!purchasedRouteKey) return;
+  var route = getRoute(purchasedRouteKey);
+  if (route && route.unlocked) { purchasedRouteKey = null; return; } // all good, silently done
+  // Not unlocked yet — give the webhook one more moment, then decide.
+  setTimeout(function() {
+    supabase.from('user_routes').select('route_id').eq('user_id', currentUser.id)
+      .then(function(res) {
+        var ids = (res.data || []).map(function(r) { return r.route_id; });
+        if (ids.indexOf(purchasedRouteKey) === -1) {
+          document.getElementById('purchaseFallback').classList.add('show');
+        } else {
+          // Refresh local state so the route opens without a manual reload.
+          loadUserAccess();
+        }
+        purchasedRouteKey = null;
+      });
+  }, 4000);
+}
+
+document.getElementById('purchaseFallbackClose').addEventListener('click', function() {
+  document.getElementById('purchaseFallback').classList.remove('show');
+});
+
 // ── STATE
 var currentUser     = null;
 var currentProfile  = null;
@@ -512,6 +571,7 @@ function loadUserAccess() {
       ROUTES.forEach(function(r) { r.unlocked = !!r.free || ids.indexOf(r.key) !== -1; });
       buildRoutePicker();
       loadRoute(activeRouteKey, false); // false = don't show intro on auth reload
+      checkPurchaseUnlock();
     });
 }
 
