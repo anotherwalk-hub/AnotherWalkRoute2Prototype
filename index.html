@@ -224,7 +224,8 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
 .aw-cta:disabled { opacity:0.6; cursor:default; transform:none; box-shadow:none; filter:none; }
 .aw-cta-secondary { display:block; width:100%; border:1.5px solid rgba(112,19,33,0.25); border-radius:12px; padding:13px 24px; font-family:'Montserrat',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--bordeaux); cursor:pointer; background:transparent; transition:all .2s; margin-top:10px; text-align:center; }
 .aw-cta-secondary:hover { background:rgba(112,19,33,0.05); }
-#introDirections { text-decoration:none; }
+.aw-directions-row { display:flex; gap:8px; margin-top:10px; }
+.aw-directions-row .aw-directions-btn { margin-top:0; flex:1; font-size:0.66rem; padding:11px 10px; text-decoration:none; }
 .aw-eyebrow { font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; font-family:'Montserrat',sans-serif; }
 .aw-title { font-family:'Playfair Display',serif; font-size:1.7rem; font-weight:600; line-height:1.15; color:var(--carbon); margin-bottom:6px; }
 .aw-meta { display:flex; gap:16px; margin-bottom:20px; font-size:0.65rem; color:var(--muted); font-family:'Montserrat',sans-serif; font-weight:500; letter-spacing:0.04em; }
@@ -368,7 +369,10 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
     </div>
     <div class="aw-footer">
       <button class="aw-cta" id="introCta">I am ready for this AnotherWalk!</button>
-      <a class="aw-cta-secondary" id="introDirections" href="#" target="_blank" rel="noopener">📍 Get directions to the start</a>
+      <div class="aw-directions-row">
+        <a class="aw-cta-secondary aw-directions-btn" id="introDirectionsGoogle" href="#" target="_blank" rel="noopener">📍 Google Maps</a>
+        <a class="aw-cta-secondary aw-directions-btn" id="introDirectionsApple" href="#" target="_blank" rel="noopener">📍 Apple Maps</a>
+      </div>
     </div>
   </div>
 </div>
@@ -1079,12 +1083,15 @@ function openIntro(route) {
   }).join('');
   document.getElementById('introCta').style.background = route.color;
   var startStop = route.stops.filter(function(s) { return s.type === 'start'; })[0] || route.stops[0];
-  var dirLink = document.getElementById('introDirections');
+  var dirRow = document.querySelector('.aw-directions-row');
+  var dirGoogle = document.getElementById('introDirectionsGoogle');
+  var dirApple  = document.getElementById('introDirectionsApple');
   if (startStop) {
-    dirLink.href = 'https://www.google.com/maps/dir/?api=1&destination=' + startStop.lat + ',' + startStop.lng;
-    dirLink.style.display = 'block';
+    dirGoogle.href = 'https://www.google.com/maps/dir/?api=1&destination=' + startStop.lat + ',' + startStop.lng;
+    dirApple.href  = 'https://maps.apple.com/?daddr=' + startStop.lat + ',' + startStop.lng;
+    dirRow.style.display = 'flex';
   } else {
-    dirLink.style.display = 'none';
+    dirRow.style.display = 'none';
   }
   document.getElementById('introOverlay').classList.add('show');
   document.getElementById('introCta').onclick = function() { closeIntro(route); };
