@@ -274,7 +274,7 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
   .sidebar-backdrop.show { display:block; }
 }
 .bundle-promo {
-  margin-top: 14px;
+  margin: 10px 4px 4px;
   padding: 16px 18px;
   border-radius: 10px;
   background: linear-gradient(135deg, #701321, #8e1a2b);
@@ -875,27 +875,28 @@ function buildRoutePicker() {
       routesWrap.appendChild(row);
     });
 
+    // ── Bundle promo: appended INSIDE this city's collapsible list, so it
+    // opens/closes together with the city group instead of always showing.
+    var paidHere = routes.filter(function(r) { return !r.free; });
+    var paidHereUnlocked = paidHere.filter(function(r) { return r.unlocked; }).length;
+    if (paidHere.length > 0 && paidHereUnlocked < paidHere.length) {
+      var promo = document.createElement('div');
+      promo.className = 'bundle-promo';
+      promo.innerHTML =
+        '<div class="bundle-promo-title">Unlock all routes</div>' +
+        '<div class="bundle-promo-sub">One-time payment · €13.99</div>' +
+        '<button class="bundle-promo-btn" type="button">Get the bundle</button>';
+      promo.querySelector('.bundle-promo-btn').addEventListener('click', function() {
+        if (!currentUser) { openLoginOverlay(false); return; }
+        var params = '?client_reference_id=' + currentUser.id + '__bundle';
+        window.location.href = BUNDLE_BUY_URL + params;
+      });
+      routesWrap.appendChild(promo);
+    }
+
     group.appendChild(routesWrap);
     container.appendChild(group);
   });
-
-  // ── Bundle promo: show while not all paid routes are unlocked yet
-  var paidRoutes = ROUTES.filter(function(r) { return !r.free; });
-  var paidUnlockedCount = paidRoutes.filter(function(r) { return r.unlocked; }).length;
-  if (paidUnlockedCount < paidRoutes.length) {
-    var promo = document.createElement('div');
-    promo.className = 'bundle-promo';
-    promo.innerHTML =
-      '<div class="bundle-promo-title">Unlock all ' + paidRoutes.length + ' routes</div>' +
-      '<div class="bundle-promo-sub">One-time payment · €13.99</div>' +
-      '<button class="bundle-promo-btn" type="button">Get the bundle</button>';
-    promo.querySelector('.bundle-promo-btn').addEventListener('click', function() {
-      if (!currentUser) { openLoginOverlay(false); return; }
-      var params = '?client_reference_id=' + currentUser.id + '__bundle';
-      window.location.href = BUNDLE_BUY_URL + params;
-    });
-    container.appendChild(promo);
-  }
 }
 
 // ─────────────────────────────────────────────
