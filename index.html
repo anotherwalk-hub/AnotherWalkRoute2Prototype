@@ -273,6 +273,40 @@ body { font-family:'Montserrat',sans-serif; background:var(--panel); color:var(-
   .sidebar.open { transform:translateX(0); }
   .sidebar-backdrop.show { display:block; }
 }
+.bundle-promo {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #701321, #8e1a2b);
+  color: #f1eade;
+  text-align: center;
+}
+.bundle-promo-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.bundle-promo-sub {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 11px;
+  color: #e3c98f;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+.bundle-promo-btn {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: #f1eade;
+  color: #701321;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 20px;
+  cursor: pointer;
+}
+.bundle-promo-btn:hover { background: #ffffff; }
 </style>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "da32f8d078144e398a67b26e67d39977"}'></script><!-- End Cloudflare Web Analytics -->
@@ -443,6 +477,9 @@ var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 var MAPBOX_TOKEN = 'pk.eyJ1Ijoibmlja3BvbnRlIiwiYSI6ImNtb25hZGVvbTA3aXMycHM2Yms2ejNxaGcifQ.rTiwFe0d2LfVqGPaUbz8tA';
 var MAPBOX_STYLE  = 'mapbox://styles/nickponte/cmon8wa9d002301r54rz0a6n7';
 
+// ── BUNDLE (all 3 paid routes)
+var BUNDLE_BUY_URL = 'https://buy.stripe.com/test_28E6oH9ic4t0c7HfPF1gs03';
+
 // ── ROUTES
 var ROUTES = [
   { key:'route4', meta:R4_META, stops:R4_STOPS, unlocked:false, color:'#b89a5a', viaPoints:R4_META.viaPoints||[], buyUrl:null, free:true },
@@ -465,6 +502,28 @@ if (purchasedRouteKey) {
 
 function checkPurchaseUnlock() {
   if (!purchasedRouteKey) return;
+
+  // ── Bundle purchase: verify all paid routes, not just one key.
+  if (purchasedRouteKey === 'bundle') {
+    var bundleKeys = ROUTES.filter(function(r) { return !r.free; }).map(function(r) { return r.key; });
+    var alreadyAllUnlocked = bundleKeys.every(function(k) { var r = getRoute(k); return r && r.unlocked; });
+    if (alreadyAllUnlocked) { purchasedRouteKey = null; return; }
+    setTimeout(function() {
+      supabase.from('user_routes').select('route_id').eq('user_id', currentUser.id)
+        .then(function(res) {
+          var ids = (res.data || []).map(function(r) { return r.route_id; });
+          var allPresent = bundleKeys.every(function(k) { return ids.indexOf(k) !== -1; });
+          if (!allPresent) {
+            document.getElementById('purchaseFallback').classList.add('show');
+          } else {
+            loadUserAccess();
+          }
+          purchasedRouteKey = null;
+        });
+    }, 4000);
+    return;
+  }
+
   var route = getRoute(purchasedRouteKey);
   if (route && route.unlocked) { purchasedRouteKey = null; return; } // all good, silently done
   // Not unlocked yet — give the webhook one more moment, then decide.
@@ -819,6 +878,24 @@ function buildRoutePicker() {
     group.appendChild(routesWrap);
     container.appendChild(group);
   });
+
+  // ── Bundle promo: show while not all paid routes are unlocked yet
+  var paidRoutes = ROUTES.filter(function(r) { return !r.free; });
+  var paidUnlockedCount = paidRoutes.filter(function(r) { return r.unlocked; }).length;
+  if (paidUnlockedCount < paidRoutes.length) {
+    var promo = document.createElement('div');
+    promo.className = 'bundle-promo';
+    promo.innerHTML =
+      '<div class="bundle-promo-title">Unlock all ' + paidRoutes.length + ' routes</div>' +
+      '<div class="bundle-promo-sub">One-time payment · €13.99</div>' +
+      '<button class="bundle-promo-btn" type="button">Get the bundle</button>';
+    promo.querySelector('.bundle-promo-btn').addEventListener('click', function() {
+      if (!currentUser) { openLoginOverlay(false); return; }
+      var params = '?client_reference_id=' + currentUser.id + '__bundle';
+      window.location.href = BUNDLE_BUY_URL + params;
+    });
+    container.appendChild(promo);
+  }
 }
 
 // ─────────────────────────────────────────────
