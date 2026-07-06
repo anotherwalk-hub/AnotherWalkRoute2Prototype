@@ -922,6 +922,22 @@ function loadRoute(key, showIntro) {
     buildList('all');
     return;
   }
+
+  // ── Marketing tracking: record that this user actually opened a free route
+  // (not just registered). Harmless if it fires again later — upsert +
+  // the unique constraint on (user_id, route_id) means repeats are silently
+  // ignored. Lets you later find "opened the free route, never bought".
+  if (route.free && currentUser) {
+    supabase.from('user_routes')
+      .upsert(
+        { user_id: currentUser.id, route_id: route.key, source: 'free' },
+        { onConflict: 'user_id,route_id', ignoreDuplicates: true }
+      )
+      .then(function(res) {
+        if (res.error) console.error('Free-route tracking insert failed:', res.error);
+      });
+  }
+
   document.getElementById('headerTitle').textContent = route.meta.title;
   document.getElementById('headerSub').textContent = route.meta.label + ' · ' + route.meta.stopCount + ' stops';
   document.documentElement.style.setProperty('--current-route-color', route.color);
